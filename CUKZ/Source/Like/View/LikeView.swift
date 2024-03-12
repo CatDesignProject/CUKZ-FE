@@ -13,6 +13,7 @@ final class LikeView: UIView {
         $0.separatorInset.left = 20
         $0.separatorInset.right = 20
         $0.separatorColor = .gadaeBlue
+        $0.tableHeaderView = UIView()
     }
     
     // MARK: - Init
