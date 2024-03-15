@@ -23,11 +23,19 @@ final class PurchaseDetailViewController: UIViewController {
         super.viewDidLoad()
         
         prepare()
+        setupImageCollectionView()
         setupButton()
     }
     
     private func prepare() {
-        
+        purchaseDetailView.scrollView.delegate = self
+    }
+    
+    private func setupImageCollectionView() {
+        let imageCV = purchaseDetailView.productImageCollectionView
+        imageCV.delegate = self
+        imageCV.dataSource = self
+        imageCV.register(PurchaseDetailImageCell.self, forCellWithReuseIdentifier: "PurchaseDetailImageCell")
     }
     
     private func setupButton() {
@@ -49,4 +57,38 @@ final class PurchaseDetailViewController: UIViewController {
         print("구매하기 버튼 눌림")
     }
     
+}
+
+// MARK: - UIScrollViewDelegate
+extension PurchaseDetailViewController: UIScrollViewDelegate {
+    
+}
+
+// MARK: - UICollectionViewDataSource
+extension PurchaseDetailViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 5
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PurchaseDetailImageCell", for: indexPath) as! PurchaseDetailImageCell
+        
+        return cell
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+extension PurchaseDetailViewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return collectionView.bounds.size
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return .zero
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return .zero
+    }
 }
