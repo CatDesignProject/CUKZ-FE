@@ -29,7 +29,7 @@ final class PurchaseDetailViewController: UIViewController {
     }
     
     private func prepare() {
-        
+        title = "구매하기"
     }
     
     private func setupScrollView() {

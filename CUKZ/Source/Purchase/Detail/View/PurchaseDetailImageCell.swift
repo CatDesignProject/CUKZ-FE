@@ -8,12 +8,13 @@
 import UIKit
 
 final class PurchaseDetailImageCell: UICollectionViewCell {
-    
+    // MARK: - View
     let mainImage = UIImageView().then {
         $0.image = UIImage(named: "testImage2")
         $0.contentMode = .scaleAspectFill
     }
     
+    // MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
         addViews()
@@ -24,6 +25,7 @@ final class PurchaseDetailImageCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - UI
     private func addViews() {
         contentView.addSubview(mainImage)
     }
