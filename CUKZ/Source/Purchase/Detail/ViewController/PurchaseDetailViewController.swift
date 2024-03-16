@@ -24,10 +24,15 @@ final class PurchaseDetailViewController: UIViewController {
         
         prepare()
         setupImageCollectionView()
+        setupScrollView()
         setupButton()
     }
     
     private func prepare() {
+        
+    }
+    
+    private func setupScrollView() {
         purchaseDetailView.scrollView.delegate = self
     }
     
@@ -61,7 +66,12 @@ final class PurchaseDetailViewController: UIViewController {
 
 // MARK: - UIScrollViewDelegate
 extension PurchaseDetailViewController: UIScrollViewDelegate {
-    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView == purchaseDetailView.productImageCollectionView {
+            let index = Int(scrollView.contentOffset.x / purchaseDetailView.productImageCollectionView.bounds.width)
+            purchaseDetailView.pageNumLabel.text = "\(index + 1) / 5"
+        }
+    }
 }
 
 // MARK: - UICollectionViewDataSource

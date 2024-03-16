@@ -15,11 +15,6 @@ final class PurchaseDetailView: UIView {
     
     private let contentView = UIView()
     
-    private let testLabel = UILabel().then {
-        $0.text = "테스트"
-        $0.numberOfLines = 0
-    }
-    
     private let flowlayout = UICollectionViewFlowLayout().then {
         $0.scrollDirection = .horizontal // 가로 스크롤
     }
@@ -28,6 +23,23 @@ final class PurchaseDetailView: UIView {
         $0.backgroundColor = .clear
         $0.isPagingEnabled = true // 페이징
         $0.showsHorizontalScrollIndicator = false
+    }
+    
+    private let pageNumBackView = UIView().then {
+        $0.backgroundColor = UIColor.black.withAlphaComponent(0.2) // 투명도 조정
+        $0.layer.cornerRadius = 3
+        $0.clipsToBounds = true
+    }
+    
+    let pageNumLabel = UILabel().then {
+        $0.text = "1 / 5"
+        $0.textColor = .white
+        $0.font = .boldSystemFont(ofSize: 17)
+    }
+    
+    let testLabel = UILabel().then {
+        $0.text = "테\n스\n트\n테\n스\n트\n테\n스\n트\n테\n스\n트\n테\n스\n트\n테\n스\n트\n테\n스\n트\n"
+        $0.numberOfLines = 0
     }
     
     let purchaseDetailBottomView = PurchaseDetailBottomView()
@@ -52,7 +64,10 @@ final class PurchaseDetailView: UIView {
         
         scrollView.addSubviews([contentView])
         
-        contentView.addSubviews([productImageCollectionView, testLabel])
+        contentView.addSubviews([productImageCollectionView,
+                                 testLabel,
+                                 pageNumBackView,
+                                 pageNumLabel])
     }
     
     private func configureConstraints() {
@@ -75,6 +90,16 @@ final class PurchaseDetailView: UIView {
         productImageCollectionView.snp.makeConstraints { make in
             make.height.equalTo(375)
             make.top.leading.trailing.equalTo(contentView)
+        }
+        
+        pageNumBackView.snp.makeConstraints { make in
+            make.height.equalTo(35)
+            make.width.equalTo(50)
+            make.top.trailing.equalTo(productImageCollectionView).inset(20)
+        }
+        
+        pageNumLabel.snp.makeConstraints { make in
+            make.center.equalTo(pageNumBackView)
         }
         
         testLabel.snp.makeConstraints { make in
