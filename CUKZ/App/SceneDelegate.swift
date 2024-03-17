@@ -17,7 +17,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
 
-        let VC = UINavigationController(rootViewController: PurchaseDetailViewController())
+//        let VC = UINavigationController(rootViewController: PurchaseDetailViewController())
+        let VC = PurchaseHomeViewController()
                 
         window?.rootViewController = VC
         window?.makeKeyAndVisible()
