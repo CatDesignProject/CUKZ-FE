@@ -7,6 +7,11 @@
 
 import UIKit
 
+// MARK: - 더미데이터
+let testArray1 = [UIImage(named: "testImage"), UIImage(named: "testImage2"), UIImage(named: "testImage2"), UIImage(named: "testImage"), UIImage(named: "testImage"), UIImage(named: "testImage2"), UIImage(named: "testImage2"), UIImage(named: "testImage"), UIImage(named: "testImage"), UIImage(named: "testImage2"), UIImage(named: "testImage2")]
+
+let testArray2 = ["컴공 과잠 사실분 와주십시오", "굿즈 공동구매 많은 참여 부탁드립니다!", "굿즈 공동구매 많은 참여 부탁드립니다!", "컴공 과잠 사실분 와주십시오", "컴공 과잠 사실분 와주십시오", "굿즈 공동구매 많은 참여 부탁드립니다!", "굿즈 공동구매 많은 참여 부탁드립니다!", "컴공 과잠 사실분 와주십시오", "컴공 과잠 사실분 와주십시오", "굿즈 공동구매 많은 참여 부탁드립니다!", "굿즈 공동구매 많은 참여 부탁드립니다!"]
+
 final class PurchaseHomeViewController: UIViewController {
     // MARK: - Properties
     private let purchaseHomeView = PurchaseHomeView()
@@ -46,29 +51,48 @@ extension PurchaseHomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PurchaseHomeCell", for: indexPath) as! PurchaseHomeCell
         
-        cell.thumnailImage.image = UIImage(named: "testImage2")
+        if indexPath.row == 3 {
+            cell.backView.backgroundColor = .black
+            cell.backView.layer.opacity = 0.2
+            cell.endLabel.isHidden = false
+        } else {
+            cell.backView.backgroundColor = .clear
+            cell.backView.layer.opacity = 1.0
+            cell.endLabel.isHidden = true
+        }
+        
+        cell.thumnailImage.snp.makeConstraints { make in
+            make.height.equalTo(view.frame.width / 2)
+        }
+        cell.thumnailImage.image = testArray1[indexPath.row]
+        cell.titleLabel.text = testArray2[indexPath.row]
+        cell.priceLabel.text = "19000원"
         
         return cell
     }
+    
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
 extension PurchaseHomeViewController: UICollectionViewDelegateFlowLayout {
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let itemsPerRow: CGFloat = 2
-        let paddingWidth = 10 * (itemsPerRow - 1) // 각 아이템 사이의 간격
-        let availableWidth = collectionView.frame.width - paddingWidth
-        let widthPerItem = availableWidth / itemsPerRow
         
-        return CGSize(width: widthPerItem, height: widthPerItem)
+        let size = view.frame.width / 2
+        
+        return CGSize(width: size, height: 235)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 10.0 // 아이템 사이의 간격을 10 포인트로 설정
+        return 0 // 아이템 사이의 간격
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 10.0 // 행 사이의 간격을 10 포인트로 설정
+        return 35 // 행 사이의 간격
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print(indexPath.row)
+    }
+    
 }
-
