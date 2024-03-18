@@ -16,28 +16,24 @@ final class LikeViewController: UIViewController {
         view = likeView
     }
     
-    // MARK: - viewWillAppear
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationController?.setNavigationBarHidden(true, animated: animated)
-    }
-
-    // MARK: - viewWillDisappear
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationController?.setNavigationBarHidden(false, animated: animated)
-    }
-    
     // MARK: - ViewDidLodad
     override func viewDidLoad() {
         super.viewDidLoad()
         
         prepare()
+        setupNaviBar()
         setupTableView()
     }
     
     private func prepare() {
         
+    }
+    
+    private func setupNaviBar() {
+        title = "찜"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.barTintColor = .white
+        navigationController?.navigationBar.tintColor = .black
     }
     
     func setupTableView() {

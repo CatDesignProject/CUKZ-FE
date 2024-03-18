@@ -36,8 +36,7 @@ final class LikeView: UIView {
     
     private func configureConstraints() {
         tableView.snp.makeConstraints { make in
-            make.top.bottom.equalTo(self.safeAreaLayoutGuide)
-            make.leading.trailing.equalToSuperview()
+            make.edges.equalToSuperview()
         }
     }
 }

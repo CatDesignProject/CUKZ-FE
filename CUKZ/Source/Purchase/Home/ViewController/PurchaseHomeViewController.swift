@@ -26,11 +26,29 @@ final class PurchaseHomeViewController: UIViewController {
         super.viewDidLoad()
         
         prepare()
+        setupNaviBar()
         setupCollectionView()
     }
     
     private func prepare() {
         
+    }
+    
+    private func setupNaviBar() {
+        title = "구매하기"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.barTintColor = .white
+        navigationController?.navigationBar.tintColor = .gadaeBlue
+        
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.placeholder = "검색"
+        searchController.obscuresBackgroundDuringPresentation = false
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+    }
+    
+    @objc func plusButtonTapped() {
+        // Handle the plus button tap event here
     }
     
     private func setupCollectionView() {

@@ -13,14 +13,14 @@ final class TabBarViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .gadaeGray
+        view.backgroundColor = .gadaeBlue
         self.selectedIndex = 0
         
         tabBarConfig()
     }
     
     private func tabBarConfig() {
-        tabBar.barTintColor = .gadaeGray
+        tabBar.barTintColor = .gadaeBlue
         tabBar.tintColor = .white
         tabBar.isTranslucent = false
         

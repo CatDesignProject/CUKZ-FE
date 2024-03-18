@@ -36,7 +36,7 @@ final class LikeCell: UITableViewCell {
         let image = UIImage(systemName: "bookmark.fill", withConfiguration: imageConfig)
         
         $0.setImage(image, for: .normal)
-        $0.tintColor = .gadaeBlue
+        $0.tintColor = .gadaeGray
     }
     
     // MARK: - Init
