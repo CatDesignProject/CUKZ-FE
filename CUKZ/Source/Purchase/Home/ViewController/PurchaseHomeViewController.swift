@@ -45,10 +45,12 @@ final class PurchaseHomeViewController: UIViewController {
         searchController.obscuresBackgroundDuringPresentation = false
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(writingButtonTapped))
     }
     
-    @objc func plusButtonTapped() {
-        // Handle the plus button tap event here
+    @objc func writingButtonTapped() {
+        print("구매하기 글쓰기 버튼 눌림")
     }
     
     private func setupCollectionView() {
