@@ -1,20 +1,17 @@
 //
-//  LikeView.swift
+//  PurchaseHomeView.swift
 //  CUKZ
 //
-//  Created by 이승민 on 3/12/24.
+//  Created by 이승민 on 3/16/24.
 //
 
 import UIKit
 
-final class LikeView: UIView {
+final class PurchaseHomeView: UIView {
     // MARK: - View
-    let tableView = UITableView().then {
-        $0.separatorInset.left = 20
-        $0.separatorInset.right = 20
-        $0.separatorColor = .gadaeBlue
-        $0.tableHeaderView = UIView()
-    }
+    private let flowlayout = UICollectionViewFlowLayout()
+    
+    lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowlayout)
     
     // MARK: - Init
     override init(frame: CGRect) {
@@ -31,12 +28,13 @@ final class LikeView: UIView {
     
     // MARK: - UI
     private func addViews() {
-        self.addSubviews([tableView])
+        self.addSubviews([collectionView])
     }
     
     private func configureConstraints() {
-        tableView.snp.makeConstraints { make in
+        collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
+    
 }

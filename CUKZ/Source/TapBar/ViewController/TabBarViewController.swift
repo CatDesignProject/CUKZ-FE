@@ -13,27 +13,34 @@ final class TabBarViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .gadaeGray
+        view.backgroundColor = .gadaeBlue
         self.selectedIndex = 0
         
         tabBarConfig()
     }
     
     private func tabBarConfig() {
-        tabBar.barTintColor = .gadaeGray
+        tabBar.barTintColor = .gadaeBlue
         tabBar.tintColor = .white
         tabBar.isTranslucent = false
         
+        let purchaseHomeVC = UINavigationController(rootViewController: PurchaseHomeViewController())
         let likeVC = UINavigationController(rootViewController: LikeViewController())
         
         // 탭 바 이이템 설정
+        purchaseHomeVC.tabBarItem = UITabBarItem(
+            title: "구매하기",
+            image: UIImage(systemName: "wonsign.circle"),
+            selectedImage: UIImage(systemName: "wonsign.circle.fill")
+        )
         likeVC.tabBarItem = UITabBarItem(
-            title: "좋아요",
+            title: "찜",
             image: UIImage(systemName: "bookmark"),
             selectedImage: UIImage(systemName: "bookmark.fill")
         )
         
         let tabItems = [
+            purchaseHomeVC,
             likeVC
         ]
         
