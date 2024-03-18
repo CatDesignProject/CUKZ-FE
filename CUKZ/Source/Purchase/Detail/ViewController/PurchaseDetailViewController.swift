@@ -23,13 +23,18 @@ final class PurchaseDetailViewController: UIViewController {
         super.viewDidLoad()
         
         prepare()
-        setupImageCollectionView()
+        setupNaviBar()
         setupScrollView()
+        setupImageCollectionView()
         setupButton()
     }
     
     private func prepare() {
-        title = "구매하기"
+        
+    }
+    
+    private func setupNaviBar() {
+        navigationItem.largeTitleDisplayMode = .never
     }
     
     private func setupScrollView() {

@@ -21,6 +21,13 @@ final class PurchaseHomeViewController: UIViewController {
         view = purchaseHomeView
     }
     
+    // MARK: - viewWillAppear
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.navigationBar.prefersLargeTitles = true
+    }
+    
     // MARK: - ViewDidLodad
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,6 +44,7 @@ final class PurchaseHomeViewController: UIViewController {
     private func setupNaviBar() {
         title = "구매하기"
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.tintColor = .gadaeBlue
         
@@ -44,8 +52,9 @@ final class PurchaseHomeViewController: UIViewController {
         searchController.searchBar.placeholder = "검색"
         searchController.obscuresBackgroundDuringPresentation = false
         navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false
         
+        navigationItem.hidesSearchBarWhenScrolling = false
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(writingButtonTapped))
     }
     
@@ -113,6 +122,9 @@ extension PurchaseHomeViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print(indexPath.row)
+        let VC = PurchaseDetailViewController()
+        VC.hidesBottomBarWhenPushed = true // 탭 바 숨기기
+        navigationController?.pushViewController(VC, animated: true)
     }
     
 }
