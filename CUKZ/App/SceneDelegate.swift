@@ -17,11 +17,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
 
-//        let VC = UINavigationController(rootViewController: PurchaseDetailViewController())
-//        let VC = PurchaseHomeViewController()
-        let VC = TabBarViewController()
-                
-        window?.rootViewController = VC
+        let tabBarVC = TabBarViewController()
+        tabBarVC.selectedIndex = 2
+        
+        window?.rootViewController = tabBarVC
         window?.makeKeyAndVisible()
     }
 
