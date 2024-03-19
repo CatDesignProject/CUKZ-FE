@@ -9,6 +9,9 @@ import UIKit
 
 final class MyPageView: UIView {
     // MARK: - View
+    let tableView = UITableView().then {
+        $0.separatorStyle = .none
+    }
     
     // MARK: - Init
     override init(frame: CGRect) {
@@ -25,10 +28,14 @@ final class MyPageView: UIView {
     
     // MARK: - UI
     private func addViews() {
-        
+        self.addSubviews([tableView])
     }
     
     private func configureConstraints() {
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(self.safeAreaLayoutGuide)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
         
     }
 }
