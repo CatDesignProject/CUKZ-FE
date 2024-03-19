@@ -26,6 +26,7 @@ final class TabBarViewController: UITabBarController {
         
         let purchaseHomeVC = UINavigationController(rootViewController: PurchaseHomeViewController())
         let likeVC = UINavigationController(rootViewController: LikeViewController())
+        let myPageVC = UINavigationController(rootViewController: MyPageViewController())
         
         // 탭 바 이이템 설정
         purchaseHomeVC.tabBarItem = UITabBarItem(
@@ -38,10 +39,16 @@ final class TabBarViewController: UITabBarController {
             image: UIImage(systemName: "bookmark"),
             selectedImage: UIImage(systemName: "bookmark.fill")
         )
+        myPageVC.tabBarItem = UITabBarItem(
+            title: "MY",
+            image: UIImage(systemName: "person.circle"),
+            selectedImage: UIImage(systemName: "person.circle.fill")
+        )
         
         let tabItems = [
             purchaseHomeVC,
-            likeVC
+            likeVC,
+            myPageVC
         ]
         
         setViewControllers(tabItems, animated: true)
