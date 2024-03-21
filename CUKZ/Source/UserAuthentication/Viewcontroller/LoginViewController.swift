@@ -9,11 +9,11 @@ import UIKit
 
 final class LoginViewController: UIViewController {
     // MARK: - Properties
-    private let loginMainView = LoginMainView()
+    private let loginView = LoginView()
     
     // MARK: - View 설정
     override func loadView() {
-        view = loginMainView
+        view = loginView
     }
     
     // MARK: - viewDidLoad
@@ -31,16 +31,16 @@ final class LoginViewController: UIViewController {
     }
     
     private func setupTextField() {
-        loginMainView.emailTextField.delegate = self
-        loginMainView.passwordTextField.delegate = self
+        loginView.emailTextField.delegate = self
+        loginView.passwordTextField.delegate = self
         
-        loginMainView.emailTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
-        loginMainView.passwordTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
+        loginView.emailTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
+        loginView.passwordTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
     }
     
     private func setupButton() {
-        loginMainView.loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
-        loginMainView.signUpButton.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
+        loginView.loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
+        loginView.signUpButton.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
     }
     
     @objc func loginButtonTapped() {
@@ -48,7 +48,8 @@ final class LoginViewController: UIViewController {
     }
     
     @objc func signUpButtonTapped() {
-        print("회원가입 화면으로")
+        let VC = SignUpViewController()
+        navigationController?.pushViewController(VC, animated: true)
     }
     
 }
@@ -84,43 +85,43 @@ extension LoginViewController: UITextFieldDelegate {
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
         
-        if textField == loginMainView.emailTextField {
-            loginMainView.emailTextFieldView.backgroundColor = .white
-            loginMainView.emailInfoLabel.font = UIFont.systemFont(ofSize: 11)
-            loginMainView.emailInfoLabelCenterYConstraint?.update(offset: -13)
+        if textField == loginView.emailTextField {
+            loginView.emailTextFieldView.backgroundColor = .white
+            loginView.emailInfoLabel.font = UIFont.systemFont(ofSize: 11)
+            loginView.emailInfoLabelCenterYConstraint?.update(offset: -13)
         }
-        if textField == loginMainView.passwordTextField {
-            loginMainView.passwordTextFieldView.backgroundColor = .white
-            loginMainView.passwordInfoLabel.font = UIFont.systemFont(ofSize: 11)
-            loginMainView.passwordInfoLabelCenterYConstraint?.update(offset: -13)
+        if textField == loginView.passwordTextField {
+            loginView.passwordTextFieldView.backgroundColor = .white
+            loginView.passwordInfoLabel.font = UIFont.systemFont(ofSize: 11)
+            loginView.passwordInfoLabelCenterYConstraint?.update(offset: -13)
         }
         
         UIView.animate(withDuration: 0.3) {
-            self.loginMainView.stackView.layoutIfNeeded()
+            self.loginView.stackView.layoutIfNeeded()
         }
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         
-        if textField == loginMainView.emailTextField {
-            loginMainView.emailTextFieldView.backgroundColor = .white
+        if textField == loginView.emailTextField {
+            loginView.emailTextFieldView.backgroundColor = .white
             
-            if loginMainView.emailTextField.text == "" {
-                loginMainView.emailInfoLabel.font = UIFont.systemFont(ofSize: 18)
-                loginMainView.emailInfoLabelCenterYConstraint?.update(offset: 0)
+            if loginView.emailTextField.text == "" {
+                loginView.emailInfoLabel.font = UIFont.systemFont(ofSize: 18)
+                loginView.emailInfoLabelCenterYConstraint?.update(offset: 0)
             }
         }
-        if textField == loginMainView.passwordTextField {
-            loginMainView.passwordTextFieldView.backgroundColor = .white
+        if textField == loginView.passwordTextField {
+            loginView.passwordTextFieldView.backgroundColor = .white
             
-            if loginMainView.passwordTextField.text == "" {
-                loginMainView.passwordInfoLabel.font = UIFont.systemFont(ofSize: 18)
-                loginMainView.passwordInfoLabelCenterYConstraint?.update(offset: 0)
+            if loginView.passwordTextField.text == "" {
+                loginView.passwordInfoLabel.font = UIFont.systemFont(ofSize: 18)
+                loginView.passwordInfoLabelCenterYConstraint?.update(offset: 0)
             }
         }
         
         UIView.animate(withDuration: 0.3) {
-            self.loginMainView.stackView.layoutIfNeeded()
+            self.loginView.stackView.layoutIfNeeded()
         }
     }
     
@@ -133,15 +134,15 @@ extension LoginViewController: UITextFieldDelegate {
             }
         }
         guard
-            let email = loginMainView.emailTextField.text, !email.isEmpty,
-            let password = loginMainView.passwordTextField.text, !password.isEmpty
+            let email = loginView.emailTextField.text, !email.isEmpty,
+            let password = loginView.passwordTextField.text, !password.isEmpty
         else {
-            loginMainView.loginButton.backgroundColor = .clear
-            loginMainView.loginButton.isEnabled = false
+            loginView.loginButton.backgroundColor = .clear
+            loginView.loginButton.isEnabled = false
             return
         }
-        loginMainView.loginButton.backgroundColor = .gadaeGray
-        loginMainView.loginButton.isEnabled = true
+        loginView.loginButton.backgroundColor = .gadaeGray
+        loginView.loginButton.isEnabled = true
     }
     
     // 엔터 누르면 키보드 내림
