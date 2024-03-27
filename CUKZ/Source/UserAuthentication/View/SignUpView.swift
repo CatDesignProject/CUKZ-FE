@@ -14,7 +14,7 @@ final class SignUpView: UIView {
     private let contentView = UIView()
     
     // 아이디
-    private let idLabel = UILabel().then() {
+    private let idLabel = UILabel().then {
         $0.text = "아이디"
         $0.font = UIFont.systemFont(ofSize: 18)
     }
@@ -31,6 +31,17 @@ final class SignUpView: UIView {
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
         $0.spellCheckingType = .no
+    }
+    
+    // 중복체크
+    let duplicateCheckLabel = UILabel().then {
+        $0.text = "중복된 아이디입니다"
+        $0.textColor = .red
+    }
+    
+    let duplicateCheckButton = UIButton().then {
+        $0.setTitle("중복체크", for: .normal)
+        $0.backgroundColor = .gadaeGray
     }
     
     // 비밀번호
@@ -51,6 +62,7 @@ final class SignUpView: UIView {
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
         $0.spellCheckingType = .no
+        $0.isSecureTextEntry = true
     }
     
     // 닉네임
@@ -76,7 +88,8 @@ final class SignUpView: UIView {
     // 가입하기 버튼
     let signUpButton = UIButton().then {
         $0.setTitle("가입하기", for: .normal)
-        $0.backgroundColor = .gadaeBlue
+        $0.backgroundColor = .lightGray
+        $0.isEnabled = false
     }
     
     // MARK: - Init
@@ -100,6 +113,8 @@ final class SignUpView: UIView {
         
         contentView.addSubviews([idLabel,
                                  idRoundView,
+                                 duplicateCheckLabel,
+                                 duplicateCheckButton,
                                  passwordLabel,
                                  passwordRoundView,
                                  nicknameLabel,
@@ -137,8 +152,20 @@ final class SignUpView: UIView {
             make.edges.equalTo(idRoundView).inset(5)
         }
         
+        duplicateCheckLabel.snp.makeConstraints { make in
+            make.top.equalTo(idRoundView.snp.bottom).offset(5)
+            make.leading.equalTo(idLabel)
+        }
+        
+        duplicateCheckButton.snp.makeConstraints { make in
+            make.top.equalTo(duplicateCheckLabel)
+            make.trailing.equalTo(idLabel)
+            make.height.equalTo(duplicateCheckLabel)
+            make.width.equalTo(80)
+        }
+        
         passwordLabel.snp.makeConstraints { make in
-            make.top.equalTo(idRoundView.snp.bottom).offset(20)
+            make.top.equalTo(duplicateCheckLabel.snp.bottom).offset(20)
             make.leading.trailing.equalTo(idLabel)
         }
         
