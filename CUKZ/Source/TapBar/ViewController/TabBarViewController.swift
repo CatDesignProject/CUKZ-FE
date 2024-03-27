@@ -26,7 +26,7 @@ final class TabBarViewController: UITabBarController {
         
         let purchaseHomeVC = UINavigationController(rootViewController: PurchaseHomeViewController())
         let likeVC = UINavigationController(rootViewController: LikeViewController())
-        let myPageVC = UINavigationController(rootViewController: MyPageViewController())
+        let myPageVC = UINavigationController(rootViewController: LoginViewController())
         
         // 탭 바 이이템 설정
         purchaseHomeVC.tabBarItem = UITabBarItem(

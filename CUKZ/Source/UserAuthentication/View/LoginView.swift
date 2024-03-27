@@ -1,5 +1,5 @@
 //
-//  LoginMainView.swift
+//  LoginView.swift
 //  CUKZ
 //
 //  Created by 이승민 on 3/10/24.
@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class LoginMainView: UIView {
+final class LoginView: UIView {
     // MARK: - View
     let emailTextFieldView = UIView().then {
         $0.backgroundColor = .white
