@@ -13,15 +13,15 @@ final class TabBarViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .gadaeBlue
+        view.backgroundColor = .white
         self.selectedIndex = 0
         
         tabBarConfig()
     }
     
     private func tabBarConfig() {
-        tabBar.barTintColor = .gadaeBlue
-        tabBar.tintColor = .white
+        tabBar.barTintColor = .white
+        tabBar.tintColor = .gadaeBlue
         tabBar.isTranslucent = false
         
         let purchaseHomeVC = UINavigationController(rootViewController: PurchaseHomeViewController())
