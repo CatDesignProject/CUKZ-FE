@@ -1,5 +1,5 @@
 //
-//  PurchaseDetailBottomView.swift
+//  ProductDetailBottomView.swift
 //  CUKZ
 //
 //  Created by 이승민 on 3/13/24.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class PurchaseDetailBottomView: UIView {
+final class ProductDetailBottomView: UIView {
     // MARK: - View
     private let dividerLine = UIView().then {
         $0.backgroundColor = .gadaeBlue

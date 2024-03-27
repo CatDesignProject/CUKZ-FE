@@ -1,5 +1,5 @@
 //
-//  PurchaseHomeCell.swift
+//  ProductHomeCell.swift
 //  CUKZ
 //
 //  Created by 이승민 on 3/16/24.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class PurchaseHomeCell: UICollectionViewCell {
+final class ProductHomeCell: UICollectionViewCell {
     // MARK: - View
     let backView = UIView()
     

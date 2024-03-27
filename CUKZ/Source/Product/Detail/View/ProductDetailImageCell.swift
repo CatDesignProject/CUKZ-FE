@@ -1,5 +1,5 @@
 //
-//  PurchaseDetailImageCell.swift
+//  ProductDetailImageCell.swift
 //  CUKZ
 //
 //  Created by 이승민 on 3/15/24.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class PurchaseDetailImageCell: UICollectionViewCell {
+final class ProductDetailImageCell: UICollectionViewCell {
     // MARK: - View
     let mainImage = UIImageView().then {
         $0.image = UIImage(named: "testImage2")
