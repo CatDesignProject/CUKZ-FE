@@ -58,10 +58,6 @@ final class ProductHomeViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(writingButtonTapped))
     }
     
-    @objc func writingButtonTapped() {
-        print("구매하기 글쓰기 버튼 눌림")
-    }
-    
     private func setupCollectionView() {
         productHomeView.collectionView.dataSource = self
         productHomeView.collectionView.delegate = self
@@ -69,6 +65,15 @@ final class ProductHomeViewController: UIViewController {
         productHomeView.collectionView.register(ProductHomeCell.self, forCellWithReuseIdentifier: "ProductHomeCell")
     }
     
+}
+
+// MARK: - @objc
+extension ProductHomeViewController {
+    @objc func writingButtonTapped() {
+        let VC = UploadProductViewController()
+        VC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(VC, animated: true)
+    }
 }
 
 // MARK: - UICollectionViewDataSource
