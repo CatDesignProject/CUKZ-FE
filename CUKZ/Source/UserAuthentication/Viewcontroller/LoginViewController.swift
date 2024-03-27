@@ -21,6 +21,7 @@ final class LoginViewController: UIViewController {
         super.viewDidLoad ()
         
         prepare()
+        setupNaviBar()
         setupNotifications()
         setupTextField()
         setupButton()
@@ -28,6 +29,10 @@ final class LoginViewController: UIViewController {
     
     private func prepare() {
         
+    }
+    
+    private func setupNaviBar() {
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
     
     private func setupTextField() {
@@ -49,6 +54,7 @@ final class LoginViewController: UIViewController {
     
     @objc func signUpButtonTapped() {
         let VC = SignUpViewController()
+        VC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(VC, animated: true)
     }
     

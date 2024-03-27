@@ -21,9 +21,17 @@ final class SignUpViewController: UIViewController {
         super.viewDidLoad()
         
         prepare()
+        setupNaviBar()
     }
     
     private func prepare() {
         
+    }
+    
+    private func setupNaviBar() {
+        title = "회원가입"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.barTintColor = .white
+        navigationController?.navigationBar.tintColor = .black
     }
 }
