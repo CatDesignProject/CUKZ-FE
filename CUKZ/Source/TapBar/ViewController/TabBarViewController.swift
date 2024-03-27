@@ -24,13 +24,13 @@ final class TabBarViewController: UITabBarController {
         tabBar.tintColor = .gadaeBlue
         tabBar.isTranslucent = false
         
-        let purchaseHomeVC = UINavigationController(rootViewController: PurchaseHomeViewController())
+        let purchaseHomeVC = UINavigationController(rootViewController: ProductHomeViewController())
         let likeVC = UINavigationController(rootViewController: LikeViewController())
         let myPageVC = UINavigationController(rootViewController: LoginViewController())
         
         // 탭 바 이이템 설정
         purchaseHomeVC.tabBarItem = UITabBarItem(
-            title: "구매하기",
+            title: "상품",
             image: UIImage(systemName: "wonsign.circle"),
             selectedImage: UIImage(systemName: "wonsign.circle.fill")
         )

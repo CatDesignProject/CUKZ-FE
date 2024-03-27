@@ -1,5 +1,5 @@
 //
-//  PurchaseDetailView.swift
+//  ProductDetailView.swift
 //  CUKZ
 //
 //  Created by 이승민 on 3/13/24.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class PurchaseDetailView: UIView {
+final class ProductDetailView: UIView {
     // MARK: - View
     let scrollView = UIScrollView()
     
@@ -75,7 +75,7 @@ final class PurchaseDetailView: UIView {
         $0.attributedText = NSMutableAttributedString(string: "대통령은 내우·외환·천재·지변 또는 중대한 재정·경제상의 위기에 있어서 국가의 안전보장 또는 공공의 안녕질서를 유지하기 위하여 긴급한 조치가 필요하고 국회의 집회를 기다릴 여유가 없을 때에 한하여 최소한으로 필요한 재정·경제상의 처분을 하거나 이에 관하여 법률의 효력을 가지는 명령을 발할 수 있다.\n\n모든 국민은 근로의 권리를 가진다. 국가는 사회적·경제적 방법으로 근로자의 고용의 증진과 적정임금의 보장에 노력하여야 하며, 법률이 정하는 바에 의하여 최저임금제를 시행하여야 한다.\n\n모든 국민은 보건에 관하여 국가의 보호를 받는다. 국가원로자문회의의 의장은 직전대통령이 된다. 다만, 직전대통령이 없을 때에는 대통령이 지명한다.", attributes: [NSAttributedString.Key.kern: -0.42, NSAttributedString.Key.paragraphStyle: paragraphStyle])
     }
     
-    let purchaseDetailBottomView = PurchaseDetailBottomView()
+    let purchaseDetailBottomView = ProductDetailBottomView()
     
     // MARK: - Init
     override init(frame: CGRect) {

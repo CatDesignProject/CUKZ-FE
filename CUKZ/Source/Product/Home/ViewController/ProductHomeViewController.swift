@@ -12,13 +12,13 @@ let testArray1 = [UIImage(named: "testImage"), UIImage(named: "testImage2"), UII
 
 let testArray2 = ["컴공 과잠 사실분 와주십시오", "굿즈 공동구매 많은 참여 부탁드립니다!", "굿즈 공동구매 많은 참여 부탁드립니다!", "컴공 과잠 사실분 와주십시오", "컴공 과잠 사실분 와주십시오", "굿즈 공동구매 많은 참여 부탁드립니다!", "굿즈 공동구매 많은 참여 부탁드립니다!", "컴공 과잠 사실분 와주십시오", "컴공 과잠 사실분 와주십시오", "굿즈 공동구매 많은 참여 부탁드립니다!", "굿즈 공동구매 많은 참여 부탁드립니다!"]
 
-final class PurchaseHomeViewController: UIViewController {
+final class ProductHomeViewController: UIViewController {
     // MARK: - Properties
-    private let purchaseHomeView = PurchaseHomeView()
+    private let productHomeView = ProductHomeView()
     
     // MARK: - View 설정
     override func loadView() {
-        view = purchaseHomeView
+        view = productHomeView
     }
     
     // MARK: - viewWillAppear
@@ -42,14 +42,14 @@ final class PurchaseHomeViewController: UIViewController {
     }
     
     private func setupNaviBar() {
-        title = "구매하기"
+        title = "상품"
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.tintColor = .gadaeBlue
         
         let searchController = UISearchController(searchResultsController: nil)
-        searchController.searchBar.placeholder = "검색"
+        searchController.searchBar.placeholder = "상품 검색"
         searchController.obscuresBackgroundDuringPresentation = false
         navigationItem.searchController = searchController
         
@@ -63,22 +63,22 @@ final class PurchaseHomeViewController: UIViewController {
     }
     
     private func setupCollectionView() {
-        purchaseHomeView.collectionView.dataSource = self
-        purchaseHomeView.collectionView.delegate = self
+        productHomeView.collectionView.dataSource = self
+        productHomeView.collectionView.delegate = self
         
-        purchaseHomeView.collectionView.register(PurchaseHomeCell.self, forCellWithReuseIdentifier: "PurchaseHomeCell")
+        productHomeView.collectionView.register(ProductHomeCell.self, forCellWithReuseIdentifier: "ProductHomeCell")
     }
     
 }
 
 // MARK: - UICollectionViewDataSource
-extension PurchaseHomeViewController: UICollectionViewDataSource {
+extension ProductHomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 11
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PurchaseHomeCell", for: indexPath) as! PurchaseHomeCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductHomeCell", for: indexPath) as! ProductHomeCell
         
         if indexPath.row == 3 {
             cell.backView.backgroundColor = .black
@@ -103,7 +103,7 @@ extension PurchaseHomeViewController: UICollectionViewDataSource {
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
-extension PurchaseHomeViewController: UICollectionViewDelegateFlowLayout {
+extension ProductHomeViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
@@ -122,7 +122,7 @@ extension PurchaseHomeViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print(indexPath.row)
-        let VC = PurchaseDetailViewController()
+        let VC = ProductDetailViewController()
         VC.hidesBottomBarWhenPushed = true // 탭 바 숨기기
         navigationController?.pushViewController(VC, animated: true)
     }
