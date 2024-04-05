@@ -9,9 +9,7 @@ import UIKit
 
 final class ProductHomeView: UIView {
     // MARK: - View
-    private let flowlayout = UICollectionViewFlowLayout()
-    
-    lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowlayout)
+    let tableView = UITableView()
     
     // MARK: - Init
     override init(frame: CGRect) {
@@ -28,13 +26,14 @@ final class ProductHomeView: UIView {
     
     // MARK: - UI
     private func addViews() {
-        self.addSubviews([collectionView])
+        self.addSubviews([
+            tableView
+        ])
     }
     
     private func configureConstraints() {
-        collectionView.snp.makeConstraints { make in
+        tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
-    
 }

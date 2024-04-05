@@ -7,11 +7,6 @@
 
 import UIKit
 
-// MARK: - 더미데이터
-let testArray1 = [UIImage(named: "testImage"), UIImage(named: "testImage2"), UIImage(named: "testImage2"), UIImage(named: "testImage"), UIImage(named: "testImage"), UIImage(named: "testImage2"), UIImage(named: "testImage2"), UIImage(named: "testImage"), UIImage(named: "testImage"), UIImage(named: "testImage2"), UIImage(named: "testImage2")]
-
-let testArray2 = ["컴공 과잠 사실분 와주십시오", "굿즈 공동구매 많은 참여 부탁드립니다!", "굿즈 공동구매 많은 참여 부탁드립니다!", "컴공 과잠 사실분 와주십시오", "컴공 과잠 사실분 와주십시오", "굿즈 공동구매 많은 참여 부탁드립니다!", "굿즈 공동구매 많은 참여 부탁드립니다!", "컴공 과잠 사실분 와주십시오", "컴공 과잠 사실분 와주십시오", "굿즈 공동구매 많은 참여 부탁드립니다!", "굿즈 공동구매 많은 참여 부탁드립니다!"]
-
 final class ProductHomeViewController: UIViewController {
     // MARK: - Properties
     private let productHomeView = ProductHomeView()
@@ -34,7 +29,7 @@ final class ProductHomeViewController: UIViewController {
         
         prepare()
         setupNaviBar()
-        setupCollectionView()
+        setupTableView()
     }
     
     private func prepare() {
@@ -55,81 +50,47 @@ final class ProductHomeViewController: UIViewController {
         
         navigationItem.hidesSearchBarWhenScrolling = false
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(writingButtonTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(uploadButtonTapped))
     }
     
-    private func setupCollectionView() {
-        productHomeView.collectionView.dataSource = self
-        productHomeView.collectionView.delegate = self
-        
-        productHomeView.collectionView.register(ProductHomeCell.self, forCellWithReuseIdentifier: "ProductHomeCell")
+    private func setupTableView() {
+        let tb = productHomeView.tableView
+        tb.dataSource = self
+        tb.delegate = self
+        tb.tableHeaderView = UIView()
+        tb.rowHeight = 120
+        tb.register(ProductHomeCell.self, forCellReuseIdentifier: "ProductHomeCell")
     }
     
 }
 
 // MARK: - @objc
 extension ProductHomeViewController {
-    @objc func writingButtonTapped() {
+    @objc func uploadButtonTapped() {
         let VC = UploadProductViewController()
         VC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(VC, animated: true)
     }
 }
 
-// MARK: - UICollectionViewDataSource
-extension ProductHomeViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 11
+// MARK: - UITableViewDataSource
+extension ProductHomeViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 10
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductHomeCell", for: indexPath) as! ProductHomeCell
-        
-        if indexPath.row == 3 {
-            cell.backView.backgroundColor = .black
-            cell.backView.layer.opacity = 0.2
-            cell.endLabel.isHidden = false
-        } else {
-            cell.backView.backgroundColor = .clear
-            cell.backView.layer.opacity = 1.0
-            cell.endLabel.isHidden = true
-        }
-        
-        cell.thumnailImage.snp.makeConstraints { make in
-            make.height.equalTo(view.frame.width / 2)
-        }
-        cell.thumnailImage.image = testArray1[indexPath.row]
-        cell.titleLabel.text = testArray2[indexPath.row]
-        cell.priceLabel.text = "19000원"
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ProductHomeCell", for: indexPath) as! ProductHomeCell
         
         return cell
     }
-    
 }
 
-// MARK: - UICollectionViewDelegateFlowLayout
-extension ProductHomeViewController: UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        let size = view.frame.width / 2
-        
-        return CGSize(width: size, height: 235)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 0 // 아이템 사이의 간격
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 35 // 행 사이의 간격
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(indexPath.row)
+// MARK: - UITableViewDelegate
+extension ProductHomeViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let VC = ProductDetailViewController()
-        VC.hidesBottomBarWhenPushed = true // 탭 바 숨기기
+        VC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(VC, animated: true)
     }
-    
 }

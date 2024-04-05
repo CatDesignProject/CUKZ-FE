@@ -7,88 +7,81 @@
 
 import UIKit
 
-final class ProductHomeCell: UICollectionViewCell {
+final class ProductHomeCell: UITableViewCell {
     // MARK: - View
-    let backView = UIView()
-    
     let thumnailImage = UIImageView().then {
-        $0.contentMode = .scaleToFill
-        $0.layer.cornerRadius = 20
+        $0.image = UIImage(named: "testImage2")
+        $0.backgroundColor = .green
+        $0.layer.cornerRadius = 5
         $0.clipsToBounds = true
         $0.layer.borderWidth = 1
-        $0.layer.borderColor = UIColor.systemGray5.cgColor
+        $0.layer.borderColor = UIColor(red: 0.935, green: 0.935, blue: 0.935, alpha: 1).cgColor
+        $0.contentMode = .scaleAspectFill
     }
     
-    let titleLabel = UILabel().then {
-        $0.textColor = .black
-        $0.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 14)
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 1.25
-        $0.attributedText = NSMutableAttributedString(string: "", attributes: [NSAttributedString.Key.kern: -0.48, NSAttributedString.Key.paragraphStyle: paragraphStyle])
-        $0.numberOfLines = 1
-        $0.lineBreakMode = .byTruncatingTail
+    let productNameLabel = UILabel().then {
+        $0.text = "2024년 꽃학잠"
+        $0.font = UIFont.boldSystemFont(ofSize: 17)
+        $0.numberOfLines = 2
     }
     
-    let priceLabel = UILabel().then {
-        $0.textColor = .black
-        $0.font = UIFont.boldSystemFont(ofSize: 14)
+    let productPriceLabel = UILabel().then {
+        $0.text = "53000원"
+        $0.font = UIFont.boldSystemFont(ofSize: 17)
         $0.numberOfLines = 1
     }
     
-    let endLabel = UILabel().then {
-        $0.isHidden = true
-        $0.text = "판 매 종 료"
-        $0.textColor = .gadaeBlue
-        $0.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 23)
+    let productStateLabel = UILabel().then {
+        $0.text = "수요조사 중"
+        $0.textColor = .orange
+        $0.font = UIFont.boldSystemFont(ofSize: 17)
     }
     
     // MARK: - Init
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.selectionStyle = .none
+        
         addViews()
         configureConstraints()
     }
     
-    required init?(coder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - UI
     private func addViews() {
-        contentView.addSubviews([backView,
-                                 endLabel])
-        
-        backView.addSubviews([thumnailImage,
-                              titleLabel,
-                              priceLabel])
+        contentView.addSubviews([
+            thumnailImage,
+            productNameLabel,
+            productPriceLabel,
+            productStateLabel
+        ])
     }
     
     private func configureConstraints() {
-        backView.snp.makeConstraints { make in
-            make.top.equalTo(contentView)
-            make.leading.trailing.equalTo(contentView).inset(8)
-        }
-        
         thumnailImage.snp.makeConstraints { make in
-            make.top.equalTo(backView)
-            make.leading.trailing.equalTo(backView)
+            make.size.equalTo(100)
+            make.leading.equalTo(contentView).offset(10)
+            make.centerY.equalTo(contentView)
         }
         
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(thumnailImage.snp.bottom)
-            make.leading.trailing.equalTo(backView).inset(2)
+        productNameLabel.snp.makeConstraints { make in
+            make.top.equalTo(thumnailImage)
+            make.leading.equalTo(thumnailImage.snp.trailing).offset(15)
+            make.trailing.equalTo(contentView).inset(10)
         }
         
-        priceLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom)
-            make.leading.trailing.equalTo(titleLabel)
-            make.bottom.equalTo(contentView)
+        productPriceLabel.snp.makeConstraints { make in
+            make.top.equalTo(productNameLabel.snp.bottom).offset(10)
+            make.leading.equalTo(productNameLabel)
         }
         
-        endLabel.snp.makeConstraints { make in
-            make.center.equalTo(thumnailImage)
+        productStateLabel.snp.makeConstraints { make in
+            make.leading.equalTo(productNameLabel)
+            make.bottom.equalTo(contentView).inset(10)
         }
         
     }
-    
 }
