@@ -30,7 +30,7 @@ final class LikeViewController: UIViewController {
     }
     
     private func setupNaviBar() {
-        title = "찜"
+        title = "좋아요"
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.tintColor = .black

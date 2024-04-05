@@ -26,36 +26,45 @@ final class LikeCell: UITableViewCell {
     }
     
     let productPriceLabel = UILabel().then {
-        $0.text = "53000원"
+        $0.text = "45000원"
         $0.font = UIFont.boldSystemFont(ofSize: 17)
         $0.numberOfLines = 1
     }
     
-    let bookmarkButton = UIButton().then {
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 30)
-        let image = UIImage(systemName: "bookmark.fill", withConfiguration: imageConfig)
-        
-        $0.setImage(image, for: .normal)
-        $0.tintColor = .gadaeGray
+    let productStateLabel = UILabel().then {
+        $0.text = "공동구매 중"
+        $0.textColor = .purple
+        $0.font = UIFont.boldSystemFont(ofSize: 17)
+    }
+    
+    private let heartIcon = UIImageView().then {
+        $0.image = UIImage(systemName: "heart.fill")
+        $0.tintColor = .gadaeBlue
+        $0.contentMode = .scaleAspectFit
     }
     
     // MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.selectionStyle = .none
+        
         addViews()
         configureConstraints()
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - UI
     private func addViews() {
-        contentView.addSubviews([thumnailImage,
-                                 productNameLabel,
-                                 productPriceLabel,
-                                 bookmarkButton])
+        contentView.addSubviews([
+            thumnailImage,
+            productNameLabel,
+            productPriceLabel,
+            productStateLabel,
+            heartIcon
+        ])
     }
     
     private func configureConstraints() {
@@ -68,7 +77,7 @@ final class LikeCell: UITableViewCell {
         productNameLabel.snp.makeConstraints { make in
             make.top.equalTo(thumnailImage)
             make.leading.equalTo(thumnailImage.snp.trailing).offset(15)
-            make.trailing.equalTo(bookmarkButton.snp.leading).offset(-10)
+            make.trailing.equalTo(heartIcon.snp.leading).inset(10)
         }
         
         productPriceLabel.snp.makeConstraints { make in
@@ -76,7 +85,13 @@ final class LikeCell: UITableViewCell {
             make.leading.equalTo(productNameLabel)
         }
         
-        bookmarkButton.snp.makeConstraints { make in
+        productStateLabel.snp.makeConstraints { make in
+            make.leading.equalTo(productNameLabel)
+            make.bottom.equalTo(contentView).inset(10)
+        }
+        
+        heartIcon.snp.makeConstraints { make in
+            make.size.equalTo(30)
             make.top.equalTo(thumnailImage)
             make.trailing.equalTo(contentView).inset(10)
         }
