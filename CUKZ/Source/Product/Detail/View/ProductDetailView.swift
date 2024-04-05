@@ -47,10 +47,10 @@ final class ProductDetailView: UIView {
     }
     
     private let dividerLine = UIView().then {
-        $0.backgroundColor = .gadaeBlue
+        $0.backgroundColor = .lightGray
     }
     
-    let titleLabel = UILabel().then {
+    let productNameLabel = UILabel().then {
         $0.textColor = .black
         $0.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 23)
         var paragraphStyle = NSMutableParagraphStyle()
@@ -59,13 +59,13 @@ final class ProductDetailView: UIView {
         $0.numberOfLines = 3
     }
     
-    let priceLabel = UILabel().then {
+    let productPriceLabel = UILabel().then {
         $0.textColor = .black
         $0.font = UIFont.boldSystemFont(ofSize: 20)
         $0.text = "19000원"
     }
     
-    let descriptionLabel = UILabel().then {
+    let productDescriptionLabel = UILabel().then {
         $0.numberOfLines = 0
         $0.lineBreakMode = .byWordWrapping
         var paragraphStyle = NSMutableParagraphStyle()
@@ -75,7 +75,7 @@ final class ProductDetailView: UIView {
         $0.attributedText = NSMutableAttributedString(string: "대통령은 내우·외환·천재·지변 또는 중대한 재정·경제상의 위기에 있어서 국가의 안전보장 또는 공공의 안녕질서를 유지하기 위하여 긴급한 조치가 필요하고 국회의 집회를 기다릴 여유가 없을 때에 한하여 최소한으로 필요한 재정·경제상의 처분을 하거나 이에 관하여 법률의 효력을 가지는 명령을 발할 수 있다.\n\n모든 국민은 근로의 권리를 가진다. 국가는 사회적·경제적 방법으로 근로자의 고용의 증진과 적정임금의 보장에 노력하여야 하며, 법률이 정하는 바에 의하여 최저임금제를 시행하여야 한다.\n\n모든 국민은 보건에 관하여 국가의 보호를 받는다. 국가원로자문회의의 의장은 직전대통령이 된다. 다만, 직전대통령이 없을 때에는 대통령이 지명한다.", attributes: [NSAttributedString.Key.kern: -0.42, NSAttributedString.Key.paragraphStyle: paragraphStyle])
     }
     
-    let purchaseDetailBottomView = ProductDetailBottomView()
+    let productDetailBottomView = ProductDetailBottomView()
     
     // MARK: - Init
     override init(frame: CGRect) {
@@ -93,31 +93,33 @@ final class ProductDetailView: UIView {
     // MARK: - UI
     private func addViews() {
         self.addSubviews([scrollView,
-                          purchaseDetailBottomView])
+                          productDetailBottomView])
         
         scrollView.addSubviews([contentView])
         
-        contentView.addSubviews([productImageCollectionView,
-                                 pageNumBackView,
-                                 pageNumLabel,
-                                 crownIcon,
-                                 ninknameLabel,
-                                 dividerLine,
-                                 titleLabel,
-                                 priceLabel,
-                                 descriptionLabel])
+        contentView.addSubviews([
+            productImageCollectionView,
+            pageNumBackView,
+            pageNumLabel,
+            crownIcon,
+            ninknameLabel,
+            dividerLine,
+            productNameLabel,
+            productPriceLabel,
+            productDescriptionLabel
+        ])
     }
     
     private func configureConstraints() {
         scrollView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(purchaseDetailBottomView.snp.top)
+            make.bottom.equalTo(productDetailBottomView.snp.top)
         }
         
-        purchaseDetailBottomView.snp.makeConstraints { make in
+        productDetailBottomView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
-            make.height.equalTo(110)
+            make.height.equalTo(100)
         }
         
         contentView.snp.makeConstraints { make in
@@ -158,18 +160,18 @@ final class ProductDetailView: UIView {
             make.top.equalTo(crownIcon.snp.bottom).offset(10)
         }
         
-        titleLabel.snp.makeConstraints { make in
+        productNameLabel.snp.makeConstraints { make in
             make.top.equalTo(dividerLine.snp.bottom).offset(10)
             make.leading.trailing.equalTo(dividerLine)
         }
         
-        priceLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(5)
-            make.leading.trailing.equalTo(titleLabel)
+        productPriceLabel.snp.makeConstraints { make in
+            make.top.equalTo(productNameLabel.snp.bottom).offset(5)
+            make.leading.trailing.equalTo(productNameLabel)
         }
         
-        descriptionLabel.snp.makeConstraints { make in
-            make.top.equalTo(priceLabel.snp.bottom).offset(13)
+        productDescriptionLabel.snp.makeConstraints { make in
+            make.top.equalTo(productPriceLabel.snp.bottom).offset(13)
             make.leading.trailing.equalTo(contentView).inset(10)
             make.bottom.equalTo(contentView).inset(10)
         }

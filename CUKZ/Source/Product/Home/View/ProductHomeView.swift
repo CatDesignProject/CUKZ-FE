@@ -9,7 +9,10 @@ import UIKit
 
 final class ProductHomeView: UIView {
     // MARK: - View
-    let tableView = UITableView()
+    let tableView = UITableView().then {
+        $0.separatorInset.left = 20
+        $0.separatorInset.right = 20
+    }
     
     // MARK: - Init
     override init(frame: CGRect) {

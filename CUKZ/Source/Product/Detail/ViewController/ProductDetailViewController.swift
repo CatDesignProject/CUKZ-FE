@@ -9,7 +9,7 @@ import UIKit
 
 final class ProductDetailViewController: UIViewController {
     // MARK: - Properties
-    private var isBookmark = false
+    private var isLike = false
     
     private let productDetailView = ProductDetailView()
     
@@ -49,22 +49,22 @@ final class ProductDetailViewController: UIViewController {
     }
     
     private func setupButton() {
-        productDetailView.purchaseDetailBottomView.bookmarkButton.addTarget(nil, action: #selector(bookmarkButtonTapped), for: .touchUpInside)
-        productDetailView.purchaseDetailBottomView.buyButton.addTarget(nil, action: #selector(buyButtonTapped), for: .touchUpInside)
+        productDetailView.productDetailBottomView.likeButton.addTarget(nil, action: #selector(likeButtonTapped), for: .touchUpInside)
+        productDetailView.productDetailBottomView.stateButton.addTarget(nil, action: #selector(stateButtonTapped), for: .touchUpInside)
     }
     
-    @objc func bookmarkButtonTapped() {
-        isBookmark.toggle()
+    @objc func likeButtonTapped() {
+        isLike.toggle()
         
-        let systemName = isBookmark ? "bookmark" : "bookmark.fill"
+        let systemName = isLike ? "heart.fill" : "heart"
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 40)
         let image = UIImage(systemName: systemName, withConfiguration: imageConfig)
         
-        productDetailView.purchaseDetailBottomView.bookmarkButton.setImage(image, for: .normal)
+        productDetailView.productDetailBottomView.likeButton.setImage(image, for: .normal)
     }
     
-    @objc func buyButtonTapped() {
-        print("구매하기 버튼 눌림")
+    @objc func stateButtonTapped() {
+        print("상품 상태 버튼 눌림")
     }
     
 }

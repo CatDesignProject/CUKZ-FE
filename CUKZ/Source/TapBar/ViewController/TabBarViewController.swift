@@ -12,9 +12,7 @@ final class TabBarViewController: UITabBarController {
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = .white
-        self.selectedIndex = 0
         
         tabBarConfig()
     }
@@ -35,9 +33,9 @@ final class TabBarViewController: UITabBarController {
             selectedImage: UIImage(systemName: "wonsign.circle.fill")
         )
         likeVC.tabBarItem = UITabBarItem(
-            title: "찜",
-            image: UIImage(systemName: "bookmark"),
-            selectedImage: UIImage(systemName: "bookmark.fill")
+            title: "좋아요",
+            image: UIImage(systemName: "heart"),
+            selectedImage: UIImage(systemName: "heart.fill")
         )
         myPageVC.tabBarItem = UITabBarItem(
             title: "MY",

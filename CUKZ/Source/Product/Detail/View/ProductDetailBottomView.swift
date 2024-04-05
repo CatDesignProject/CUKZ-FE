@@ -10,29 +10,22 @@ import UIKit
 final class ProductDetailBottomView: UIView {
     // MARK: - View
     private let dividerLine = UIView().then {
-        $0.backgroundColor = .gadaeBlue
+        $0.backgroundColor = .lightGray
     }
     
-    private let backgroudView = UIView().then {
-        $0.backgroundColor = .white
-    }
-    
-    let bookmarkButton = UIButton().then {
+    let likeButton = UIButton().then {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 40)
-        let image = UIImage(systemName: "bookmark", withConfiguration: imageConfig)
+        let image = UIImage(systemName: "heart", withConfiguration: imageConfig)
         
         $0.setImage(image, for: .normal)
-        $0.tintColor = .gadaeGray
+        $0.tintColor = .gadaeBlue
     }
     
-    let buyButton = UIButton().then {
-        $0.backgroundColor = .gadaeBlue
-        $0.setTitle("구매하기", for: .normal)
+    let stateButton = UIButton().then {
+        $0.backgroundColor = .gadaeGray
+        $0.setTitle("수요조사 참여하기", for: .normal)
         $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
-        $0.layer.borderWidth = 3
-        $0.layer.borderColor = UIColor.gadaeBlue.cgColor
         $0.layer.cornerRadius = 8
-        $0.clipsToBounds = true
     }
     
     // MARK: - Init
@@ -50,33 +43,29 @@ final class ProductDetailBottomView: UIView {
     
     // MARK: - UI
     private func addViews() {
-        self.addSubviews([dividerLine,
-                          backgroudView,
-                          bookmarkButton,
-                          buyButton])
+        self.addSubviews([
+            dividerLine,
+            likeButton,
+            stateButton
+        ])
     }
     
     private func configureConstraints() {
         dividerLine.snp.makeConstraints { make in
             make.height.equalTo(0.3)
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(backgroudView.snp.top)
+            make.top.equalToSuperview()
         }
         
-        backgroudView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.height.equalTo(110)
+        likeButton.snp.makeConstraints { make in
+            make.top.equalTo(dividerLine.snp.bottom).offset(20)
+            make.leading.equalToSuperview().inset(20)
         }
         
-        bookmarkButton.snp.makeConstraints { make in
-            make.top.equalTo(backgroudView).inset(15)
-            make.leading.equalTo(backgroudView).inset(20)
-        }
-        
-        buyButton.snp.makeConstraints { make in
-            make.top.equalTo(backgroudView).inset(18)
-            make.trailing.equalTo(backgroudView).inset(20)
-            make.leading.equalTo(bookmarkButton.snp.trailing).offset(10)
+        stateButton.snp.makeConstraints { make in
+            make.top.equalTo(likeButton)
+            make.trailing.equalToSuperview().inset(20)
+            make.leading.equalTo(likeButton.snp.trailing).offset(10)
             make.height.equalTo(43)
         }
     }
