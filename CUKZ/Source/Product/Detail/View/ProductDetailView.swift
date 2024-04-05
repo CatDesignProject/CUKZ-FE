@@ -40,10 +40,11 @@ final class ProductDetailView: UIView {
         $0.tintColor = .gadaeGray
     }
     
-    let ninknameLabel = UILabel().then {
-        $0.textColor = .black
-        $0.font = UIFont.boldSystemFont(ofSize: 18)
-        $0.text = "닉네임"
+    let nicknameButton = UIButton().then {
+        $0.backgroundColor = .clear
+        $0.setTitle("닉네임입니다", for: .normal)
+        $0.setTitleColor(.black, for: .normal)
+        $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
     }
     
     private let dividerLine = UIView().then {
@@ -102,7 +103,7 @@ final class ProductDetailView: UIView {
             pageNumBackView,
             pageNumLabel,
             crownIcon,
-            ninknameLabel,
+            nicknameButton,
             dividerLine,
             productNameLabel,
             productPriceLabel,
@@ -149,7 +150,7 @@ final class ProductDetailView: UIView {
             make.leading.equalTo(contentView).inset(10)
         }
         
-        ninknameLabel.snp.makeConstraints { make in
+        nicknameButton.snp.makeConstraints { make in
             make.centerY.equalTo(crownIcon)
             make.leading.equalTo(crownIcon.snp.trailing).offset(12)
         }

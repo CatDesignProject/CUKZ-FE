@@ -49,8 +49,17 @@ final class ProductDetailViewController: UIViewController {
     }
     
     private func setupButton() {
-        productDetailView.productDetailBottomView.likeButton.addTarget(nil, action: #selector(likeButtonTapped), for: .touchUpInside)
-        productDetailView.productDetailBottomView.stateButton.addTarget(nil, action: #selector(stateButtonTapped), for: .touchUpInside)
+        productDetailView.nicknameButton.addTarget(self, action: #selector(nicknameButtonTapped), for: .touchUpInside)
+        productDetailView.productDetailBottomView.likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
+        productDetailView.productDetailBottomView.stateButton.addTarget(self, action: #selector(stateButtonTapped), for: .touchUpInside)
+    }
+    
+}
+
+// MARK: - @objc
+extension ProductDetailViewController {
+    @objc func nicknameButtonTapped() {
+        print("닉네임 버튼 눌림")
     }
     
     @objc func likeButtonTapped() {
@@ -66,7 +75,6 @@ final class ProductDetailViewController: UIViewController {
     @objc func stateButtonTapped() {
         print("상품 상태 버튼 눌림")
     }
-    
 }
 
 // MARK: - UIScrollViewDelegate
