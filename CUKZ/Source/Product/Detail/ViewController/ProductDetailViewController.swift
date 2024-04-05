@@ -35,6 +35,7 @@ final class ProductDetailViewController: UIViewController {
     
     private func setupNaviBar() {
         navigationItem.largeTitleDisplayMode = .never
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
     
     private func setupScrollView() {
@@ -59,7 +60,9 @@ final class ProductDetailViewController: UIViewController {
 // MARK: - @objc
 extension ProductDetailViewController {
     @objc func nicknameButtonTapped() {
-        print("닉네임 버튼 눌림")
+        let VC = ReviewViewController()
+        VC.isLeave = false
+        navigationController?.pushViewController(VC, animated: true)
     }
     
     @objc func likeButtonTapped() {
