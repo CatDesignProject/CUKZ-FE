@@ -35,6 +35,7 @@ final class ProductDetailViewController: UIViewController {
     
     private func setupNaviBar() {
         navigationItem.largeTitleDisplayMode = .never
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
     
     private func setupScrollView() {
@@ -49,8 +50,19 @@ final class ProductDetailViewController: UIViewController {
     }
     
     private func setupButton() {
-        productDetailView.productDetailBottomView.likeButton.addTarget(nil, action: #selector(likeButtonTapped), for: .touchUpInside)
-        productDetailView.productDetailBottomView.stateButton.addTarget(nil, action: #selector(stateButtonTapped), for: .touchUpInside)
+        productDetailView.nicknameButton.addTarget(self, action: #selector(nicknameButtonTapped), for: .touchUpInside)
+        productDetailView.productDetailBottomView.likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
+        productDetailView.productDetailBottomView.stateButton.addTarget(self, action: #selector(stateButtonTapped), for: .touchUpInside)
+    }
+    
+}
+
+// MARK: - @objc
+extension ProductDetailViewController {
+    @objc func nicknameButtonTapped() {
+        let VC = ReviewViewController()
+        VC.isLeave = false
+        navigationController?.pushViewController(VC, animated: true)
     }
     
     @objc func likeButtonTapped() {
@@ -66,7 +78,6 @@ final class ProductDetailViewController: UIViewController {
     @objc func stateButtonTapped() {
         print("상품 상태 버튼 눌림")
     }
-    
 }
 
 // MARK: - UIScrollViewDelegate
