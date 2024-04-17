@@ -56,6 +56,8 @@ final class LoginViewController: UIViewController {
         NetworkManager.shared.postSignUp(username: username,
                                          password: password) { JSESSIONID, responseBody in
             
+            self.loginSuccess(username: username, password: password)
+            
             guard let JSESSIONID = JSESSIONID else { return }
             print("JSESSIONID: \(JSESSIONID)")
             
@@ -66,18 +68,29 @@ final class LoginViewController: UIViewController {
                   let role = body["role"] as? String else { return }
             
             if let tabBarVC = self.tabBarController as? TabBarViewController {
+                guard var viewControllers = tabBarVC.viewControllers else { return }
+                
                 let VC = MyPageViewController()
-                VC.nickName = nickname // 닉네임 전달
-                VC.role = role // 총대 여부 전달
-                VC.tabBarItem = UITabBarItem( // 탭바 교체
+                VC.nickName = nickname
+                VC.role = role
+    
+                let myPageNavController = UINavigationController(rootViewController: VC)
+                myPageNavController.tabBarItem = UITabBarItem(
                     title: "MY",
                     image: UIImage(systemName: "person.circle"),
                     selectedImage: UIImage(systemName: "person.circle.fill")
                 )
-                let navigationController = UINavigationController(rootViewController: VC)
-                tabBarVC.viewControllers?[2] = navigationController
+                viewControllers[2] = myPageNavController
+                tabBarVC.setViewControllers(viewControllers, animated: true)
             }
         }
+    }
+    
+    private func loginSuccess(username: String, password: String) {
+        // 사용자가 로그인 정보를 저장소에 저장합니다.
+        UserDefaults.standard.set(username, forKey: "username")
+        UserDefaults.standard.set(password, forKey: "password")
+        UserDefaults.standard.synchronize()
     }
     
     @objc func signUpButtonTapped() {
