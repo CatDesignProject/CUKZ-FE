@@ -45,7 +45,7 @@ class NetworkManager {
     // 로그인
     func postSignUp(username: String,
                     password: String,
-                    completion: @escaping (String?) -> Void) {
+                    completion: @escaping (String?, [String: Any]?) -> Void) {
         
         let parameters: [String: Any] = [
             "username": username,
@@ -57,18 +57,18 @@ class NetworkManager {
                    parameters: parameters,
                    encoding: JSONEncoding.default)
         .validate(statusCode: 200..<300)
-        .response { response in
+        .responseJSON { response in
             switch response.result {
             case .success:
                 if let headerFields = response.response?.allHeaderFields as? [String: String], let url = response.response?.url {
                     let cookies = HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: url)
                     let cookie = cookies.first(where: { $0.name == "JSESSIONID" })
-                    completion(cookie?.value)
+                    completion(cookie?.value, response.value as? [String: Any])
                 } else {
-                    completion(nil)
+                    completion(nil, nil)
                 }
             case .failure:
-                completion(nil)
+                completion(nil, nil)
             }
         }
     }

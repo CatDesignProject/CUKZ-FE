@@ -52,24 +52,30 @@ final class LoginViewController: UIViewController {
         print("로그인 눌림")
         guard let username = loginView.emailTextField.text,
               let password = loginView.passwordTextField.text else { return }
-
+        
         NetworkManager.shared.postSignUp(username: username,
-                                         password: password) { JSESSIONID in
+                                         password: password) { JSESSIONID, responseBody in
             
             guard let JSESSIONID = JSESSIONID else { return }
             print("JSESSIONID: \(JSESSIONID)")
             
+            guard let responseBody = responseBody else { return }
+            guard let body = responseBody["body"] as? [String: Any] else { return }
+            guard let memberId = body["memberId"] as? Int,
+                  let nickname = body["nickname"] as? String,
+                  let role = body["role"] as? String else { return }
             
             if let tabBarVC = self.tabBarController as? TabBarViewController {
-                let myPageVC = MyPageViewController()
-                myPageVC.tabBarItem = UITabBarItem(
+                let VC = MyPageViewController()
+                VC.nickName = nickname // 닉네임 전달
+                VC.role = role // 총대 여부 전달
+                VC.tabBarItem = UITabBarItem( // 탭바 교체
                     title: "MY",
                     image: UIImage(systemName: "person.circle"),
                     selectedImage: UIImage(systemName: "person.circle.fill")
                 )
-                let navigationController = UINavigationController(rootViewController: myPageVC)
+                let navigationController = UINavigationController(rootViewController: VC)
                 tabBarVC.viewControllers?[2] = navigationController
-                tabBarVC.selectedIndex = 2
             }
         }
     }
