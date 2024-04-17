@@ -50,6 +50,28 @@ final class LoginViewController: UIViewController {
     
     @objc func loginButtonTapped() {
         print("로그인 눌림")
+        guard let username = loginView.emailTextField.text,
+              let password = loginView.passwordTextField.text else { return }
+
+        NetworkManager.shared.postSignUp(username: username,
+                                         password: password) { JSESSIONID in
+            
+            guard let JSESSIONID = JSESSIONID else { return }
+            print("JSESSIONID: \(JSESSIONID)")
+            
+            
+            if let tabBarVC = self.tabBarController as? TabBarViewController {
+                let myPageVC = MyPageViewController()
+                myPageVC.tabBarItem = UITabBarItem(
+                    title: "MY",
+                    image: UIImage(systemName: "person.circle"),
+                    selectedImage: UIImage(systemName: "person.circle.fill")
+                )
+                let navigationController = UINavigationController(rootViewController: myPageVC)
+                tabBarVC.viewControllers?[2] = navigationController
+                tabBarVC.selectedIndex = 2
+            }
+        }
     }
     
     @objc func signUpButtonTapped() {
