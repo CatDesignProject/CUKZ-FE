@@ -9,8 +9,12 @@ import UIKit
 
 final class MyPageViewController: UIViewController {
     // MARK: - Properties
+    var nickName: String? = nil
+    var role: String? = nil
+    
     private let myPageSection = MyPageSection()
-    private let myPageView = MyPageView()
+    
+    let myPageView = MyPageView()
     
     // MARK: - View 설정
     override func loadView() {
@@ -48,9 +52,14 @@ final class MyPageViewController: UIViewController {
         tb.dataSource = self
         tb.delegate = self
         
+        // 헤더뷰 설정
         let myPageTopView = MyPageTopView(frame: CGRect(x: 0, y: 0, width: 0, height: 150))
-        myPageTopView.nicknameLabel.text = "테스트닉네임"
-        myPageTopView.leaderLabel.text = "총대인증✅"
+        myPageTopView.nicknameLabel.text = self.nickName
+        if self.role == "user" {
+            myPageTopView.leaderLabel.text = "총대인증 ❌"
+        } else {
+            myPageTopView.leaderLabel.text = "총대인증 ✅"
+        }
         tb.tableHeaderView = myPageTopView
     }
 }

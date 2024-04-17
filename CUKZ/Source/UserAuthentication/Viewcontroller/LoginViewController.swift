@@ -50,6 +50,47 @@ final class LoginViewController: UIViewController {
     
     @objc func loginButtonTapped() {
         print("로그인 눌림")
+        guard let username = loginView.emailTextField.text,
+              let password = loginView.passwordTextField.text else { return }
+        
+        NetworkManager.shared.postSignUp(username: username,
+                                         password: password) { JSESSIONID, responseBody in
+            
+            self.loginSuccess(username: username, password: password)
+            
+            guard let JSESSIONID = JSESSIONID else { return }
+            print("JSESSIONID: \(JSESSIONID)")
+            
+            guard let responseBody = responseBody else { return }
+            guard let body = responseBody["body"] as? [String: Any] else { return }
+            guard let memberId = body["memberId"] as? Int,
+                  let nickname = body["nickname"] as? String,
+                  let role = body["role"] as? String else { return }
+            
+            if let tabBarVC = self.tabBarController as? TabBarViewController {
+                guard var viewControllers = tabBarVC.viewControllers else { return }
+                
+                let VC = MyPageViewController()
+                VC.nickName = nickname
+                VC.role = role
+    
+                let myPageNavController = UINavigationController(rootViewController: VC)
+                myPageNavController.tabBarItem = UITabBarItem(
+                    title: "MY",
+                    image: UIImage(systemName: "person.circle"),
+                    selectedImage: UIImage(systemName: "person.circle.fill")
+                )
+                viewControllers[2] = myPageNavController
+                tabBarVC.setViewControllers(viewControllers, animated: true)
+            }
+        }
+    }
+    
+    private func loginSuccess(username: String, password: String) {
+        // 사용자가 로그인 정보를 저장소에 저장합니다.
+        UserDefaults.standard.set(username, forKey: "username")
+        UserDefaults.standard.set(password, forKey: "password")
+        UserDefaults.standard.synchronize()
     }
     
     @objc func signUpButtonTapped() {

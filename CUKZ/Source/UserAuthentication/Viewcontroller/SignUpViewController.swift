@@ -9,6 +9,7 @@ import UIKit
 
 final class SignUpViewController: UIViewController {
     // MARK: - Properties
+    private let networkManager = NetworkManager.shared
     private let signUpView = SignUpView()
     
     // MARK: - View 설정
@@ -20,15 +21,10 @@ final class SignUpViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        prepare()
         setupNaviBar()
         setupKeyboardNotification()
         setupTextField()
         setupButton()
-    }
-    
-    private func prepare() {
-        
     }
     
     private func setupNaviBar() {
