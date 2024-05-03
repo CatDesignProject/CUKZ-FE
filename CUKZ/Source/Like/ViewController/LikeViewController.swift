@@ -32,6 +32,7 @@ final class LikeViewController: UIViewController {
         
         setupNaviBar()
         setupTableView()
+        setupRefresh()
     }
     
     // 네트워킹
@@ -59,7 +60,7 @@ final class LikeViewController: UIViewController {
     }
     
     // 테이블뷰 설정
-    func setupTableView() {
+    private func setupTableView() {
         let tb = likeView.tableView
         
         tb.dataSource = self
@@ -67,6 +68,26 @@ final class LikeViewController: UIViewController {
         
         tb.rowHeight = 120
         tb.register(LikeCell.self, forCellReuseIdentifier: "LikeCell")
+    }
+    
+    private func setupRefresh() {
+        let rc = likeView.refreshControl
+        rc.addTarget(self, action: #selector(refreshTable(refresh:)), for: .valueChanged)
+        rc.tintColor = .gadaeBlue
+        
+        likeView.tableView.refreshControl = rc
+    }
+}
+
+// MARK: - @objc
+extension LikeViewController {
+    @objc func refreshTable(refresh: UIRefreshControl) {
+        print("새로고침 시작")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.fetchData()
+            refresh.endRefreshing()
+        }
     }
 }
 
