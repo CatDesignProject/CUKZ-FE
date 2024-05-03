@@ -9,6 +9,8 @@ import UIKit
 
 final class LikeView: UIView {
     // MARK: - View
+    let refreshControl = UIRefreshControl()
+    
     let tableView = UITableView().then {
         $0.separatorInset.left = 20
         $0.separatorInset.right = 20

@@ -1,5 +1,5 @@
 //
-//  NetworkManager.swift
+//  UserNetworkManager.swift
 //  CUKZ
 //
 //  Created by 이승민 on 4/17/24.
@@ -8,18 +8,17 @@
 import Alamofire
 import Foundation
 
-class NetworkManager {
+class UserNetworkManager {
     
-    static let shared = NetworkManager()
+    static let shared = UserNetworkManager()
     
     private let baseURL = "http://3.35.203.198:8080"
     
     private init() {}
     
-    // MARK: - 회원
-    
-    // 아이디 중복체크
-    func postDuplicateCheck(username: String, completion: @escaping (Bool?) -> Void) {
+    // MARK: - 아이디 중복체크
+    func postDuplicateCheck(username: String,
+                            completion: @escaping (Bool?) -> Void) {
         
         let parameters: [String: Any] = [
             "username": username
@@ -43,9 +42,9 @@ class NetworkManager {
     }
     
     // 로그인
-    func postSignUp(username: String,
-                    password: String,
-                    completion: @escaping (String?, [String: Any]?) -> Void) {
+    func postLogin(username: String,
+                   password: String,
+                   completion: @escaping (String?, [String: Any]?) -> Void) {
         
         let parameters: [String: Any] = [
             "username": username,
