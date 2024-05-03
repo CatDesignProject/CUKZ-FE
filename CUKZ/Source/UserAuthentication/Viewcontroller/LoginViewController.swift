@@ -19,16 +19,11 @@ final class LoginViewController: UIViewController {
     // MARK: - viewDidLoad
     override func viewDidLoad () {
         super.viewDidLoad ()
-        
-        prepare()
+
         setupNaviBar()
         setupNotifications()
         setupTextField()
         setupButton()
-    }
-    
-    private func prepare() {
-        
     }
     
     private func setupNaviBar() {
@@ -53,10 +48,8 @@ final class LoginViewController: UIViewController {
         guard let username = loginView.emailTextField.text,
               let password = loginView.passwordTextField.text else { return }
         
-        NetworkManager.shared.postSignUp(username: username,
+        UserNetworkManager.shared.postLogin(username: username,
                                          password: password) { JSESSIONID, responseBody in
-            
-            self.loginSuccess(username: username, password: password)
             
             guard let JSESSIONID = JSESSIONID else { return }
             print("JSESSIONID: \(JSESSIONID)")
@@ -66,6 +59,9 @@ final class LoginViewController: UIViewController {
             guard let memberId = body["memberId"] as? Int,
                   let nickname = body["nickname"] as? String,
                   let role = body["role"] as? String else { return }
+            
+            // 로그인 성공시 JSESSIONID 저장
+            self.loginSuccess(sessionId: JSESSIONID, username: username, password: password)
             
             if let tabBarVC = self.tabBarController as? TabBarViewController {
                 guard var viewControllers = tabBarVC.viewControllers else { return }
@@ -86,13 +82,15 @@ final class LoginViewController: UIViewController {
         }
     }
     
-    private func loginSuccess(username: String, password: String) {
-        // 사용자가 로그인 정보를 저장소에 저장합니다.
+    // UserDefaults
+    private func loginSuccess(sessionId:String, username: String, password: String) {
+        UserDefaults.standard.set(sessionId, forKey: "sessionId")
         UserDefaults.standard.set(username, forKey: "username")
         UserDefaults.standard.set(password, forKey: "password")
         UserDefaults.standard.synchronize()
     }
     
+    // 회원가입 버튼 눌림
     @objc func signUpButtonTapped() {
         let VC = SignUpViewController()
         VC.hidesBottomBarWhenPushed = true

@@ -6,9 +6,15 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class LikeViewController: UIViewController {
     // MARK: - Properties
+    var arrayLike: [LikeAllModel.Content] = []
+    var totalPageNum: Int = 0
+    var pageNum: Int = 0
+    var isLastPage: Bool = false
+    
     private let likeView = LikeView()
     
     // MARK: - View 설정
@@ -16,26 +22,43 @@ final class LikeViewController: UIViewController {
         view = likeView
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        fetchData()
+    }
+    
     // MARK: - ViewDidLodad
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        prepare()
         setupNaviBar()
         setupTableView()
     }
     
-    private func prepare() {
-        
+    // 네트워킹
+    private func fetchData() {
+        LikeNetworkManager.shared.getLikeAll(page: 1, size: 10) { model in
+            if let model = model {
+                self.totalPageNum = model.body.totalPage
+                self.isLastPage = model.body.last
+                self.arrayLike = model.body.content
+                DispatchQueue.main.async {
+                    self.likeView.tableView.reloadData()
+                }
+            }
+        }
     }
     
+    // 네비게이션바 설정
     private func setupNaviBar() {
         title = "좋아요"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationBar.barTintColor = .white
-        navigationController?.navigationBar.tintColor = .black
+        
+        let nb = navigationController?.navigationBar
+        nb?.prefersLargeTitles = true
+        nb?.barTintColor = .white
+        nb?.tintColor = .black
     }
     
+    // 테이블뷰 설정
     func setupTableView() {
         let tb = likeView.tableView
         
@@ -47,21 +70,30 @@ final class LikeViewController: UIViewController {
     }
 }
 
+// MARK: - UITableViewDataSource
 extension LikeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return arrayLike.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "LikeCell", for: indexPath) as! LikeCell
         
-        cell.selectionStyle = .none
+        let data = arrayLike[indexPath.row]
+        
+        if let imageUrlString = data.imageUrls.first,
+           let imageUrl = URL(string: imageUrlString) {
+            cell.thumnailImage.kf.setImage(with: imageUrl)
+        }
+        cell.productNameLabel.text = data.name
+        cell.productPriceLabel.text = "\(data.price)"
+        cell.productStateLabel.text = data.status
         
         return cell
     }
 }
 
+// MARK: - UITableViewDelegate
 extension LikeViewController: UITableViewDelegate {
     
 }
-

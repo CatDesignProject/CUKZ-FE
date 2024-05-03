@@ -9,7 +9,7 @@ import UIKit
 
 final class SignUpViewController: UIViewController {
     // MARK: - Properties
-    private let networkManager = NetworkManager.shared
+    private let networkManager = UserNetworkManager.shared
     private let signUpView = SignUpView()
     
     // MARK: - View 설정
