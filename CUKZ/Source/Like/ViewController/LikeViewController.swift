@@ -86,8 +86,24 @@ extension LikeViewController: UITableViewDataSource {
             cell.thumnailImage.kf.setImage(with: imageUrl)
         }
         cell.productNameLabel.text = data.name
-        cell.productPriceLabel.text = "\(data.price)"
-        cell.productStateLabel.text = data.status
+        cell.productPriceLabel.text = "\(data.price)원"
+        
+        var saleStatus = ""
+        
+        switch data.status {
+        case "ON_DEMAND":
+            saleStatus = "수요조사 중"
+        case "END_DEMAND":
+            saleStatus = "수요조사 종료"
+        case "ON_SALE":
+            saleStatus = "판매 중"
+        case "END_SALE":
+            saleStatus = "판매 종료"
+        default:
+            print("")
+        }
+        
+        cell.productStateLabel.text = saleStatus
         
         return cell
     }
