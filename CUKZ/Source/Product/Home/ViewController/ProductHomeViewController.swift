@@ -15,6 +15,7 @@ final class ProductHomeViewController: UIViewController {
     private var pageNum: Int = 0
     private var isLastPage: Bool = false
     private var isSearch: Bool = false // 검색인지 확인하는 프로퍼티
+    private var keyword: String?
     
     private let productHomeView = ProductHomeView()
     
@@ -36,6 +37,7 @@ final class ProductHomeViewController: UIViewController {
     // 네트워킹
     private func fetchData() {
         self.pageNum = 0
+        self.isSearch = false
         ProductNetworkManager.shared.getProductAll(page: 0) { model in
             if let model = model {
                 self.totalPageNum = model.body.totalPage
@@ -164,16 +166,34 @@ extension ProductHomeViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths { // 페이징
             
-            if arrayProduct.count - 1 == indexPath.row && pageNum < totalPageNum && !isLastPage {
-                
-                pageNum += 1
-                
-                ProductNetworkManager.shared.getProductAll(page: pageNum) { model in
-                    if let model = model {
-                        self.arrayProduct += model.body.content
-                        self.isLastPage = model.body.last
-                        DispatchQueue.main.async {
-                            self.productHomeView.tableView.reloadData()
+            if self.isSearch { // 검색일 때
+                if arrayProduct.count - 1 == indexPath.row && pageNum < totalPageNum && !isLastPage {
+                    
+                    pageNum += 1
+                    guard let keyword = self.keyword else { return }
+                    ProductNetworkManager.shared.getProductSearch(keyword: keyword,
+                                                                  page: pageNum) { model in
+                        if let model = model {
+                            self.arrayProduct += model.body.content
+                            self.isLastPage = model.body.last
+                            DispatchQueue.main.async {
+                                self.productHomeView.tableView.reloadData()
+                            }
+                        }
+                    }
+                }
+            } else {
+                if arrayProduct.count - 1 == indexPath.row && pageNum < totalPageNum && !isLastPage {
+
+                    pageNum += 1
+                    
+                    ProductNetworkManager.shared.getProductAll(page: pageNum) { model in
+                        if let model = model {
+                            self.arrayProduct += model.body.content
+                            self.isLastPage = model.body.last
+                            DispatchQueue.main.async {
+                                self.productHomeView.tableView.reloadData()
+                            }
                         }
                     }
                 }
@@ -187,7 +207,11 @@ extension ProductHomeViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { // 키보드 검색 버튼 클릭
         self.pageNum = 0
         self.isSearch = true
-        ProductNetworkManager.shared.getProductSearch(keyword: searchBar.text!) { model in
+        guard let keyword = searchBar.text else { return }
+        self.keyword = keyword
+        
+        ProductNetworkManager.shared.getProductSearch(keyword: keyword,
+                                                      page: 0) { model in
             if let model = model {
                 self.totalPageNum = model.body.totalPage
                 self.isLastPage = model.body.last
