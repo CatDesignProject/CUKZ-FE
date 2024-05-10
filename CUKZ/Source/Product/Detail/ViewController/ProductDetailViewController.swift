@@ -101,7 +101,14 @@ extension ProductDetailViewController {
         print("새로고침 시작")
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//            self.fetchData()
+            self.fetchData()
+            
+            // refresh된 후 첫 번째 셀로 이동
+            if let productDetailData = self.productDetailData, !productDetailData.body.imageUrls.isEmpty {
+                let indexPath = IndexPath(item: 0, section: 0)
+                self.productDetailView.productImageCollectionView.scrollToItem(at: indexPath, at: .top, animated: true)
+            }
+            
             refresh.endRefreshing()
         }
     }
