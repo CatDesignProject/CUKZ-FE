@@ -9,7 +9,9 @@ import UIKit
 
 final class ReviewViewController: UIViewController {
     // MARK: - Properties
-    var isLeave: Bool? = nil
+    var isLeave: Bool?
+    var sellerId: Int?
+    private var reviewData: ReviewModel?
     
     private let reviewView = ReviewView()
     
@@ -21,9 +23,29 @@ final class ReviewViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        fetchData()
         prepare()
         setupButton()
         updateCompleteButton()
+    }
+    
+    private func fetchData() {
+        guard let sellerId = self.sellerId else { return }
+        ReviewNetworkManager.shared.getReview(sellerId: sellerId) { model in
+            self.reviewData = model
+            DispatchQueue.main.async {
+                self.updateUI()
+            }
+        }
+    }
+    
+    private func updateUI() {
+        guard let data = self.reviewData?.body else { return }
+        reviewView.nicknameLabel.text = "\(data.nickname) 님의\n이런 점이 좋았어요"
+        reviewView.firstQuestionNumLabel.text = "\(data.sellerKindnessCnt)"
+        reviewView.secondQuestionNumLabel.text = "\(data.goodNotificationCnt)"
+        reviewView.thirdQuestionNumLabel.text = "\(data.descriptionMatchCnt)"
+        reviewView.fourthQuestionNumLabel.text = "\(data.arrivalSatisfactoryCnt)"
     }
     
     private func prepare() {
