@@ -153,6 +153,7 @@ extension ProductHomeViewController: UITableViewDataSource {
 extension ProductHomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let VC = ProductDetailViewController()
+        VC.productId = arrayProduct[indexPath.row].id // 아이디값 넘겨주기
         VC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(VC, animated: true)
     }

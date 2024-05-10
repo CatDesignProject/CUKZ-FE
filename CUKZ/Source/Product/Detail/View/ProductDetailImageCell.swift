@@ -12,6 +12,7 @@ final class ProductDetailImageCell: UICollectionViewCell {
     let mainImage = UIImageView().then {
         $0.image = UIImage(named: "testImage2")
         $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
     }
     
     // MARK: - Init

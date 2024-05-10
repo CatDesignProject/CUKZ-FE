@@ -70,4 +70,24 @@ final class ProductNetworkManager {
             }
         }
     }
+    
+    // MARK: - 상품 상세보기
+    func getProductDetail(productId: Int, 
+                          completion: @escaping (ProductDetailModel?) -> Void) {
+        
+        AF.request("\(baseURL)/products/\(productId)",
+                   method: .get,
+                   encoding: URLEncoding.default)
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: ProductDetailModel.self) { response in
+            switch response.result {
+            case .success(let result):
+                print("상품 상세보기 - 네트워킹 성공")
+                completion(result)
+            case .failure(let error):
+                print("상품 상세보기 - \(error)")
+                completion(nil)
+            }
+        }
+    }
 }
