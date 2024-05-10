@@ -35,6 +35,7 @@ final class ProductHomeViewController: UIViewController {
         
         setupNaviBar()
         setupTableView()
+        setupRefresh()
     }
     
     // 네트워킹
@@ -54,7 +55,6 @@ final class ProductHomeViewController: UIViewController {
     // 네비게이션바 설정
     private func setupNaviBar() {
         title = "상품"
-        navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.tintColor = .gadaeBlue
@@ -79,14 +79,34 @@ final class ProductHomeViewController: UIViewController {
         tb.register(ProductHomeCell.self, forCellReuseIdentifier: "ProductHomeCell")
     }
     
+    // 새로고침 설정
+    private func setupRefresh() {
+        let rc = productHomeView.refreshControl
+        rc.addTarget(self, action: #selector(refreshTable(refresh:)), for: .valueChanged)
+        rc.tintColor = .gadaeBlue
+        
+        productHomeView.tableView.refreshControl = rc
+    }
+    
 }
 
 // MARK: - @objc
 extension ProductHomeViewController {
+    // 업로드 버튼
     @objc func uploadButtonTapped() {
         let VC = UploadProductViewController()
         VC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(VC, animated: true)
+    }
+    
+    // 새로고침
+    @objc func refreshTable(refresh: UIRefreshControl) {
+        print("상품 목록 전체 조회 - 새로고침 시작")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.fetchData()
+            refresh.endRefreshing()
+        }
     }
 }
 
