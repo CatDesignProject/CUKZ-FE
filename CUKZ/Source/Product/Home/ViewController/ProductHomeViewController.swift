@@ -6,9 +6,15 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ProductHomeViewController: UIViewController {
     // MARK: - Properties
+    var arrayProduct: [ProductHomeModel.Content] = []
+    var totalPageNum: Int = 0
+    var pageNum: Int = 0
+    var isLastPage: Bool = false
+    
     private let productHomeView = ProductHomeView()
     
     // MARK: - View 설정
@@ -20,22 +26,32 @@ final class ProductHomeViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationController?.navigationBar.prefersLargeTitles = true
+        fetchData()
     }
     
     // MARK: - ViewDidLodad
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        prepare()
         setupNaviBar()
         setupTableView()
     }
     
-    private func prepare() {
-        
+    // 네트워킹
+    private func fetchData() {
+        ProductNetworkManager.shared.getProductAll(page: 0) { model in
+            if let model = model {
+                self.totalPageNum = model.body.totalPage
+                self.isLastPage = model.body.last
+                self.arrayProduct = model.body.content
+                DispatchQueue.main.async {
+                    self.productHomeView.tableView.reloadData()
+                }
+            }
+        }
     }
     
+    // 네비게이션바 설정
     private func setupNaviBar() {
         title = "상품"
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -53,6 +69,7 @@ final class ProductHomeViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(uploadButtonTapped))
     }
     
+    // 테이블뷰 설정
     private func setupTableView() {
         let tb = productHomeView.tableView
         tb.dataSource = self
@@ -76,11 +93,37 @@ extension ProductHomeViewController {
 // MARK: - UITableViewDataSource
 extension ProductHomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return arrayProduct.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ProductHomeCell", for: indexPath) as! ProductHomeCell
+        
+        let data = arrayProduct[indexPath.row]
+        
+        if let imageUrl = URL(string: data.imageUrl) {
+            cell.thumnailImage.kf.setImage(with: imageUrl)
+        }
+        
+        cell.productNameLabel.text = data.productName
+        cell.productPriceLabel.text = "\(data.price)원"
+        
+        var saleStatus = ""
+        
+//        switch data.status {
+//        case "ON_DEMAND":
+//            saleStatus = "수요조사 중"
+//        case "END_DEMAND":
+//            saleStatus = "수요조사 종료"
+//        case "ON_SALE":
+//            saleStatus = "판매 중"
+//        case "END_SALE":
+//            saleStatus = "판매 종료"
+//        default:
+//            print("")
+//        }
+        
+        cell.productStateLabel.text = saleStatus
         
         return cell
     }
