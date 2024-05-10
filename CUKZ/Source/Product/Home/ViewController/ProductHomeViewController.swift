@@ -10,10 +10,11 @@ import Kingfisher
 
 final class ProductHomeViewController: UIViewController {
     // MARK: - Properties
-    var arrayProduct: [ProductHomeModel.Content] = []
-    var totalPageNum: Int = 0
-    var pageNum: Int = 0
-    var isLastPage: Bool = false
+    private var arrayProduct: [ProductHomeModel.Content] = []
+    private var totalPageNum: Int = 0
+    private var pageNum: Int = 0
+    private var isLastPage: Bool = false
+    private var isSearch: Bool = false // 검색인지 확인하는 프로퍼티
     
     private let productHomeView = ProductHomeView()
     
@@ -22,17 +23,11 @@ final class ProductHomeViewController: UIViewController {
         view = productHomeView
     }
     
-    // MARK: - viewWillAppear
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        fetchData() // ** 수정필요 **
-    }
-    
     // MARK: - ViewDidLodad
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        fetchData() // ** API 수정필요 **
         setupNaviBar()
         setupTableView()
         setupRefresh()
@@ -40,6 +35,7 @@ final class ProductHomeViewController: UIViewController {
     
     // 네트워킹
     private func fetchData() {
+        self.pageNum = 0
         ProductNetworkManager.shared.getProductAll(page: 0) { model in
             if let model = model {
                 self.totalPageNum = model.body.totalPage
@@ -55,16 +51,18 @@ final class ProductHomeViewController: UIViewController {
     // 네비게이션바 설정
     private func setupNaviBar() {
         title = "상품"
-        navigationItem.largeTitleDisplayMode = .always
+//        navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.tintColor = .gadaeBlue
         
-        let searchController = UISearchController(searchResultsController: nil)
+        let searchController = UISearchController(searchResultsController: nil) // 검색창
+        searchController.searchBar.delegate = self
         searchController.searchBar.placeholder = "상품 검색"
-        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.obscuresBackgroundDuringPresentation = false // 검색창 활성화 밝기 유지
+        searchController.searchBar.setValue("취소", forKey: "cancelButtonText")
         navigationItem.searchController = searchController
         
-        navigationItem.hidesSearchBarWhenScrolling = false
+        navigationItem.hidesSearchBarWhenScrolling = false // 스크롤 시 검색창 유지
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(uploadButtonTapped))
     }
@@ -103,7 +101,7 @@ extension ProductHomeViewController {
     
     // 새로고침
     @objc func refreshTable(refresh: UIRefreshControl) {
-        print("상품 목록 전체 조회 - 새로고침 시작")
+        print("새로고침 시작")
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.fetchData()
@@ -177,6 +175,24 @@ extension ProductHomeViewController: UITableViewDataSourcePrefetching {
                             self.productHomeView.tableView.reloadData()
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - UISearchBarDelegate
+extension ProductHomeViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { // 키보드 검색 버튼 클릭
+        self.pageNum = 0
+        self.isSearch = true
+        ProductNetworkManager.shared.getProductSearch(keyword: searchBar.text!) { model in
+            if let model = model {
+                self.totalPageNum = model.body.totalPage
+                self.isLastPage = model.body.last
+                self.arrayProduct = model.body.content
+                DispatchQueue.main.async {
+                    self.productHomeView.tableView.reloadData()
                 }
             }
         }

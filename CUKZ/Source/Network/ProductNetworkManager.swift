@@ -41,4 +41,33 @@ final class ProductNetworkManager {
             }
         }
     }
+    
+    // MARK: - 상품 검색
+    func getProductSearch(keyword: String,
+//                          page: Int,
+                          completion: @escaping (ProductHomeModel?) -> Void) {
+        
+        // 파라미터
+        let parameters: [String: Any] = [
+            "keyword" : keyword
+//            "page": page
+        ]
+        
+        // Alamofire 요청
+        AF.request("\(baseURL)/products/search",
+                   method: .get,
+                   parameters: parameters,
+                   encoding: URLEncoding.default)
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: ProductHomeModel.self) { response in
+            switch response.result {
+            case .success(let result):
+                print("상품 검색 - 네트워킹 성공")
+                completion(result)
+            case .failure(let error):
+                print("상품 검색 - \(error)")
+                completion(nil)
+            }
+        }
+    }
 }
