@@ -22,24 +22,28 @@ final class ProductDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        prepare()
         setupNaviBar()
         setupScrollView()
+        setupRefresh()
         setupImageCollectionView()
         setupButton()
     }
     
-    private func prepare() {
-        
-    }
-    
     private func setupNaviBar() {
-        navigationItem.largeTitleDisplayMode = .never
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
     
     private func setupScrollView() {
         productDetailView.scrollView.delegate = self
+    }
+    
+    // 새로고침 설정
+    private func setupRefresh() {
+        let rc = productDetailView.refreshControl
+        rc.addTarget(self, action: #selector(refreshTable(refresh:)), for: .valueChanged)
+        rc.tintColor = .gadaeBlue
+        
+        productDetailView.scrollView.refreshControl = rc
     }
     
     private func setupImageCollectionView() {
@@ -50,21 +54,40 @@ final class ProductDetailViewController: UIViewController {
     }
     
     private func setupButton() {
-        productDetailView.nicknameButton.addTarget(self, action: #selector(nicknameButtonTapped), for: .touchUpInside)
-        productDetailView.productDetailBottomView.likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
-        productDetailView.productDetailBottomView.stateButton.addTarget(self, action: #selector(stateButtonTapped), for: .touchUpInside)
+        productDetailView.reviewButton.addTarget(self,
+                                                 action: #selector(reviewButtonTapped),
+                                                 for: .touchUpInside)
+        
+        productDetailView.productDetailBottomView.likeButton.addTarget(self,
+                                                                       action: #selector(likeButtonTapped),
+                                                                       for: .touchUpInside)
+        
+        productDetailView.productDetailBottomView.stateButton.addTarget(self,
+                                                                        action: #selector(stateButtonTapped),
+                                                                        for: .touchUpInside)
     }
-    
 }
 
 // MARK: - @objc
 extension ProductDetailViewController {
-    @objc func nicknameButtonTapped() {
+    // 새로고침
+    @objc func refreshTable(refresh: UIRefreshControl) {
+        print("새로고침 시작")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+//            self.fetchData()
+            refresh.endRefreshing()
+        }
+    }
+    
+    // 총대 리뷰보기
+    @objc func reviewButtonTapped() {
         let VC = ReviewViewController()
         VC.isLeave = false
         navigationController?.pushViewController(VC, animated: true)
     }
     
+    // 좋아요
     @objc func likeButtonTapped() {
         isLike.toggle()
         
