@@ -48,11 +48,26 @@ final class ProductDetailViewController: UIViewController {
         productDetailView.productImageCollectionView.reloadData()
         guard let data = self.productDetailData else { return }
         
+        let productStatus: String
+        switch data.body.status {
+        case "ON_DEMAND":
+            productStatus = "수요조사 참여하기"
+        case "END_DEMAND":
+            productStatus = "수요조사 종료"
+        case "ON_SALE":
+            productStatus = "구매하기"
+        case "END_SALE":
+            productStatus = "판매 종료"
+        default:
+            productStatus = ""
+        }
+        
         productDetailView.pageNumLabel.text = "1 / \(data.body.imageUrls.count)"
         productDetailView.nicknameLabel.text = data.body.nickname
         productDetailView.productNameLabel.text = data.body.name
         productDetailView.productPriceLabel.text = "\(data.body.price)원"
         productDetailView.productDescriptionLabel.text = data.body.info
+        productDetailView.productDetailBottomView.statusButton.setTitle(productStatus, for: .normal)
     }
     
     private func setupNaviBar() {
@@ -88,8 +103,8 @@ final class ProductDetailViewController: UIViewController {
                                                                        action: #selector(likeButtonTapped),
                                                                        for: .touchUpInside)
         
-        productDetailView.productDetailBottomView.stateButton.addTarget(self,
-                                                                        action: #selector(stateButtonTapped),
+        productDetailView.productDetailBottomView.statusButton.addTarget(self,
+                                                                        action: #selector(statusButtonTapped),
                                                                         for: .touchUpInside)
     }
 }
@@ -131,7 +146,7 @@ extension ProductDetailViewController {
         productDetailView.productDetailBottomView.likeButton.setImage(image, for: .normal)
     }
     
-    @objc func stateButtonTapped() {
+    @objc func statusButtonTapped() {
         print("상품 상태 버튼 눌림")
     }
 }

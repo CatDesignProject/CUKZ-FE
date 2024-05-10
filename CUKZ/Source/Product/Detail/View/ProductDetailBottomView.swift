@@ -21,7 +21,7 @@ final class ProductDetailBottomView: UIView {
         $0.tintColor = .gadaeBlue
     }
     
-    let stateButton = UIButton().then {
+    let statusButton = UIButton().then {
         $0.backgroundColor = .gadaeGray
         $0.setTitle("수요조사 참여하기", for: .normal)
         $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
@@ -46,7 +46,7 @@ final class ProductDetailBottomView: UIView {
         self.addSubviews([
             dividerLine,
             likeButton,
-            stateButton
+            statusButton
         ])
     }
     
@@ -62,7 +62,7 @@ final class ProductDetailBottomView: UIView {
             make.leading.equalToSuperview().inset(20)
         }
         
-        stateButton.snp.makeConstraints { make in
+        statusButton.snp.makeConstraints { make in
             make.top.equalTo(likeButton)
             make.trailing.equalToSuperview().inset(20)
             make.leading.equalTo(likeButton.snp.trailing).offset(10)
