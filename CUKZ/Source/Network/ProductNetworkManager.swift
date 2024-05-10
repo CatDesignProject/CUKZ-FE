@@ -44,13 +44,13 @@ final class ProductNetworkManager {
     
     // MARK: - 상품 검색
     func getProductSearch(keyword: String,
-//                          page: Int,
+                          page: Int,
                           completion: @escaping (ProductHomeModel?) -> Void) {
         
         // 파라미터
         let parameters: [String: Any] = [
-            "keyword" : keyword
-//            "page": page
+            "keyword" : keyword,
+            "page": page
         ]
         
         // Alamofire 요청
