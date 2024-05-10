@@ -26,7 +26,7 @@ final class ProductHomeViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        fetchData()
+        fetchData() // ** 수정필요 **
     }
     
     // MARK: - ViewDidLodad
@@ -74,6 +74,8 @@ final class ProductHomeViewController: UIViewController {
         let tb = productHomeView.tableView
         tb.dataSource = self
         tb.delegate = self
+        tb.prefetchDataSource = self // 페이징
+        
         tb.tableHeaderView = UIView()
         tb.rowHeight = 120
         tb.register(ProductHomeCell.self, forCellReuseIdentifier: "ProductHomeCell")
@@ -155,5 +157,28 @@ extension ProductHomeViewController: UITableViewDelegate {
         let VC = ProductDetailViewController()
         VC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(VC, animated: true)
+    }
+}
+
+// MARK: - UITableViewDataSourcePrefetching
+extension ProductHomeViewController: UITableViewDataSourcePrefetching {
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        for indexPath in indexPaths { // 페이징
+            
+            if arrayProduct.count - 1 == indexPath.row && pageNum < totalPageNum && !isLastPage {
+                
+                pageNum += 1
+                
+                ProductNetworkManager.shared.getProductAll(page: pageNum) { model in
+                    if let model = model {
+                        self.arrayProduct += model.body.content
+                        self.isLastPage = model.body.last
+                        DispatchQueue.main.async {
+                            self.productHomeView.tableView.reloadData()
+                        }
+                    }
+                }
+            }
+        }
     }
 }
