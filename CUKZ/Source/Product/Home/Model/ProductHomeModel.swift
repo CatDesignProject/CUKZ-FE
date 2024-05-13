@@ -6,14 +6,9 @@
 //
 
 struct ProductHomeModel: Codable {
-    let status: String
-    let body: Body
-    
-    struct Body: Codable {
-        let listSize, totalPage, totalElements: Int
-        let content: [Content]
-        let first, last: Bool
-    }
+    let listSize, totalPage, totalElements: Int
+    let content: [Content]
+    let first, last: Bool
     
     struct Content: Codable {
         let id: Int
@@ -21,5 +16,6 @@ struct ProductHomeModel: Codable {
         let price, likesCount: Int
         let imageUrl: String
         let nickname: String
+        let saleStatus: String
     }
 }

@@ -6,18 +6,16 @@
 //
 
 struct ProductDetailModel: Codable {
-    let status: String
-    let body: Body
-    
-    struct Body: Codable {
-        let status, name: String
-        let price: Int
-        let info, startDate, endDate: String
-        let imageUrls: [String]
-        let nickname: String
-        let likesCount: Int
-        let options: [Option]
-    }
+    let id: Int
+    let status, name: String
+    let price: Int
+    let info, startDate, endDate: String
+    let imageUrls: [String]
+    let nickname: String
+    let likesCount: Int
+    let options: [Option]
+    let sellerId: Int
+    let isLiked: Bool
     
     struct Option: Codable {
         let name: String

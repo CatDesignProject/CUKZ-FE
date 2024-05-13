@@ -40,9 +40,9 @@ final class ProductHomeViewController: UIViewController {
         self.isSearch = false
         ProductNetworkManager.shared.getProductAll(page: 0) { model in
             if let model = model {
-                self.totalPageNum = model.body.totalPage
-                self.isLastPage = model.body.last
-                self.arrayProduct = model.body.content
+                self.totalPageNum = model.totalPage
+                self.isLastPage = model.last
+                self.arrayProduct = model.content
                 DispatchQueue.main.async {
                     self.productHomeView.tableView.reloadData()
                 }
@@ -130,22 +130,26 @@ extension ProductHomeViewController: UITableViewDataSource {
         cell.productNameLabel.text = data.productName
         cell.productPriceLabel.text = "\(data.price)원"
         
-        var saleStatus = ""
+        var productStatus: String = ""
+        var productStatusColor: UIColor = .systemGray4
         
-//        switch data.status {
-//        case "ON_DEMAND":
-//            saleStatus = "수요조사 중"
-//        case "END_DEMAND":
-//            saleStatus = "수요조사 종료"
-//        case "ON_SALE":
-//            saleStatus = "판매 중"
-//        case "END_SALE":
-//            saleStatus = "판매 종료"
-//        default:
-//            print("")
-//        }
+        switch data.saleStatus {
+        case "ON_DEMAND":
+            productStatus = "수요조사 중"
+            productStatusColor = .systemPink
+        case "END_DEMAND":
+            productStatus = "수요조사 종료"
+        case "ON_SALE":
+            productStatus = "판매 중"
+            productStatusColor = .systemBlue
+        case "END_SALE":
+            productStatus = "판매 종료"
+        default:
+            print("")
+        }
         
-        cell.productStateLabel.text = saleStatus
+        cell.productStateLabel.text = productStatus
+        cell.productStateLabel.textColor = productStatusColor
         
         return cell
     }
@@ -174,8 +178,8 @@ extension ProductHomeViewController: UITableViewDataSourcePrefetching {
                     ProductNetworkManager.shared.getProductSearch(keyword: keyword,
                                                                   page: pageNum) { model in
                         if let model = model {
-                            self.arrayProduct += model.body.content
-                            self.isLastPage = model.body.last
+                            self.arrayProduct += model.content
+                            self.isLastPage = model.last
                             DispatchQueue.main.async {
                                 self.productHomeView.tableView.reloadData()
                             }
@@ -189,8 +193,8 @@ extension ProductHomeViewController: UITableViewDataSourcePrefetching {
                     
                     ProductNetworkManager.shared.getProductAll(page: pageNum) { model in
                         if let model = model {
-                            self.arrayProduct += model.body.content
-                            self.isLastPage = model.body.last
+                            self.arrayProduct += model.content
+                            self.isLastPage = model.last
                             DispatchQueue.main.async {
                                 self.productHomeView.tableView.reloadData()
                             }
@@ -213,9 +217,9 @@ extension ProductHomeViewController: UISearchBarDelegate {
         ProductNetworkManager.shared.getProductSearch(keyword: keyword,
                                                       page: 0) { model in
             if let model = model {
-                self.totalPageNum = model.body.totalPage
-                self.isLastPage = model.body.last
-                self.arrayProduct = model.body.content
+                self.totalPageNum = model.totalPage
+                self.isLastPage = model.last
+                self.arrayProduct = model.content
                 DispatchQueue.main.async {
                     self.productHomeView.tableView.reloadData()
                 }
