@@ -52,6 +52,7 @@ final class LoginViewController: UIViewController {
                                              password: password) { JSESSIONID, responseBody in
             
             guard let JSESSIONID = JSESSIONID else { return }
+            AppDelegate.isLogin = true
             print("JSESSIONID: \(JSESSIONID)")
             
             guard let responseBody = responseBody else { return }

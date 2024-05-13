@@ -95,9 +95,17 @@ final class ProductHomeViewController: UIViewController {
 extension ProductHomeViewController {
     // 업로드 버튼
     @objc func uploadButtonTapped() {
-        let VC = UploadProductViewController()
-        VC.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(VC, animated: true)
+        if AppDelegate.isLogin { // ⭐️⭐️ 총대인증 추가하기 ⭐️⭐️
+            let VC = UploadProductViewController()
+            VC.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(VC, animated: true)
+        } else {
+            let alert = UIAlertController(title: nil, message: "로그인 후 총대인증을 진행해주세요.", preferredStyle: .alert)
+            self.present(alert, animated: true, completion: nil)
+            Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
+                alert.dismiss(animated: true, completion: nil)
+            }
+        }
     }
     
     // 새로고침
