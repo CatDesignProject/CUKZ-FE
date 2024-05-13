@@ -173,7 +173,31 @@ extension SignUpViewController {
     
     // 회원가입
     @objc private func completeButtonButtonTapped() {
-        print("회원가입 버튼 눌림")
+        guard let username = signUpView.idTextField.text,
+              let password = signUpView.passwordTextField.text,
+              let nickname = signUpView.nicknameTextField.text else { return }
+        
+        UserNetworkManager.shared.postSignUp(username: username,
+                                             password: password,
+                                             nickname: nickname) { success in
+            
+            DispatchQueue.main.async {
+                if success { // 네트워크 성공 했을 때
+                    self.navigationController?.popViewController(animated: true)
+                    let alert = UIAlertController(title: nil, message: "회원가입이 완료되었습니다.", preferredStyle: .alert)
+                    self.present(alert, animated: true, completion: nil)
+                    Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
+                        alert.dismiss(animated: true, completion: nil)
+                    }
+                } else { // 실패했을 때
+                    let alert = UIAlertController(title: nil, message: "회원가입에 실패했습니다.\n잠시 후, 다시 시도해주세요.", preferredStyle: .alert)
+                    self.present(alert, animated: true, completion: nil)
+                    Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
+                        alert.dismiss(animated: true, completion: nil)
+                    }
+                }
+            }
+        }
     }
 }
 
