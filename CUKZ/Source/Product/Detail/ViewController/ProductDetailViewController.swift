@@ -158,20 +158,28 @@ extension ProductDetailViewController {
     
     // 좋아요
     @objc func likeButtonTapped() {
-        self.isLiked.toggle()
-        updateLikeButtonAppearance()
-        
-        if let productId = productId {
-            if isLiked {
-                LikeNetworkManager.shared.postLike(productId: productId)
-            } else {
-                LikeNetworkManager.shared.postUnlike(productId: productId)
+        if AppDelegate.isLogin {
+            self.isLiked.toggle()
+            updateLikeButtonAppearance()
+            
+            if let productId = productId {
+                if isLiked {
+                    LikeNetworkManager.shared.postLike(productId: productId)
+                } else {
+                    LikeNetworkManager.shared.postUnlike(productId: productId)
+                }
             }
+        } else {
+            showAlertWithDismissDelay(message: "로그인 후 이용해주세요.")
         }
     }
     
     @objc func statusButtonTapped() {
-        print("상품 상태 버튼 눌림")
+        if AppDelegate.isLogin {
+            print("상품 상태 버튼 눌림")
+        } else {
+            showAlertWithDismissDelay(message: "로그인 후 이용해주세요.")
+        }
     }
 }
 

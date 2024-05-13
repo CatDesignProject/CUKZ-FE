@@ -95,9 +95,13 @@ final class ProductHomeViewController: UIViewController {
 extension ProductHomeViewController {
     // 업로드 버튼
     @objc func uploadButtonTapped() {
-        let VC = UploadProductViewController()
-        VC.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(VC, animated: true)
+        if AppDelegate.isLogin { // ⭐️⭐️ 총대인증 추가하기 ⭐️⭐️
+            let VC = UploadProductViewController()
+            VC.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(VC, animated: true)
+        } else {
+            showAlertWithDismissDelay(message: "로그인 후 총대인증을 진행해주세요.")
+        }
     }
     
     // 새로고침
@@ -175,7 +179,7 @@ extension ProductHomeViewController: UITableViewDataSourcePrefetching {
                     pageNum += 1
                     guard let keyword = self.keyword else { return }
                     ProductNetworkManager.shared.getProductSearch(keyword: keyword,
-                                                                  page: pageNum) { model in
+                                                                  page: pageNum) { model, error in
                         if let model = model {
                             self.arrayProduct += model.content
                             self.isLastPage = model.last
@@ -214,13 +218,21 @@ extension ProductHomeViewController: UISearchBarDelegate {
         self.keyword = keyword
         
         ProductNetworkManager.shared.getProductSearch(keyword: keyword,
-                                                      page: 0) { model in
-            if let model = model {
-                self.totalPageNum = model.totalPage
-                self.isLastPage = model.last
-                self.arrayProduct = model.content
-                DispatchQueue.main.async {
-                    self.productHomeView.tableView.reloadData()
+                                                      page: 0) { model, error in
+            if let error = error {
+                let alert = UIAlertController(title: nil, message: "찾으시는 상품이 없습니다.", preferredStyle: .alert)
+                self.present(alert, animated: true, completion: nil)
+                Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
+                    alert.dismiss(animated: true, completion: nil)
+                }
+            } else {
+                if let model = model {
+                    self.totalPageNum = model.totalPage
+                    self.isLastPage = model.last
+                    self.arrayProduct = model.content
+                    DispatchQueue.main.async {
+                        self.productHomeView.tableView.reloadData()
+                    }
                 }
             }
         }
