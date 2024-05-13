@@ -7,16 +7,12 @@
 
 // MARK: - Welcome
 struct LikeAllModel: Codable {
-    let status: String
-    let body: Body
-    
-    struct Body: Codable {
-        let listSize, totalPage, totalElements: Int
-        let content: [Content]
-        let first, last: Bool
-    }
+    let listSize, totalPage, totalElements: Int
+    let content: [Content]
+    let first, last: Bool
     
     struct Content: Codable {
+        let id: Int
         let status, name: String
         let price: Int
         let imageUrls: [String]

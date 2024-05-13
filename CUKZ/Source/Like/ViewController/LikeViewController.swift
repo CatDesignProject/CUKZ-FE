@@ -39,9 +39,9 @@ final class LikeViewController: UIViewController {
     private func fetchData() {
         LikeNetworkManager.shared.getLikeAll(page: 1, size: 10) { model in
             if let model = model {
-                self.totalPageNum = model.body.totalPage
-                self.isLastPage = model.body.last
-                self.arrayLike = model.body.content
+                self.totalPageNum = model.totalPage
+                self.isLastPage = model.last
+                self.arrayLike = model.content
                 DispatchQueue.main.async {
                     self.likeView.tableView.reloadData()
                 }
@@ -54,9 +54,9 @@ final class LikeViewController: UIViewController {
         title = "좋아요"
         
         let nb = navigationController?.navigationBar
-        nb?.prefersLargeTitles = true
         nb?.barTintColor = .white
         nb?.tintColor = .black
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
     
     // 테이블뷰 설정
@@ -109,22 +109,26 @@ extension LikeViewController: UITableViewDataSource {
         cell.productNameLabel.text = data.name
         cell.productPriceLabel.text = "\(data.price)원"
         
-        var saleStatus = ""
+        var productStatus: String = ""
+        var productStatusColor: UIColor = .systemGray4
         
         switch data.status {
         case "ON_DEMAND":
-            saleStatus = "수요조사 중"
+            productStatus = "수요조사 중"
+            productStatusColor = .systemPink
         case "END_DEMAND":
-            saleStatus = "수요조사 종료"
+            productStatus = "수요조사 종료"
         case "ON_SALE":
-            saleStatus = "판매 중"
+            productStatus = "판매 중"
+            productStatusColor = .systemBlue
         case "END_SALE":
-            saleStatus = "판매 종료"
+            productStatus = "판매 종료"
         default:
             print("")
         }
         
-        cell.productStateLabel.text = saleStatus
+        cell.productStateLabel.text = productStatus
+        cell.productStateLabel.textColor = productStatusColor
         
         return cell
     }
@@ -132,5 +136,10 @@ extension LikeViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 extension LikeViewController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let VC = ProductDetailViewController()
+        VC.productId = arrayLike[indexPath.row].id // 아이디값 넘겨주기
+        VC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(VC, animated: true)
+    }
 }
