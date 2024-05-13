@@ -28,7 +28,7 @@ final class SignUpView: UIView {
     }
     
     let idTextField = UITextField().then {
-        $0.placeholder = "아이디를 입력해주세요"
+        $0.placeholder = "영문으로 시작하는 영문,숫자로 이뤄진 5~16자"
         $0.backgroundColor = .clear
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
@@ -37,8 +37,9 @@ final class SignUpView: UIView {
     
     // 중복체크
     let duplicateCheckLabel = UILabel().then {
-        $0.text = "중복된 아이디입니다"
+        $0.text = "이미 사용 중인 아이디입니다."
         $0.textColor = .red
+        $0.isHidden = true
     }
     
     let duplicateCheckButton = UIButton().then {
@@ -59,12 +60,18 @@ final class SignUpView: UIView {
     }
     
     let passwordTextField = UITextField().then {
-        $0.placeholder = "비밀번호를 입력해주세요"
+        $0.placeholder = "숫자, 문자, 특수문자 포함 8~16자"
         $0.backgroundColor = .clear
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
         $0.spellCheckingType = .no
         $0.isSecureTextEntry = true
+    }
+    
+    let nicknameValidationLabel = UILabel().then {
+        $0.text = "사용 가능한 비밀번호입니다."
+        $0.textColor = .blue
+        $0.isHidden = true
     }
     
     // 공백뷰
@@ -91,6 +98,13 @@ final class SignUpView: UIView {
         $0.isSecureTextEntry = true
     }
     
+    let passwordValidationLabel = UILabel().then {
+        $0.text = "사용 가능한 닉네임입니다."
+        $0.numberOfLines = 0
+        $0.textColor = .blue
+        $0.isHidden = true
+    }
+    
     // 공백뷰
     private let spacer2 = UIView()
     
@@ -107,7 +121,7 @@ final class SignUpView: UIView {
     }
     
     let nicknameTextField = UITextField().then {
-        $0.placeholder = "닉네임을 입력해주세요"
+        $0.placeholder = "공백없이 닉네임을 입력해주세요"
         $0.backgroundColor = .clear
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
@@ -115,7 +129,7 @@ final class SignUpView: UIView {
     }
     
     // 스택뷰
-    let stackView = UIStackView().then {
+    private let stackView = UIStackView().then {
         $0.axis = .vertical
     }
     
@@ -164,12 +178,14 @@ final class SignUpView: UIView {
         stackView.addArrangedSubviews([
             passwordLabel,
             passwordRoundView,
+            passwordValidationLabel,
             spacer1,
-            secondPasswordLabel,
-            secondPasswordRoundView,
-            spacer2,
+//            secondPasswordLabel,
+//            secondPasswordRoundView,
+//            spacer2,
             nicknameLabel,
-            nicknameRoundView
+            nicknameRoundView,
+            nicknameValidationLabel
         ])
     }
     
@@ -216,7 +232,7 @@ final class SignUpView: UIView {
         
         // 스택뷰
         stackView.snp.makeConstraints { make in
-            make.top.equalTo(duplicateCheckLabel.snp.bottom).offset(20)
+            make.top.equalTo(duplicateCheckLabel.snp.bottom)
             make.leading.trailing.equalTo(idLabel)
             make.bottom.equalTo(contentView)
         }

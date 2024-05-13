@@ -31,12 +31,43 @@ class UserNetworkManager {
         .validate(statusCode: 200..<300)
         .responseJSON { response in
             switch response.result {
-            case .success(let value):
-                if let json = value as? [String: Any], let body = json["body"] as? Bool {
-                    completion(body)
+            case .success(let result):
+                if let result = result as? Bool {
+                    completion(result)
                 }
-            case .failure(_):
+                print("아이디 중복 체크 - 네트워킹 성공")
+            case .failure(let error):
                 completion(nil)
+                print("아이디 중복 체크 - \(error)")
+            }
+        }
+    }
+    
+    // MARK: - 회원가입
+    func postSignUp(username: String,
+                    password: String,
+                    nickname: String,
+                    completion: @escaping (_ success: Bool) -> Void) {
+        
+        let parameters: [String: Any] = [
+            "username": username,
+            "password": password,
+            "nickname": nickname
+        ]
+        
+        AF.request("\(baseURL)/members/register",
+                   method: .post,
+                   parameters: parameters,
+                   encoding: JSONEncoding.default)
+        .validate(statusCode: 200..<300)
+        .response { response in
+            switch response.result {
+            case .success:
+                completion(true)
+                print("회원가입 - 네트워킹 성공")
+            case .failure(let error):
+                completion(false)
+                print("회원가입 - \(error)")
             }
         }
     }
