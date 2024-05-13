@@ -88,6 +88,7 @@ extension LoginViewController {
             
             guard let JSESSIONID = JSESSIONID else { return }
             AppDelegate.isLogin = true
+            self.dismiss(animated: true, completion: nil)
             print("JSESSIONID: \(JSESSIONID)")
             
             guard let responseBody = responseBody else { return }
