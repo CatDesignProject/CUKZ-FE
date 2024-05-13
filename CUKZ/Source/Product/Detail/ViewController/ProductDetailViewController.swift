@@ -46,10 +46,18 @@ final class ProductDetailViewController: UIViewController {
     
     private func updateUI() {
         productDetailView.productImageCollectionView.reloadData()
+        
         guard let data = self.productDetailData else { return }
         
+        // 좋아요
+        self.isLiked = data.isLiked
+        let systemName = isLiked ? "heart.fill" : "heart"
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 40)
+        let image = UIImage(systemName: systemName, withConfiguration: imageConfig)
+        
+        // 상품상태
         var productStatus: String = ""
-        var productStatusColor: UIColor = .systemGray4
+        var productStatusColor: UIColor = .systemGray
         
         switch data.status {
         case "ON_DEMAND":
@@ -57,13 +65,11 @@ final class ProductDetailViewController: UIViewController {
             productStatusColor = .systemPink
         case "END_DEMAND":
             productStatus = "수요조사 종료"
-            productStatusColor = .systemPink
         case "ON_SALE":
             productStatus = "구매하기"
             productStatusColor = .systemBlue
         case "END_SALE":
             productStatus = "판매 종료"
-            productStatusColor = .systemPink
         default:
             return
         }
@@ -73,6 +79,8 @@ final class ProductDetailViewController: UIViewController {
         productDetailView.productNameLabel.text = data.name
         productDetailView.productPriceLabel.text = "\(data.price)원"
         productDetailView.productDescriptionLabel.text = data.info
+        
+        productDetailView.productDetailBottomView.likeButton.setImage(image, for: .normal)
         productDetailView.productDetailBottomView.statusButton.setTitle(productStatus, for: .normal)
         productDetailView.productDetailBottomView.statusButton.backgroundColor = productStatusColor
     }
