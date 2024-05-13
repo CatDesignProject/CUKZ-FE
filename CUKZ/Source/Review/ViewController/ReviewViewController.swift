@@ -40,7 +40,7 @@ final class ReviewViewController: UIViewController {
     }
     
     private func updateUI() {
-        guard let data = self.reviewData?.body else { return }
+        guard let data = self.reviewData else { return }
         reviewView.nicknameLabel.text = "\(data.nickname) 님의\n이런 점이 좋았어요"
         reviewView.firstQuestionNumLabel.text = "\(data.sellerKindnessCnt)"
         reviewView.secondQuestionNumLabel.text = "\(data.goodNotificationCnt)"

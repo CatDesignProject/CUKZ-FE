@@ -139,8 +139,7 @@ extension ProductDetailViewController {
     @objc func reviewButtonTapped() {
         let VC = ReviewViewController()
         VC.isLeave = false
-        VC.sellerId = 10
-//        VC.sellerId = self.productDetailData?.body.sellerId ** API 수정 요청 **
+        VC.sellerId = self.productDetailData?.sellerId
         navigationController?.pushViewController(VC, animated: true)
     }
     

@@ -6,10 +6,6 @@
 //
 
 struct ReviewModel: Codable {
-    let body: Body
-    
-    struct Body: Codable {
-        let nickname: String
-        let sellerKindnessCnt, goodNotificationCnt, descriptionMatchCnt, arrivalSatisfactoryCnt: Int
-    }
+    let nickname: String
+    let sellerKindnessCnt, goodNotificationCnt, descriptionMatchCnt, arrivalSatisfactoryCnt: Int
 }
