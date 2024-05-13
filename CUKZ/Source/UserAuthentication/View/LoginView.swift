@@ -11,19 +11,24 @@ import Then
 
 final class LoginView: UIView {
     // MARK: - View
-    let emailTextFieldView = UIView().then {
+    let dismissButton = UIButton().then {
+        $0.setImage(UIImage(systemName: "xmark"), for: .normal)
+        $0.tintColor = .white
+    }
+    
+    let idTextFieldView = UIView().then {
         $0.backgroundColor = .white
         $0.layer.cornerRadius = 5
         $0.clipsToBounds = true
     }
 
-    let emailInfoLabel = UILabel().then() {
-        $0.text = "이메일주소"
+    let idInfoLabel = UILabel().then() {
+        $0.text = "아이디"
         $0.font = UIFont.systemFont(ofSize: 18)
         $0.textColor = .gadaeBlue
     }
     
-    let emailTextField = UITextField().then {
+    let idTextField = UITextField().then {
         $0.frame.size.height = 48
         $0.backgroundColor = .clear
         $0.textColor = .black
@@ -96,12 +101,12 @@ final class LoginView: UIView {
     
     // MARK: - UI
     private func addViews() {
-        emailTextFieldView.addSubviews([emailInfoLabel, emailTextField])
+        idTextFieldView.addSubviews([idInfoLabel, idTextField])
         passwordTextFieldView.addSubviews([passwordInfoLabel, passwordTextField])
         
-        stackView.addArrangedSubviews([emailTextFieldView, passwordTextFieldView, loginButton])
+        stackView.addArrangedSubviews([idTextFieldView, passwordTextFieldView, loginButton])
         
-        self.addSubviews([stackView, signUpButton])
+        self.addSubviews([dismissButton, stackView, signUpButton])
     }
     
     let textViewHeight: CGFloat = 48
@@ -110,16 +115,19 @@ final class LoginView: UIView {
     var passwordInfoLabelCenterYConstraint: Constraint?
     
     private func configureConstraints() {
-        
-        emailInfoLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(emailTextFieldView).inset(8)
-            emailInfoLabelCenterYConstraint = make.centerY.equalTo(emailTextFieldView).constraint
+        dismissButton.snp.makeConstraints { make in
+            make.top.trailing.equalTo(self.safeAreaLayoutGuide).inset(20)
         }
         
-        emailTextField.snp.makeConstraints { make in
-            make.top.equalTo(emailTextFieldView).offset(15)
-            make.leading.trailing.equalTo(emailTextFieldView).inset(8)
-            make.bottom.equalTo(emailTextFieldView).inset(2)
+        idInfoLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalTo(idTextFieldView).inset(8)
+            emailInfoLabelCenterYConstraint = make.centerY.equalTo(idTextFieldView).constraint
+        }
+        
+        idTextField.snp.makeConstraints { make in
+            make.top.equalTo(idTextFieldView).offset(15)
+            make.leading.trailing.equalTo(idTextFieldView).inset(8)
+            make.bottom.equalTo(idTextFieldView).inset(2)
         }
         
         passwordInfoLabel.snp.makeConstraints { make in
