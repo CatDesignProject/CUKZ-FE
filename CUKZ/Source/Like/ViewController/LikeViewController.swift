@@ -12,7 +12,7 @@ final class LikeViewController: UIViewController {
     // MARK: - Properties
     var arrayLike: [LikeAllModel.Content] = []
     var totalPageNum: Int = 0
-    var pageNum: Int = 0
+    var pageNum: Int = 1
     var isLastPage: Bool = false
     
     private let likeView = LikeView()
@@ -22,14 +22,11 @@ final class LikeViewController: UIViewController {
         view = likeView
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        fetchData()
-    }
-    
     // MARK: - ViewDidLodad
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        fetchData()
         setupNaviBar()
         setupTableView()
         setupRefresh()
@@ -37,6 +34,7 @@ final class LikeViewController: UIViewController {
     
     // 네트워킹
     private func fetchData() {
+        self.pageNum = 1
         LikeNetworkManager.shared.getLikeAll(page: 1, size: 10) { model in
             if let model = model {
                 self.totalPageNum = model.totalPage
@@ -65,6 +63,7 @@ final class LikeViewController: UIViewController {
         
         tb.dataSource = self
         tb.delegate = self
+        tb.prefetchDataSource = self // 페이징
         
         tb.rowHeight = 120
         tb.register(LikeCell.self, forCellReuseIdentifier: "LikeCell")
@@ -141,5 +140,28 @@ extension LikeViewController: UITableViewDelegate {
         VC.productId = arrayLike[indexPath.row].id // 아이디값 넘겨주기
         VC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(VC, animated: true)
+    }
+}
+
+// MARK: - UITableViewDataSourcePrefetching
+extension LikeViewController: UITableViewDataSourcePrefetching {
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        for indexPath in indexPaths { // 페이징
+            
+            if arrayLike.count - 1 == indexPath.row && pageNum <= totalPageNum && !isLastPage {
+                
+                pageNum += 1
+                
+                LikeNetworkManager.shared.getLikeAll(page: pageNum, size: 10) { model in
+                    if let model = model {
+                        self.arrayLike += model.content
+                        self.isLastPage = model.last
+                        DispatchQueue.main.async {
+                            self.likeView.tableView.reloadData()
+                        }
+                    }
+                }
+            }
+        }
     }
 }
