@@ -25,7 +25,7 @@ final class TabBarViewController: UITabBarController {
         
         let productHomeVC = UINavigationController(rootViewController: ProductHomeViewController())
         let likeVC = UINavigationController(rootViewController: LikeViewController())
-        let myPageVC = UINavigationController(rootViewController: LoginViewController())
+        let myPageVC = UINavigationController(rootViewController: MyPageViewController())
         
         // 탭 바 이이템 설정
         productHomeVC.tabBarItem = UITabBarItem(
@@ -62,9 +62,16 @@ extension TabBarViewController: UITabBarControllerDelegate {
         }
         
         // 로그인 상태에 따라 동작 설정
-        if selectedIndex == 1 && !AppDelegate.isLogin { // likeVC를 클릭하고 로그인하지 않은 경우
+        if selectedIndex == 1 && !AppDelegate.isLogin { // 비로그인일 때 likeVC 클릭 시
             showAlertWithDismissDelay(message: "로그인 후 이용해주세요.")
             return false // 좋아요 탭으로 이동하지 않음
+        }
+        
+        if selectedIndex == 2 && !AppDelegate.isLogin { // 비로그인일 때 myPageVC 클릭 시
+            let loginVC = UINavigationController(rootViewController: LoginViewController())
+            loginVC.modalPresentationStyle = .fullScreen
+            self.present(loginVC, animated: true, completion: nil) // 로그인 화면 모달로 뜨게
+            return false
         }
         
         return true // 다른 탭 선택 허용

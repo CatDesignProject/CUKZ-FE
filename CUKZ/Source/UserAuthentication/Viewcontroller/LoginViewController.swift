@@ -16,6 +16,16 @@ final class LoginViewController: UIViewController {
         view = loginView
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+    
     // MARK: - viewDidLoad
     override func viewDidLoad () {
         super.viewDidLoad ()
@@ -31,21 +41,46 @@ final class LoginViewController: UIViewController {
     }
     
     private func setupTextField() {
-        loginView.emailTextField.delegate = self
+        loginView.idTextField.delegate = self
         loginView.passwordTextField.delegate = self
         
-        loginView.emailTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
+        loginView.idTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
         loginView.passwordTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
     }
     
     private func setupButton() {
-        loginView.loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
-        loginView.signUpButton.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
+        loginView.loginButton.addTarget(self, 
+                                        action: #selector(loginButtonTapped),
+                                        for: .touchUpInside)
+        
+        loginView.signUpButton.addTarget(self,
+                                         action: #selector(signUpButtonTapped),
+                                         for: .touchUpInside)
+        
+        loginView.dismissButton.addTarget(self,
+                                          action: #selector(dismissButtonTapped),
+                                          for: .touchUpInside)
+    }
+
+    // UserDefaults
+    private func loginSuccess(sessionId:String, username: String, password: String) {
+        UserDefaults.standard.set(sessionId, forKey: "sessionId")
+        UserDefaults.standard.set(username, forKey: "username")
+        UserDefaults.standard.set(password, forKey: "password")
+        UserDefaults.standard.synchronize()
+    }
+}
+
+extension LoginViewController {
+    // 닫기 버튼
+    @objc private func dismissButtonTapped() {
+        self.dismiss(animated: true, completion: nil)
     }
     
-    @objc func loginButtonTapped() {
+    // 로그인 버튼
+    @objc private func loginButtonTapped() {
         print("로그인 눌림")
-        guard let username = loginView.emailTextField.text,
+        guard let username = loginView.idTextField.text,
               let password = loginView.passwordTextField.text else { return }
         
         UserNetworkManager.shared.postLogin(username: username,
@@ -53,6 +88,7 @@ final class LoginViewController: UIViewController {
             
             guard let JSESSIONID = JSESSIONID else { return }
             AppDelegate.isLogin = true
+            self.dismiss(animated: true, completion: nil)
             print("JSESSIONID: \(JSESSIONID)")
             
             guard let responseBody = responseBody else { return }
@@ -81,23 +117,13 @@ final class LoginViewController: UIViewController {
             }
         }
     }
-
     
-    // UserDefaults
-    private func loginSuccess(sessionId:String, username: String, password: String) {
-        UserDefaults.standard.set(sessionId, forKey: "sessionId")
-        UserDefaults.standard.set(username, forKey: "username")
-        UserDefaults.standard.set(password, forKey: "password")
-        UserDefaults.standard.synchronize()
-    }
-    
-    // 회원가입 버튼 눌림
-    @objc func signUpButtonTapped() {
+    // 회원가입 버튼
+    @objc private func signUpButtonTapped() {
         let VC = SignUpViewController()
         VC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(VC, animated: true)
     }
-    
 }
 
 // MARK: - 키보드 관련
@@ -107,7 +133,7 @@ extension LoginViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    @objc func keyboardWillShow(notification: NSNotification) {
+    @objc private func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             if self.view.frame.origin.y == 0 {
                 self.view.frame.origin.y -= keyboardSize.height / 3
@@ -115,7 +141,7 @@ extension LoginViewController {
         }
     }
     
-    @objc func keyboardWillHide(notification: NSNotification) {
+    @objc private func keyboardWillHide(notification: NSNotification) {
         if self.view.frame.origin.y != 0 {
             self.view.frame.origin.y = 0
         }
@@ -131,9 +157,9 @@ extension LoginViewController: UITextFieldDelegate {
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
         
-        if textField == loginView.emailTextField {
-            loginView.emailTextFieldView.backgroundColor = .white
-            loginView.emailInfoLabel.font = UIFont.systemFont(ofSize: 11)
+        if textField == loginView.idTextField {
+            loginView.idTextFieldView.backgroundColor = .white
+            loginView.idInfoLabel.font = UIFont.systemFont(ofSize: 11)
             loginView.emailInfoLabelCenterYConstraint?.update(offset: -13)
         }
         if textField == loginView.passwordTextField {
@@ -149,11 +175,11 @@ extension LoginViewController: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         
-        if textField == loginView.emailTextField {
-            loginView.emailTextFieldView.backgroundColor = .white
+        if textField == loginView.idTextField {
+            loginView.idTextFieldView.backgroundColor = .white
             
-            if loginView.emailTextField.text == "" {
-                loginView.emailInfoLabel.font = UIFont.systemFont(ofSize: 18)
+            if loginView.idTextField.text == "" {
+                loginView.idInfoLabel.font = UIFont.systemFont(ofSize: 18)
                 loginView.emailInfoLabelCenterYConstraint?.update(offset: 0)
             }
         }
@@ -180,7 +206,7 @@ extension LoginViewController: UITextFieldDelegate {
             }
         }
         guard
-            let email = loginView.emailTextField.text, !email.isEmpty,
+            let email = loginView.idTextField.text, !email.isEmpty,
             let password = loginView.passwordTextField.text, !password.isEmpty
         else {
             loginView.loginButton.backgroundColor = .clear
