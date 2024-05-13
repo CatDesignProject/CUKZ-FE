@@ -29,7 +29,6 @@ final class SignUpViewController: UIViewController {
     
     private func setupNaviBar() {
         title = "회원가입"
-        navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.tintColor = .black
     }
@@ -108,8 +107,26 @@ extension SignUpViewController {
         return nil
     }
     
+    // 아이디 중복체크
     @objc private func duplicateCheckButtonTapped() {
-        print("중복체크 버튼 눌림")
+        guard let username = signUpView.idTextField.text else { return }
+        view.endEditing(true)
+        
+        UserNetworkManager.shared.postDuplicateCheck(username: username) { isDuplicate in
+            guard let isDuplicate = isDuplicate else { return }
+            
+            DispatchQueue.main.async {
+                self.signUpView.duplicateCheckLabel.isHidden = false
+                
+                if isDuplicate { // 중복일때 isDuplicate == true
+                    self.signUpView.duplicateCheckLabel.text = "이미 사용 중인 아이디입니다."
+                    self.signUpView.duplicateCheckLabel.textColor = .red
+                } else { // 사용가능할때 isDuplicate == false
+                    self.signUpView.duplicateCheckLabel.text = "사용 가능한 아이디입니다."
+                    self.signUpView.duplicateCheckLabel.textColor = .blue
+                }
+            }
+        }
     }
     
     @objc private func completeButtonButtonTapped() {

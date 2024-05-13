@@ -37,8 +37,9 @@ final class SignUpView: UIView {
     
     // 중복체크
     let duplicateCheckLabel = UILabel().then {
-        $0.text = "중복된 아이디입니다"
+        $0.text = "이미 사용 중인 아이디입니다."
         $0.textColor = .red
+        $0.isHidden = true
     }
     
     let duplicateCheckButton = UIButton().then {
@@ -165,9 +166,9 @@ final class SignUpView: UIView {
             passwordLabel,
             passwordRoundView,
             spacer1,
-            secondPasswordLabel,
-            secondPasswordRoundView,
-            spacer2,
+//            secondPasswordLabel,
+//            secondPasswordRoundView,
+//            spacer2,
             nicknameLabel,
             nicknameRoundView
         ])
@@ -216,7 +217,7 @@ final class SignUpView: UIView {
         
         // 스택뷰
         stackView.snp.makeConstraints { make in
-            make.top.equalTo(duplicateCheckLabel.snp.bottom).offset(20)
+            make.top.equalTo(duplicateCheckLabel.snp.bottom)
             make.leading.trailing.equalTo(idLabel)
             make.bottom.equalTo(contentView)
         }

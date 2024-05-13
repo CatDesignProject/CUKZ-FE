@@ -31,12 +31,14 @@ class UserNetworkManager {
         .validate(statusCode: 200..<300)
         .responseJSON { response in
             switch response.result {
-            case .success(let value):
-                if let json = value as? [String: Any], let body = json["body"] as? Bool {
-                    completion(body)
+            case .success(let result):
+                if let result = result as? Bool {
+                    completion(result)
                 }
-            case .failure(_):
+                print("아이디 중복 체크 - 네트워킹 성공")
+            case .failure(let error):
                 completion(nil)
+                print("아이디 중복 체크 - \(error)")
             }
         }
     }
