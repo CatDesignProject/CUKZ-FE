@@ -130,28 +130,26 @@ extension ProductHomeViewController: UITableViewDataSource {
         cell.productNameLabel.text = data.productName
         cell.productPriceLabel.text = "\(data.price)원"
         
-        var saleStatus: String?
-        var saleStatusColor: UIColor?
+        var productStatus: String = ""
+        var productStatusColor: UIColor = .systemGray4
         
         switch data.saleStatus {
         case "ON_DEMAND":
-            saleStatus = "수요조사 중"
-            saleStatusColor = .systemPink
+            productStatus = "수요조사 중"
+            productStatusColor = .systemPink
         case "END_DEMAND":
-            saleStatus = "수요조사 종료"
-            saleStatusColor = .black
+            productStatus = "수요조사 종료"
         case "ON_SALE":
-            saleStatus = "판매 중"
-            saleStatusColor = .systemBlue
+            productStatus = "판매 중"
+            productStatusColor = .systemBlue
         case "END_SALE":
-            saleStatus = "판매 종료"
-            saleStatusColor = .black
+            productStatus = "판매 종료"
         default:
             print("")
         }
         
-        cell.productStateLabel.text = saleStatus
-        cell.productStateLabel.textColor = saleStatusColor
+        cell.productStateLabel.text = productStatus
+        cell.productStateLabel.textColor = productStatusColor
         
         return cell
     }

@@ -48,26 +48,33 @@ final class ProductDetailViewController: UIViewController {
         productDetailView.productImageCollectionView.reloadData()
         guard let data = self.productDetailData else { return }
         
-        let productStatus: String
-        switch data.body.status {
+        var productStatus: String = ""
+        var productStatusColor: UIColor = .systemGray4
+        
+        switch data.status {
         case "ON_DEMAND":
             productStatus = "수요조사 참여하기"
+            productStatusColor = .systemPink
         case "END_DEMAND":
             productStatus = "수요조사 종료"
+            productStatusColor = .systemPink
         case "ON_SALE":
             productStatus = "구매하기"
+            productStatusColor = .systemBlue
         case "END_SALE":
             productStatus = "판매 종료"
+            productStatusColor = .systemPink
         default:
-            productStatus = ""
+            return
         }
         
-        productDetailView.pageNumLabel.text = "1 / \(data.body.imageUrls.count)"
-        productDetailView.nicknameLabel.text = data.body.nickname
-        productDetailView.productNameLabel.text = data.body.name
-        productDetailView.productPriceLabel.text = "\(data.body.price)원"
-        productDetailView.productDescriptionLabel.text = data.body.info
+        productDetailView.pageNumLabel.text = "1 / \(data.imageUrls.count)"
+        productDetailView.nicknameLabel.text = data.nickname
+        productDetailView.productNameLabel.text = data.name
+        productDetailView.productPriceLabel.text = "\(data.price)원"
+        productDetailView.productDescriptionLabel.text = data.info
         productDetailView.productDetailBottomView.statusButton.setTitle(productStatus, for: .normal)
+        productDetailView.productDetailBottomView.statusButton.backgroundColor = productStatusColor
     }
     
     private func setupNaviBar() {
@@ -119,7 +126,7 @@ extension ProductDetailViewController {
             self.fetchData()
             
             // refresh된 후 첫 번째 셀로 이동
-            if let productDetailData = self.productDetailData, !productDetailData.body.imageUrls.isEmpty {
+            if let productDetailData = self.productDetailData, !productDetailData.imageUrls.isEmpty {
                 let indexPath = IndexPath(item: 0, section: 0)
                 self.productDetailView.productImageCollectionView.scrollToItem(at: indexPath, at: .top, animated: true)
             }
@@ -158,7 +165,7 @@ extension ProductDetailViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView == productDetailView.productImageCollectionView {
             let index = Int(scrollView.contentOffset.x / productDetailView.productImageCollectionView.bounds.width)
-            productDetailView.pageNumLabel.text = "\(index + 1) / \(self.productDetailData?.body.imageUrls.count ?? 0)"
+            productDetailView.pageNumLabel.text = "\(index + 1) / \(self.productDetailData?.imageUrls.count ?? 0)"
         }
     }
 }
@@ -166,13 +173,13 @@ extension ProductDetailViewController: UIScrollViewDelegate {
 // MARK: - UICollectionViewDataSource
 extension ProductDetailViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.productDetailData?.body.imageUrls.count ?? 0
+        return self.productDetailData?.imageUrls.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductDetailImageCell", for: indexPath) as! ProductDetailImageCell
         
-        if let imageUrlString = self.productDetailData?.body.imageUrls[indexPath.item] {
+        if let imageUrlString = self.productDetailData?.imageUrls[indexPath.item] {
             if let imageUrl = URL(string: imageUrlString) {
                 cell.mainImage.kf.setImage(with: imageUrl)
             }
