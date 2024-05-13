@@ -93,6 +93,11 @@ extension LikeViewController {
 // MARK: - UITableViewDataSource
 extension LikeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if arrayLike.count == 0 {
+            tableView.setEmptyMessage("좋아요한 상품이 없습니다.")
+        } else {
+            tableView.restore()
+        }
         return arrayLike.count
     }
     
