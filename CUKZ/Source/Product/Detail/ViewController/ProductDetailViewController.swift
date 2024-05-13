@@ -51,9 +51,6 @@ final class ProductDetailViewController: UIViewController {
         
         // 좋아요
         self.isLiked = data.isLiked
-        let systemName = isLiked ? "heart.fill" : "heart"
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 40)
-        let image = UIImage(systemName: systemName, withConfiguration: imageConfig)
         
         // 상품상태
         var productStatus: String = ""
@@ -80,7 +77,7 @@ final class ProductDetailViewController: UIViewController {
         productDetailView.productPriceLabel.text = "\(data.price)원"
         productDetailView.productDescriptionLabel.text = data.info
         
-        productDetailView.productDetailBottomView.likeButton.setImage(image, for: .normal)
+        updateLikeButtonAppearance()
         productDetailView.productDetailBottomView.statusButton.setTitle(productStatus, for: .normal)
         productDetailView.productDetailBottomView.statusButton.backgroundColor = productStatusColor
     }
@@ -122,6 +119,14 @@ final class ProductDetailViewController: UIViewController {
                                                                         action: #selector(statusButtonTapped),
                                                                         for: .touchUpInside)
     }
+    
+    // 하트 이미지 설정
+    private func updateLikeButtonAppearance() {
+        let systemName = self.isLiked ? "heart.fill" : "heart"
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 40)
+        let image = UIImage(systemName: systemName, withConfiguration: imageConfig)
+        productDetailView.productDetailBottomView.likeButton.setImage(image, for: .normal)
+    }
 }
 
 // MARK: - @objc
@@ -153,13 +158,16 @@ extension ProductDetailViewController {
     
     // 좋아요
     @objc func likeButtonTapped() {
-        isLiked.toggle()
+        self.isLiked.toggle()
+        updateLikeButtonAppearance()
         
-        let systemName = isLiked ? "heart.fill" : "heart"
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 40)
-        let image = UIImage(systemName: systemName, withConfiguration: imageConfig)
-        
-        productDetailView.productDetailBottomView.likeButton.setImage(image, for: .normal)
+        if let productId = productId {
+            if isLiked {
+                LikeNetworkManager.shared.postLike(productId: productId)
+            } else {
+                LikeNetworkManager.shared.postUnlike(productId: productId)
+            }
+        }
     }
     
     @objc func statusButtonTapped() {
