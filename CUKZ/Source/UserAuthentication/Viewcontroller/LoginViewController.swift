@@ -49,16 +49,15 @@ final class LoginViewController: UIViewController {
               let password = loginView.passwordTextField.text else { return }
         
         UserNetworkManager.shared.postLogin(username: username,
-                                         password: password) { JSESSIONID, responseBody in
+                                             password: password) { JSESSIONID, responseBody in
             
             guard let JSESSIONID = JSESSIONID else { return }
             print("JSESSIONID: \(JSESSIONID)")
             
             guard let responseBody = responseBody else { return }
-            guard let body = responseBody["body"] as? [String: Any] else { return }
-            guard let memberId = body["memberId"] as? Int,
-                  let nickname = body["nickname"] as? String,
-                  let role = body["role"] as? String else { return }
+            guard let memberId = responseBody["memberId"] as? Int,
+                  let nickname = responseBody["nickname"] as? String,
+                  let role = responseBody["role"] as? String else { return }
             
             // 로그인 성공시 JSESSIONID 저장
             self.loginSuccess(sessionId: JSESSIONID, username: username, password: password)
@@ -69,7 +68,7 @@ final class LoginViewController: UIViewController {
                 let VC = MyPageViewController()
                 VC.nickName = nickname
                 VC.role = role
-    
+
                 let myPageNavController = UINavigationController(rootViewController: VC)
                 myPageNavController.tabBarItem = UITabBarItem(
                     title: "MY",
@@ -81,6 +80,7 @@ final class LoginViewController: UIViewController {
             }
         }
     }
+
     
     // UserDefaults
     private func loginSuccess(sessionId:String, username: String, password: String) {
