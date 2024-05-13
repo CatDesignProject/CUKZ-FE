@@ -5,6 +5,7 @@
 //  Created by 이승민 on 5/10/24.
 //
 
+import UIKit
 import Alamofire
 
 final class ProductNetworkManager {
@@ -45,7 +46,7 @@ final class ProductNetworkManager {
     // MARK: - 상품 검색
     func getProductSearch(keyword: String,
                           page: Int,
-                          completion: @escaping (ProductHomeModel?) -> Void) {
+                          completion: @escaping (ProductHomeModel?, Error?) -> Void) {
         
         // 파라미터
         let parameters: [String: Any] = [
@@ -63,10 +64,10 @@ final class ProductNetworkManager {
             switch response.result {
             case .success(let result):
                 print("상품 검색 - 네트워킹 성공")
-                completion(result)
+                completion(result, nil)
             case .failure(let error):
                 print("상품 검색 - \(error)")
-                completion(nil)
+                completion(nil, error)
             }
         }
     }
