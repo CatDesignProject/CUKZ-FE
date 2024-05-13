@@ -53,7 +53,6 @@ final class ProductHomeViewController: UIViewController {
     // 네비게이션바 설정
     private func setupNaviBar() {
         title = "상품"
-//        navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.tintColor = .gadaeBlue
         
@@ -131,7 +130,7 @@ extension ProductHomeViewController: UITableViewDataSource {
         cell.productPriceLabel.text = "\(data.price)원"
         
         var productStatus: String = ""
-        var productStatusColor: UIColor = .systemGray4
+        var productStatusColor: UIColor = .systemGray
         
         switch data.saleStatus {
         case "ON_DEMAND":

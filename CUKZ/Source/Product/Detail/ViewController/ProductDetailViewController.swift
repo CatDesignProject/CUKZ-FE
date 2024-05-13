@@ -46,10 +46,15 @@ final class ProductDetailViewController: UIViewController {
     
     private func updateUI() {
         productDetailView.productImageCollectionView.reloadData()
+        
         guard let data = self.productDetailData else { return }
         
+        // 좋아요
+        self.isLiked = data.isLiked
+        
+        // 상품상태
         var productStatus: String = ""
-        var productStatusColor: UIColor = .systemGray4
+        var productStatusColor: UIColor = .systemGray
         
         switch data.status {
         case "ON_DEMAND":
@@ -57,13 +62,11 @@ final class ProductDetailViewController: UIViewController {
             productStatusColor = .systemPink
         case "END_DEMAND":
             productStatus = "수요조사 종료"
-            productStatusColor = .systemPink
         case "ON_SALE":
             productStatus = "구매하기"
             productStatusColor = .systemBlue
         case "END_SALE":
             productStatus = "판매 종료"
-            productStatusColor = .systemPink
         default:
             return
         }
@@ -73,6 +76,8 @@ final class ProductDetailViewController: UIViewController {
         productDetailView.productNameLabel.text = data.name
         productDetailView.productPriceLabel.text = "\(data.price)원"
         productDetailView.productDescriptionLabel.text = data.info
+        
+        updateLikeButtonAppearance()
         productDetailView.productDetailBottomView.statusButton.setTitle(productStatus, for: .normal)
         productDetailView.productDetailBottomView.statusButton.backgroundColor = productStatusColor
     }
@@ -114,6 +119,14 @@ final class ProductDetailViewController: UIViewController {
                                                                         action: #selector(statusButtonTapped),
                                                                         for: .touchUpInside)
     }
+    
+    // 하트 이미지 설정
+    private func updateLikeButtonAppearance() {
+        let systemName = self.isLiked ? "heart.fill" : "heart"
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 40)
+        let image = UIImage(systemName: systemName, withConfiguration: imageConfig)
+        productDetailView.productDetailBottomView.likeButton.setImage(image, for: .normal)
+    }
 }
 
 // MARK: - @objc
@@ -145,13 +158,16 @@ extension ProductDetailViewController {
     
     // 좋아요
     @objc func likeButtonTapped() {
-        isLiked.toggle()
+        self.isLiked.toggle()
+        updateLikeButtonAppearance()
         
-        let systemName = isLiked ? "heart.fill" : "heart"
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 40)
-        let image = UIImage(systemName: systemName, withConfiguration: imageConfig)
-        
-        productDetailView.productDetailBottomView.likeButton.setImage(image, for: .normal)
+        if let productId = productId {
+            if isLiked {
+                LikeNetworkManager.shared.postLike(productId: productId)
+            } else {
+                LikeNetworkManager.shared.postUnlike(productId: productId)
+            }
+        }
     }
     
     @objc func statusButtonTapped() {
