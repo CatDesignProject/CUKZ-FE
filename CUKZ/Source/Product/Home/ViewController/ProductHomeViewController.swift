@@ -14,7 +14,6 @@ final class ProductHomeViewController: UIViewController {
     private var totalPageNum: Int = 0
     private var pageNum: Int = 0
     private var isLastPage: Bool = false
-    private var isSearch: Bool = false // 검색인지 확인하는 프로퍼티
     private var keyword: String?
     
     private let productHomeView = ProductHomeView()
@@ -37,7 +36,6 @@ final class ProductHomeViewController: UIViewController {
     // 네트워킹
     private func fetchData() {
         self.pageNum = 0
-        self.isSearch = false
         ProductNetworkManager.shared.getProductAll(page: 0) { model in
             if let model = model {
                 self.totalPageNum = model.totalPage
@@ -56,16 +54,38 @@ final class ProductHomeViewController: UIViewController {
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.tintColor = .gadaeBlue
         
-        let searchController = UISearchController(searchResultsController: nil) // 검색창
-        searchController.searchBar.delegate = self
-        searchController.searchBar.placeholder = "상품 검색"
-        searchController.obscuresBackgroundDuringPresentation = false // 검색창 활성화 밝기 유지
-        searchController.searchBar.setValue("취소", forKey: "cancelButtonText")
-        navigationItem.searchController = searchController
-        
-        navigationItem.hidesSearchBarWhenScrolling = false // 스크롤 시 검색창 유지
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(uploadButtonTapped))
+        
+        // leftBarButtonItem, rightBarButtonItem 스택뷰 커스텀
+        let uploadButton = UIButton().then {
+            let imageConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .light)
+            let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
+            $0.setImage(image, for: .normal)
+            $0.addTarget(self, action: #selector(uploadButtonTapped), for: .touchUpInside)
+        }
+
+        let searchButton = UIButton().then {
+            let imageConfig = UIImage.SymbolConfiguration(pointSize: 21, weight: .light)
+            let image = UIImage(systemName: "magnifyingglass", withConfiguration: imageConfig)
+            $0.setImage(image, for: .normal)
+            $0.addTarget(self, action: #selector(searchButtonTapped), for: .touchUpInside)
+        }
+        
+        let menuButton = UIButton().then {
+            let imageConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .light)
+            let image = UIImage(systemName: "ellipsis.circle", withConfiguration: imageConfig)
+            $0.setImage(image, for: .normal)
+            $0.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
+        }
+        
+        let itemsStackView = UIStackView.init(arrangedSubviews: [searchButton, menuButton])
+        itemsStackView.distribution = .equalSpacing
+        itemsStackView.axis = .horizontal
+        itemsStackView.alignment = .center
+        itemsStackView.spacing = 12
+        
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: uploadButton) // 왼쪽
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: itemsStackView) // 오른쪽
     }
     
     // 테이블뷰 설정
@@ -104,6 +124,18 @@ extension ProductHomeViewController {
         }
     }
     
+    // 검색 버튼
+    @objc func searchButtonTapped() {
+        let VC = ProductSearchViewController()
+        VC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(VC, animated: true)
+    }
+    
+    // 메뉴 버튼
+    @objc func menuButtonTapped() {
+        print("메뉴 버튼 눌림")
+    }
+    
     // 새로고침
     @objc func refreshTable(refresh: UIRefreshControl) {
         print("새로고침 시작")
@@ -118,6 +150,12 @@ extension ProductHomeViewController {
 // MARK: - UITableViewDataSource
 extension ProductHomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if arrayProduct.count == 0 {
+            tableView.setEmptyMessage("등록된 상품이 없습니다.")
+        } else {
+            tableView.restore()
+        }
+        
         return arrayProduct.count
     }
     
@@ -172,66 +210,17 @@ extension ProductHomeViewController: UITableViewDelegate {
 extension ProductHomeViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths { // 페이징
-            
-            if self.isSearch { // 검색일 때
-                if arrayProduct.count - 1 == indexPath.row && pageNum < totalPageNum && !isLastPage {
-                    
-                    pageNum += 1
-                    guard let keyword = self.keyword else { return }
-                    ProductNetworkManager.shared.getProductSearch(keyword: keyword,
-                                                                  page: pageNum) { model, error in
-                        if let model = model {
-                            self.arrayProduct += model.content
-                            self.isLastPage = model.last
-                            DispatchQueue.main.async {
-                                self.productHomeView.tableView.reloadData()
-                            }
-                        }
-                    }
-                }
-            } else {
-                if arrayProduct.count - 1 == indexPath.row && pageNum < totalPageNum && !isLastPage {
+            if arrayProduct.count - 1 == indexPath.row && pageNum < totalPageNum && !isLastPage {
 
-                    pageNum += 1
-                    
-                    ProductNetworkManager.shared.getProductAll(page: pageNum) { model in
-                        if let model = model {
-                            self.arrayProduct += model.content
-                            self.isLastPage = model.last
-                            DispatchQueue.main.async {
-                                self.productHomeView.tableView.reloadData()
-                            }
+                pageNum += 1
+                
+                ProductNetworkManager.shared.getProductAll(page: pageNum) { model in
+                    if let model = model {
+                        self.arrayProduct += model.content
+                        self.isLastPage = model.last
+                        DispatchQueue.main.async {
+                            self.productHomeView.tableView.reloadData()
                         }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// MARK: - UISearchBarDelegate
-extension ProductHomeViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { // 키보드 검색 버튼 클릭
-        self.pageNum = 0
-        self.isSearch = true
-        guard let keyword = searchBar.text else { return }
-        self.keyword = keyword
-        
-        ProductNetworkManager.shared.getProductSearch(keyword: keyword,
-                                                      page: 0) { model, error in
-            if let error = error {
-                let alert = UIAlertController(title: nil, message: "찾으시는 상품이 없습니다.", preferredStyle: .alert)
-                self.present(alert, animated: true, completion: nil)
-                Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
-                    alert.dismiss(animated: true, completion: nil)
-                }
-            } else {
-                if let model = model {
-                    self.totalPageNum = model.totalPage
-                    self.isLastPage = model.last
-                    self.arrayProduct = model.content
-                    DispatchQueue.main.async {
-                        self.productHomeView.tableView.reloadData()
                     }
                 }
             }
