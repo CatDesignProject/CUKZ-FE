@@ -79,41 +79,18 @@ extension LoginViewController {
     
     // 로그인 버튼
     @objc private func loginButtonTapped() {
-        print("로그인 눌림")
         guard let username = loginView.idTextField.text,
               let password = loginView.passwordTextField.text else { return }
         
         UserNetworkManager.shared.postLogin(username: username,
-                                             password: password) { JSESSIONID, responseBody in
-            
-            guard let JSESSIONID = JSESSIONID else { return }
-            AppDelegate.isLogin = true
-            self.dismiss(animated: true, completion: nil)
-            print("JSESSIONID: \(JSESSIONID)")
-            
-            guard let responseBody = responseBody else { return }
-            guard let memberId = responseBody["memberId"] as? Int,
-                  let nickname = responseBody["nickname"] as? String,
-                  let role = responseBody["role"] as? String else { return }
-            
-            // 로그인 성공시 JSESSIONID 저장
-            self.loginSuccess(sessionId: JSESSIONID, username: username, password: password)
-            
-            if let tabBarVC = self.tabBarController as? TabBarViewController {
-                guard var viewControllers = tabBarVC.viewControllers else { return }
-                
-                let VC = MyPageViewController()
-                VC.nickName = nickname
-                VC.role = role
-
-                let myPageNavController = UINavigationController(rootViewController: VC)
-                myPageNavController.tabBarItem = UITabBarItem(
-                    title: "MY",
-                    image: UIImage(systemName: "person.circle"),
-                    selectedImage: UIImage(systemName: "person.circle.fill")
-                )
-                viewControllers[2] = myPageNavController
-                tabBarVC.setViewControllers(viewControllers, animated: true)
+                                            password: password) { error in
+            DispatchQueue.main.async {
+                if let error = error { // 로그인 실패
+                    self.loginView.loginInfoLabel.isHidden = false
+                } else { // 로그인 성공
+                    AppDelegate.isLogin = true
+                    self.dismiss(animated: true, completion: nil)
+                }
             }
         }
     }

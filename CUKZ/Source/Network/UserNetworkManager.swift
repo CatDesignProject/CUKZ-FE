@@ -73,9 +73,9 @@ class UserNetworkManager {
     }
     
     // 로그인
-    func postLogin(username: String,
+    func postLogin(username: String, 
                    password: String,
-                   completion: @escaping (String?, [String: Any]?) -> Void) {
+                   completion: @escaping (Error?) -> Void) {
         
         let parameters: [String: Any] = [
             "username": username,
@@ -93,12 +93,12 @@ class UserNetworkManager {
                 if let headerFields = response.response?.allHeaderFields as? [String: String], let url = response.response?.url {
                     let cookies = HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: url)
                     let cookie = cookies.first(where: { $0.name == "JSESSIONID" })
-                    completion(cookie?.value, response.value as? [String: Any])
-                } else {
-                    completion(nil, nil)
                 }
-            case .failure:
-                completion(nil, nil)
+                completion(nil)
+                print("로그인 - 네트워킹 성공")
+            case .failure(let error):
+                completion(error)
+                print("로그인 - \(error)")
             }
         }
     }
