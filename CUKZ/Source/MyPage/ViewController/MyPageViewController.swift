@@ -9,8 +9,7 @@ import UIKit
 
 final class MyPageViewController: UIViewController {
     // MARK: - Properties
-    var nickName: String? = nil
-    var role: String? = nil
+    private var userInfoData: UserModel?
     
     private let myPageSection = MyPageSection()
     
@@ -33,16 +32,26 @@ final class MyPageViewController: UIViewController {
         self.navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
-    // MARK: - ViewDidLodad
+    // MARK: - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        prepare()
+        fetchData()
         setupTableView()
     }
     
-    private func prepare() {
-        
+    private func fetchData() {
+        UserNetworkManager.shared.getUserInfo { result in
+            switch result {
+            case .success(let data):
+                self.userInfoData = data
+                DispatchQueue.main.async {
+                    self.updateHeaderView()
+                }
+            case .failure(let error):
+                print("내 정보 조회 - \(error)")
+            }
+        }
     }
     
     private func setupTableView() {
@@ -51,21 +60,19 @@ final class MyPageViewController: UIViewController {
         tb.register(MyPageCell.self, forCellReuseIdentifier: "MyPageCell")
         tb.dataSource = self
         tb.delegate = self
+    }
+    
+    private func updateHeaderView() {
+        guard let data = userInfoData else { return }
         
-        // 헤더뷰 설정
-        let myPageTopView = MyPageTopView(frame: CGRect(x: 0, y: 0, width: 0, height: 150))
-        myPageTopView.nicknameLabel.text = self.nickName
-        if self.role == "user" {
-            myPageTopView.leaderLabel.text = "총대인증 ❌"
-        } else {
-            myPageTopView.leaderLabel.text = "총대인증 ✅"
-        }
-        tb.tableHeaderView = myPageTopView
+        let myPageTopView = MyPageTopView(frame: CGRect(x: 0, y: 0, width: myPageView.tableView.bounds.width, height: 150))
+        myPageTopView.nicknameLabel.text = data.nickname
+        myPageTopView.leaderLabel.text = (data.role == "user") ? "총대인증 ❌" : "총대인증 ✅"
+        myPageView.tableView.tableHeaderView = myPageTopView
     }
 }
 
 extension MyPageViewController: UITableViewDataSource {
-    
     func numberOfSections(in tableView: UITableView) -> Int {
         return myPageSection.sections.count
     }
@@ -104,7 +111,6 @@ extension MyPageViewController: UITableViewDataSource {
         return cell
     }
 }
-
 
 extension MyPageViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

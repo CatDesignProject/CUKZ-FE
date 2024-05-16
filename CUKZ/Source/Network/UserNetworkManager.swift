@@ -72,8 +72,8 @@ class UserNetworkManager {
         }
     }
     
-    // 로그인
-    func postLogin(username: String, 
+    // MARK: - 로그인
+    func postLogin(username: String,
                    password: String,
                    completion: @escaping (Error?) -> Void) {
         
@@ -99,6 +99,22 @@ class UserNetworkManager {
             case .failure(let error):
                 completion(error)
                 print("로그인 - \(error)")
+            }
+        }
+    }
+    
+    // MARK: - 내 정보 조회
+    func getUserInfo(completion: @escaping (Result<UserModel, Error>) -> Void) {
+        AF.request("\(baseURL)/members/me",
+                   method: .get)
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: UserModel.self) { response in
+            switch response.result {
+            case .success(let result):
+                print("내 정보 조회 - 네트워킹 성공")
+                completion(.success(result))
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
     }
