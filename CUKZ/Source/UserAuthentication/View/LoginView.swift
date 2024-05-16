@@ -11,6 +11,14 @@ import Then
 
 final class LoginView: UIView {
     // MARK: - View
+    let loginInfoLabel = UILabel().then {
+        $0.text = "아이디 또는 비밀번호를 잘못 입력했습니다.\n입력하신 내용을 다시 확인해주세요."
+        $0.textAlignment = .center
+        $0.textColor = .red
+        $0.numberOfLines = 0
+        $0.isHidden = true
+    }
+    
     let dismissButton = UIButton().then {
         $0.setImage(UIImage(systemName: "xmark"), for: .normal)
         $0.tintColor = .white
@@ -106,7 +114,10 @@ final class LoginView: UIView {
         
         stackView.addArrangedSubviews([idTextFieldView, passwordTextFieldView, loginButton])
         
-        self.addSubviews([dismissButton, stackView, signUpButton])
+        self.addSubviews([dismissButton,
+                          loginInfoLabel,
+                          stackView,
+                          signUpButton])
     }
     
     let textViewHeight: CGFloat = 48
@@ -117,6 +128,11 @@ final class LoginView: UIView {
     private func configureConstraints() {
         dismissButton.snp.makeConstraints { make in
             make.top.trailing.equalTo(self.safeAreaLayoutGuide).inset(20)
+        }
+        
+        loginInfoLabel.snp.makeConstraints { make in
+            make.bottom.equalTo(stackView.snp.top).offset(-10)
+            make.centerX.equalToSuperview()
         }
         
         idInfoLabel.snp.makeConstraints { make in
