@@ -38,6 +38,7 @@ final class MyPageViewController: UIViewController {
         
         fetchData()
         setupTableView()
+        setupRefresh()
     }
     
     private func fetchData() {
@@ -54,6 +55,7 @@ final class MyPageViewController: UIViewController {
         }
     }
     
+    // 테이블뷰 설정
     private func setupTableView() {
         let tb = myPageView.tableView
         
@@ -62,6 +64,7 @@ final class MyPageViewController: UIViewController {
         tb.delegate = self
     }
     
+    // 테이블뷰 헤더뷰 설정
     private func updateHeaderView() {
         guard let data = userInfoData else { return }
         
@@ -70,8 +73,31 @@ final class MyPageViewController: UIViewController {
         myPageTopView.leaderLabel.text = (data.role == "user") ? "총대인증 ❌" : "총대인증 ✅"
         myPageView.tableView.tableHeaderView = myPageTopView
     }
+    
+    // 새로고침 설정
+    private func setupRefresh() {
+        let rc = myPageView.refreshControl
+        rc.addTarget(self, action: #selector(refreshTable(refresh:)), for: .valueChanged)
+        rc.tintColor = .gadaeBlue
+        
+        myPageView.tableView.refreshControl = rc
+    }
 }
 
+// MARK: - @objc
+extension MyPageViewController {
+    // 새로고침
+    @objc func refreshTable(refresh: UIRefreshControl) {
+        print("새로고침 시작")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.fetchData()
+            refresh.endRefreshing()
+        }
+    }
+}
+
+// MARK: - UITableViewDataSource
 extension MyPageViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return myPageSection.sections.count
@@ -112,6 +138,7 @@ extension MyPageViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableViewDelegate
 extension MyPageViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         50
