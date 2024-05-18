@@ -174,11 +174,24 @@ extension ProductDetailViewController {
         }
     }
     
+    // 수요조사 참여, 구매하기
     @objc func statusButtonTapped() {
-        if AppDelegate.isLogin {
-            print("상품 상태 버튼 눌림")
-        } else {
+        if !AppDelegate.isLogin {
             showAlertWithDismissDelay(message: "로그인 후 이용해주세요.")
+            return
+        }
+        
+        guard let data = self.productDetailData else { return }
+        
+        switch data.status {
+        case "ON_DEMAND":
+            let VC = DemandParticipateViewController()
+            VC.options = data.options
+            navigationController?.pushViewController(VC, animated: true)
+        case "ON_SALE":
+            print("구매하기 눌림")
+        default:
+            showAlertWithDismissDelay(message: "종료되었습니다.")
         }
     }
 }
