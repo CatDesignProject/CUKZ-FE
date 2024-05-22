@@ -22,16 +22,11 @@ final class UploadProductViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        prepare()
         setupNaviBar()
         setupTextField()
         setupTextView()
         setupButton()
         setupPickerView()
-    }
-    
-    private func prepare() {
-        
     }
     
     private func setupNaviBar() {
@@ -43,7 +38,6 @@ final class UploadProductViewController: UIViewController {
         view.productNameTextField.delegate = self
         view.statusTextField.delegate = self
         view.endDateTextField.delegate = self
-        view.colorTextField.delegate = self
     }
     
     private func setupTextView() {

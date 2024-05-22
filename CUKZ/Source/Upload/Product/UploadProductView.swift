@@ -13,9 +13,13 @@ final class UploadProductView: UIView {
         $0.keyboardDismissMode = .onDrag // 스크롤 시 키보드 숨김
     }
     
-    private let contentView = UIView()
+    let contentView = UIView()
     
     let pickerView = UIPickerView()
+    
+    private let stackView = UIStackView().then {
+        $0.axis = .vertical
+    }
     
     // 상품명
     private let productNameLabel = UILabel().then {
@@ -31,6 +35,49 @@ final class UploadProductView: UIView {
     
     let productNameTextField = UITextField().then {
         $0.placeholder = "상품명을 입력해주세요"
+        $0.backgroundColor = .clear
+        $0.autocapitalizationType = .none
+        $0.autocorrectionType = .no
+        $0.spellCheckingType = .no
+        $0.font = UIFont.systemFont(ofSize: 19)
+    }
+    
+    // 가격
+    private let priceLabel = UILabel().then {
+        $0.text = "가격"
+        $0.font = UIFont.systemFont(ofSize: 18)
+    }
+    
+    private let priceRoundView = UIView().then {
+        $0.backgroundColor = .white
+        $0.layer.cornerRadius = 5
+        $0.layer.borderWidth = 1
+    }
+    
+    let priceDateTextField = UITextField().then {
+        $0.placeholder = "가격을 입력해주세요"
+        $0.backgroundColor = .clear
+        $0.autocapitalizationType = .none
+        $0.autocorrectionType = .no
+        $0.spellCheckingType = .no
+        $0.font = UIFont.systemFont(ofSize: 19)
+        $0.keyboardType = .numberPad
+    }
+    
+    // 계좌번호
+    private let accountLabel = UILabel().then {
+        $0.text = "계좌번호"
+        $0.font = UIFont.systemFont(ofSize: 18)
+    }
+    
+    private let accountRoundView = UIView().then {
+        $0.backgroundColor = .white
+        $0.layer.cornerRadius = 5
+        $0.layer.borderWidth = 1
+    }
+    
+    let accountTextField = UITextField().then {
+        $0.placeholder = "은행과 계좌번호를 입력해주세요"
         $0.backgroundColor = .clear
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
@@ -60,6 +107,33 @@ final class UploadProductView: UIView {
         $0.tintColor = .clear
     }
     
+    // 시작 기간
+    private let startDateLabel = UILabel().then {
+        $0.text = "시작 기간 (예시 2024-03-15T12:00:00)"
+        $0.font = UIFont.systemFont(ofSize: 18)
+        let attributedString = NSMutableAttributedString(string: $0.text ?? "")
+        let range = ($0.text as NSString?)?.range(of: "(예시 2024-03-15T12:00:00)")
+        if let range = range {
+            attributedString.addAttribute(.foregroundColor, value: UIColor.red, range: range)
+            $0.attributedText = attributedString
+        }
+    }
+    
+    private let startDateRoundView = UIView().then {
+        $0.backgroundColor = .white
+        $0.layer.cornerRadius = 5
+        $0.layer.borderWidth = 1
+    }
+    
+    let startDateTextField = UITextField().then {
+        $0.placeholder = "2024-03-15T12:00:00"
+        $0.backgroundColor = .clear
+        $0.autocapitalizationType = .none
+        $0.autocorrectionType = .no
+        $0.spellCheckingType = .no
+        $0.font = UIFont.systemFont(ofSize: 19)
+    }
+    
     // 종료 기간
     private let endDateLabel = UILabel().then {
         $0.text = "종료 기간 (예시 2024-03-15T12:00:00)"
@@ -87,33 +161,6 @@ final class UploadProductView: UIView {
         $0.font = UIFont.systemFont(ofSize: 19)
     }
     
-    // 색상
-    private let colorLabel = UILabel().then {
-        $0.text = "색상 (예시 #블랙 #핑크 #네이비)"
-        $0.font = UIFont.systemFont(ofSize: 18)
-        let attributedString = NSMutableAttributedString(string: $0.text ?? "")
-        let range = ($0.text as NSString?)?.range(of: "(예시 #블랙 #핑크 #네이비)")
-        if let range = range {
-            attributedString.addAttribute(.foregroundColor, value: UIColor.red, range: range)
-            $0.attributedText = attributedString
-        }
-    }
-    
-    private let colorRoundView = UIView().then {
-        $0.backgroundColor = .white
-        $0.layer.cornerRadius = 5
-        $0.layer.borderWidth = 1
-    }
-    
-    let colorTextField = UITextField().then {
-        $0.placeholder = "#블랙 #핑크 #네이비"
-        $0.backgroundColor = .clear
-        $0.autocapitalizationType = .none
-        $0.autocorrectionType = .no
-        $0.spellCheckingType = .no
-        $0.font = UIFont.systemFont(ofSize: 19)
-    }
-    
     // 상품 설명
     private let desciptionLabel = UILabel().then {
         $0.text = "상품 설명"
@@ -121,11 +168,22 @@ final class UploadProductView: UIView {
     }
     
     let desciptionTextView = UITextView().then {
+        $0.autocapitalizationType = .none
+        $0.autocorrectionType = .no
+        $0.spellCheckingType = .no
         $0.layer.cornerRadius = 8
         $0.layer.borderWidth = 1
         $0.textContainerInset = UIEdgeInsets(top: 12.0, left: 16.0, bottom: 12.0, right: 16.0)
         $0.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 16)
     }
+    
+    // 공백뷰
+    private let spacerView1 = UIView()
+    private let spacerView2 = UIView()
+    private let spacerView3 = UIView()
+    private let spacerView4 = UIView()
+    private let spacerView5 = UIView()
+    private let spacerView6 = UIView()
     
     // 작성완료 버튼
     let completeButton = UIButton().then {
@@ -149,25 +207,44 @@ final class UploadProductView: UIView {
     
     // MARK: - UI
     private func addViews() {
-        self.addSubviews([scrollView, completeButton])
+        self.addSubviews([
+            scrollView,
+            completeButton
+        ])
         
-        scrollView.addSubviews([contentView])
+        scrollView.addSubview(contentView)
         
-        contentView.addSubviews([productNameLabel,
-                                 productNameRoundView,
-                                 statusLabel,
-                                 statusRoundView,
-                                 endDateLabel,
-                                 endDateRoundView,
-                                 colorLabel,
-                                 colorRoundView,
-                                 desciptionLabel,
-                                 desciptionTextView])
+        contentView.addSubview(stackView)
         
-        productNameRoundView.addSubviews([productNameTextField])
-        statusRoundView.addSubviews([statusTextField])
-        endDateRoundView.addSubviews([endDateTextField])
-        colorRoundView.addSubviews([colorTextField])
+        stackView.addArrangedSubviews([
+            productNameLabel,
+            productNameRoundView,
+            spacerView1, // 공백
+            priceLabel,
+            priceRoundView,
+            spacerView2, // 공백
+            accountLabel,
+            accountRoundView,
+            spacerView3, // 공백
+            statusLabel,
+            statusRoundView,
+            spacerView4, // 공백
+            startDateLabel,
+            startDateRoundView,
+            spacerView5, // 공백
+            endDateLabel,
+            endDateRoundView,
+            spacerView6, // 공백
+            desciptionLabel,
+            desciptionTextView
+        ])
+        
+        productNameRoundView.addSubview(productNameTextField)
+        priceRoundView.addSubview(priceDateTextField)
+        accountRoundView.addSubview(accountTextField)
+        statusRoundView.addSubview(statusTextField)
+        startDateRoundView.addSubview(startDateTextField)
+        endDateRoundView.addSubview(endDateTextField)
     }
     
     private func configureConstraints() {
@@ -182,81 +259,42 @@ final class UploadProductView: UIView {
             make.edges.equalTo(scrollView)
         }
         
-        // 상품명
-        productNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(contentView).offset(20)
-            make.leading.trailing.equalTo(contentView).inset(20)
+        stackView.snp.makeConstraints { make in
+            make.edges.equalTo(contentView).inset(20)
         }
         
-        productNameRoundView.snp.makeConstraints { make in
-            make.top.equalTo(productNameLabel.snp.bottom)
-            make.leading.trailing.equalTo(productNameLabel)
-            make.height.equalTo(50)
+        [productNameRoundView, priceRoundView, accountRoundView,statusRoundView, startDateRoundView, endDateRoundView].forEach {
+            $0.snp.makeConstraints { make in
+                make.height.equalTo(50)
+            }
         }
         
         productNameTextField.snp.makeConstraints { make in
             make.edges.equalTo(productNameRoundView).inset(5)
         }
         
-        // 상품 상태
-        statusLabel.snp.makeConstraints { make in
-            make.top.equalTo(productNameRoundView.snp.bottom).offset(45)
-            make.leading.trailing.equalTo(productNameLabel)
+        priceDateTextField.snp.makeConstraints { make in
+            make.edges.equalTo(priceRoundView).inset(5)
         }
         
-        statusRoundView.snp.makeConstraints { make in
-            make.top.equalTo(statusLabel.snp.bottom)
-            make.leading.trailing.equalTo(productNameLabel)
-            make.height.equalTo(50)
+        accountTextField.snp.makeConstraints { make in
+            make.edges.equalTo(accountRoundView).inset(5)
         }
         
         statusTextField.snp.makeConstraints { make in
             make.edges.equalTo(statusRoundView).inset(5)
         }
         
-        // 종료 기간
-        endDateLabel.snp.makeConstraints { make in
-            make.top.equalTo(statusRoundView.snp.bottom).offset(45)
-            make.leading.trailing.equalTo(productNameLabel)
-        }
-        
-        endDateRoundView.snp.makeConstraints { make in
-            make.top.equalTo(endDateLabel.snp.bottom)
-            make.leading.trailing.equalTo(productNameLabel)
-            make.height.equalTo(50)
+        startDateTextField.snp.makeConstraints { make in
+            make.edges.equalTo(startDateRoundView).inset(5)
         }
         
         endDateTextField.snp.makeConstraints { make in
             make.edges.equalTo(endDateRoundView).inset(5)
         }
         
-        // 색상
-        colorLabel.snp.makeConstraints { make in
-            make.top.equalTo(endDateRoundView.snp.bottom).offset(45)
-            make.leading.trailing.equalTo(productNameLabel)
-        }
-        
-        colorRoundView.snp.makeConstraints { make in
-            make.top.equalTo(colorLabel.snp.bottom)
-            make.leading.trailing.equalTo(productNameLabel)
-            make.height.equalTo(50)
-        }
-        
-        colorTextField.snp.makeConstraints { make in
-            make.edges.equalTo(colorRoundView).inset(5)
-        }
-        
-        // 상품 설명
-        desciptionLabel.snp.makeConstraints { make in
-            make.top.equalTo(colorRoundView.snp.bottom).offset(45)
-            make.leading.trailing.equalTo(productNameLabel)
-        }
-        
         desciptionTextView.snp.makeConstraints { make in
-            make.top.equalTo(desciptionLabel.snp.bottom)
-            make.leading.trailing.equalTo(productNameLabel)
-            make.height.equalTo(150)
-            make.bottom.equalTo(contentView).inset(100)
+            make.height.equalTo(180)
         }
         
         // 작성완료 버튼
@@ -265,5 +303,11 @@ final class UploadProductView: UIView {
             make.height.equalTo(80)
         }
         
+        // 공백뷰
+        [spacerView1, spacerView2, spacerView3, spacerView4, spacerView5, spacerView6].forEach {
+            $0.snp.makeConstraints { make in
+                make.height.equalTo(20)
+            }
+        }
     }
 }
