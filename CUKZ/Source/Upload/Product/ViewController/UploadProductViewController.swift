@@ -28,9 +28,6 @@ final class UploadProductViewController: UIViewController {
         setupTextView()
         setupButton()
         setupPickerView()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardAppear), name: UIResponder.keyboardDidShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDisappear), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     private func prepare() {
@@ -85,25 +82,6 @@ final class UploadProductViewController: UIViewController {
     @objc private func completeButtonTapped() {
         print("작성완료 버튼 눌림")
     }
-    
-    @objc func keyboardAppear(notification: Notification) {
-        guard let activeField = activeField,
-              let userInfo = notification.userInfo,
-              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
-            return
-        }
-        
-        let contentInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: keyboardFrame.height + 10, right: 0.0)
-        uploadProductView.scrollView.contentInset = contentInsets
-        uploadProductView.scrollView.verticalScrollIndicatorInsets = contentInsets
-        let activeRect = activeField.convert(activeField.bounds, to: uploadProductView.scrollView)
-        uploadProductView.scrollView.scrollRectToVisible(activeRect, animated: true)
-    }
-    
-    @objc func keyboardDisappear(notification: Notification) {
-        uploadProductView.scrollView.contentInset = .zero
-        uploadProductView.scrollView.verticalScrollIndicatorInsets = .zero
-    }
 }
 
 // MARK: - UITextFieldDelegate
@@ -124,14 +102,6 @@ extension UploadProductViewController: UITextFieldDelegate {
 
 // MARK: - UITextViewDelegate
 extension UploadProductViewController: UITextViewDelegate {
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if text == "\n" {
-            textView.resignFirstResponder()
-            return false
-        }
-        return true
-    }
-
     func textViewDidBeginEditing(_ textView: UITextView) {
         activeField = textView
     }
