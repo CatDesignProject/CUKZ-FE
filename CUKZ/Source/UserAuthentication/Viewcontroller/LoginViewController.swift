@@ -31,7 +31,6 @@ final class LoginViewController: UIViewController {
         super.viewDidLoad ()
 
         setupNaviBar()
-        setupNotifications()
         setupTextField()
         setupButton()
     }
@@ -85,7 +84,7 @@ extension LoginViewController {
         UserNetworkManager.shared.postLogin(username: username,
                                             password: password) { error in
             DispatchQueue.main.async {
-                if let error = error { // 로그인 실패
+                if error != nil { // 로그인 실패
                     self.loginView.loginInfoLabel.isHidden = false
                 } else { // 로그인 성공
                     AppDelegate.isLogin = true
@@ -100,32 +99,6 @@ extension LoginViewController {
         let VC = SignUpViewController()
         VC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(VC, animated: true)
-    }
-}
-
-// MARK: - 키보드 관련
-extension LoginViewController {
-    private func setupNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    @objc private func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y == 0 {
-                self.view.frame.origin.y -= keyboardSize.height / 3
-            }
-        }
-    }
-    
-    @objc private func keyboardWillHide(notification: NSNotification) {
-        if self.view.frame.origin.y != 0 {
-            self.view.frame.origin.y = 0
-        }
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.view.endEditing(true)
     }
 }
 
