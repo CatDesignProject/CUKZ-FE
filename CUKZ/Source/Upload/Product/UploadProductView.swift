@@ -177,6 +177,14 @@ final class UploadProductView: UIView {
         $0.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 16)
     }
     
+    // 사진
+    private let uploadImageLabel = UILabel().then {
+        $0.text = "사진"
+        $0.font = UIFont.systemFont(ofSize: 18)
+    }
+    
+    let uploadImageView = UploadImageView()
+    
     // 공백뷰
     private let spacerView1 = UIView()
     private let spacerView2 = UIView()
@@ -184,6 +192,7 @@ final class UploadProductView: UIView {
     private let spacerView4 = UIView()
     private let spacerView5 = UIView()
     private let spacerView6 = UIView()
+    private let spacerView7 = UIView()
     
     // 작성완료 버튼
     let completeButton = UIButton().then {
@@ -236,7 +245,10 @@ final class UploadProductView: UIView {
             endDateRoundView,
             spacerView6, // 공백
             desciptionLabel,
-            desciptionTextView
+            desciptionTextView,
+            spacerView7, // 공백
+            uploadImageLabel,
+            uploadImageView
         ])
         
         productNameRoundView.addSubview(productNameTextField)
@@ -297,6 +309,10 @@ final class UploadProductView: UIView {
             make.height.equalTo(180)
         }
         
+        uploadImageView.snp.makeConstraints { make in
+            make.height.equalTo(115)
+        }
+        
         // 작성완료 버튼
         completeButton.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
@@ -304,7 +320,7 @@ final class UploadProductView: UIView {
         }
         
         // 공백뷰
-        [spacerView1, spacerView2, spacerView3, spacerView4, spacerView5, spacerView6].forEach {
+        [spacerView1, spacerView2, spacerView3, spacerView4, spacerView5, spacerView6, spacerView7].forEach {
             $0.snp.makeConstraints { make in
                 make.height.equalTo(20)
             }

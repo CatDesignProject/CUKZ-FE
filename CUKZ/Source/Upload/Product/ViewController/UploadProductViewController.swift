@@ -27,6 +27,7 @@ final class UploadProductViewController: UIViewController {
         setupTextView()
         setupButton()
         setupPickerView()
+        setupCollectionView()
     }
     
     private func setupNaviBar() {
@@ -68,11 +69,19 @@ final class UploadProductViewController: UIViewController {
         uploadProductView.statusTextField.inputAccessoryView = toolbar
     }
     
-    // MARK: - @objc
+    private func setupCollectionView() {
+        uploadProductView.uploadImageView.collectionView.delegate = self
+        uploadProductView.uploadImageView.collectionView.dataSource = self
+        uploadProductView.uploadImageView.collectionView.register(UploadImageCell.self, forCellWithReuseIdentifier: "UploadImageCell")
+    }
+}
+
+// MARK: - @objc
+extension UploadProductViewController {
     @objc func dismissPickerView() {
         view.endEditing(true)
     }
-    
+
     @objc private func completeButtonTapped() {
         print("작성완료 버튼 눌림")
     }
@@ -124,4 +133,20 @@ extension UploadProductViewController: UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         uploadProductView.statusTextField.text = "\(statusArray[row])"
     }
+}
+
+extension UploadProductViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 5
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UploadImageCell", for: indexPath) as! UploadImageCell
+        
+        return cell
+    }
+}
+
+extension UploadProductViewController: UICollectionViewDelegate {
+    
 }
