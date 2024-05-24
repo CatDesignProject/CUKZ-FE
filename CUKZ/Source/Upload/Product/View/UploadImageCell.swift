@@ -10,13 +10,13 @@ import UIKit
 final class UploadImageCell: UICollectionViewCell {
     // MARK: - View
     let uploadedImageView = UIImageView().then {
-        $0.contentMode = .scaleToFill
+        $0.contentMode = .scaleAspectFit
         $0.layer.cornerRadius = 8
         $0.clipsToBounds = true
         $0.image = UIImage(named: "testImage2")
     }
     
-    let deleteBtn = UIButton().then {
+    let deleteButton = UIButton().then {
         $0.setImage(UIImage(named: "ic_delete"), for: .normal)
     }
     
@@ -37,12 +37,12 @@ final class UploadImageCell: UICollectionViewCell {
     func addViews() {
         contentView.addSubviews([
             uploadedImageView,
-            deleteBtn
+            deleteButton
         ])
     }
     
     func configureConstraints() {
-        deleteBtn.snp.makeConstraints {
+        deleteButton.snp.makeConstraints {
             $0.top.trailing.equalToSuperview()
             $0.size.equalTo(30)
         }

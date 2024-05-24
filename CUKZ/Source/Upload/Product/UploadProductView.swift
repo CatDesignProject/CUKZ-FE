@@ -179,8 +179,14 @@ final class UploadProductView: UIView {
     
     // 사진
     private let uploadImageLabel = UILabel().then {
-        $0.text = "사진"
+        $0.text = "사진 (최소1장, 최대 10장)"
         $0.font = UIFont.systemFont(ofSize: 18)
+        let attributedString = NSMutableAttributedString(string: $0.text ?? "")
+        let range = ($0.text as NSString?)?.range(of: "(최소1장, 최대 10장)")
+        if let range = range {
+            attributedString.addAttribute(.foregroundColor, value: UIColor.red, range: range)
+            $0.attributedText = attributedString
+        }
     }
     
     let uploadImageView = UploadImageView()
@@ -198,7 +204,7 @@ final class UploadProductView: UIView {
     let completeButton = UIButton().then {
         $0.setTitle("작성완료", for: .normal)
         $0.backgroundColor = .lightGray
-        $0.isEnabled = false
+//        $0.isEnabled = false
     }
     
     // MARK: - Init

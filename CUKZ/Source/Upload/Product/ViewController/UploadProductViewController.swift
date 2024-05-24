@@ -6,9 +6,13 @@
 //
 
 import UIKit
+import Photos
+import PhotosUI
 
 final class UploadProductViewController: UIViewController {
     // MARK: - Properties
+    var imageList: [UIImage] = []
+    
     private let uploadProductView = UploadProductView()
     private var activeField: UIView?
     let statusArray = ["---- 선택 ----", "수요조사 중", "수요조사 종료", "공동구매 중", "공동구매 종료"]
@@ -34,6 +38,7 @@ final class UploadProductViewController: UIViewController {
         title = "상품 등록"
     }
     
+    // 텍스트필드
     private func setupTextField() {
         let view = uploadProductView
         view.productNameTextField.delegate = self
@@ -41,14 +46,18 @@ final class UploadProductViewController: UIViewController {
         view.endDateTextField.delegate = self
     }
     
+    // 텍스트뷰
     private func setupTextView() {
         uploadProductView.desciptionTextView.delegate = self
     }
     
+    // 버튼
     private func setupButton() {
+        uploadProductView.uploadImageView.uploadButton.addTarget(self, action: #selector(uploadButtonTapped), for: .touchUpInside)
         uploadProductView.completeButton.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
     }
     
+    // 피커뷰
     private func setupPickerView() {
         uploadProductView.pickerView.dataSource = self
         uploadProductView.pickerView.delegate = self
@@ -69,8 +78,8 @@ final class UploadProductViewController: UIViewController {
         uploadProductView.statusTextField.inputAccessoryView = toolbar
     }
     
+    // 컬렉션뷰
     private func setupCollectionView() {
-        uploadProductView.uploadImageView.collectionView.delegate = self
         uploadProductView.uploadImageView.collectionView.dataSource = self
         uploadProductView.uploadImageView.collectionView.register(UploadImageCell.self, forCellWithReuseIdentifier: "UploadImageCell")
     }
@@ -78,12 +87,39 @@ final class UploadProductViewController: UIViewController {
 
 // MARK: - @objc
 extension UploadProductViewController {
-    @objc func dismissPickerView() {
+    @objc private func dismissPickerView() {
         view.endEditing(true)
     }
 
+    @objc private func uploadButtonTapped() {
+        print("사진 업로드 버튼 눌림")
+        let availableSlots = 10 - imageList.count
+        if availableSlots > 0 {
+            var config = PHPickerConfiguration()
+            config.filter = .images // 이미지만 보이게
+            config.selectionLimit = availableSlots // 사진 갯수 제한
+                    
+            let imagePicker = PHPickerViewController(configuration: config)
+            imagePicker.delegate = self
+            imagePicker.modalPresentationStyle = .fullScreen
+                    
+            self.present(imagePicker, animated: true)
+        } else {
+            showAlertWithDismissDelay(message: "이미지는 최대 10장까지만 업로드 가능합니다.")
+        }
+    }
+    
+    @objc func deleteButtonTapped(sender: UIButton) {
+        let index = sender.tag
+        
+        self.imageList.remove(at: index)
+        print(self.imageList)
+        self.uploadProductView.uploadImageView.collectionView.reloadData()
+    }
+    
     @objc private func completeButtonTapped() {
         print("작성완료 버튼 눌림")
+        ProductNetworkManager.shared.uploadImage(images: self.imageList)
     }
 }
 
@@ -92,14 +128,6 @@ extension UploadProductViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
-    }
-
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        activeField = textField
-    }
-
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        activeField = nil
     }
 }
 
@@ -135,18 +163,39 @@ extension UploadProductViewController: UIPickerViewDelegate {
     }
 }
 
+// MARK: - UICollectionViewDataSource
 extension UploadProductViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return self.imageList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UploadImageCell", for: indexPath) as! UploadImageCell
         
+        let image = self.imageList[indexPath.item]
+        cell.uploadedImageView.image = image
+        cell.deleteButton.tag = indexPath.row
+        cell.deleteButton.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
+        
         return cell
     }
 }
 
-extension UploadProductViewController: UICollectionViewDelegate {
-    
+// MARK: - PHPickerViewControllerDelegate
+extension UploadProductViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        for result in results {
+            result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
+                guard let image = image as? UIImage else {
+                    return
+                }
+
+                DispatchQueue.main.async {
+                    self?.imageList.append(image)
+                    self?.uploadProductView.uploadImageView.collectionView.reloadData()
+                }
+            }
+        }
+        picker.dismiss(animated: true)
+    }
 }

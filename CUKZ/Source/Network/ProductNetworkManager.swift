@@ -91,4 +91,32 @@ final class ProductNetworkManager {
             }
         }
     }
+    
+    // MARK: - 이미지 업로드
+    func uploadImage(images: [UIImage]) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "multipart/form-data"
+        ]
+        
+        AF.upload(multipartFormData: { multipartFormData in
+            for (index, image) in images.enumerated() {
+                if let jpegData = image.jpegData(compressionQuality: 0.2) {
+                    multipartFormData.append(jpegData,
+                                             withName: "files",
+                                             fileName: "image\(index).jpeg",
+                                             mimeType: "image/jpeg")
+                }
+            }
+        }, to: "\(baseURL)/products/image-upload", method: .post, headers: headers)
+        .validate(statusCode: 200..<300)
+        .response { response in
+            switch response.result {
+            case .success:
+                print("\(response)")
+                print("이미지 업로드 성공")
+            case .failure:
+                print("이미지 업로드 실패")
+            }
+        }
+    }
 }
