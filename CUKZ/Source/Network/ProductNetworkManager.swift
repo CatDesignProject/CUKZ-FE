@@ -141,6 +141,26 @@ final class ProductNetworkManager {
         }
     }
     
+    // MARK: - 상품 수정
+    func patchProduct(productId: Int,
+                      parameters: UploadProductRequest,
+                      completion: @escaping (Error?) -> Void) {
+        
+        AF.request("\(baseURL)/products/\(productId)",
+                   method: .patch,
+                   parameters: parameters,
+                   encoder: JSONParameterEncoder.default)
+        .validate(statusCode: 200..<300)
+        .response { response in
+            switch response.result {
+            case .success:
+                completion(nil)
+            case .failure(let error):
+                completion(error)
+            }
+        }
+    }
+    
     // MARK: - 상품 삭제
     func deleteProduct(productId: Int, 
                        completion: @escaping (Error?) -> Void) {

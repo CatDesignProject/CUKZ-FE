@@ -15,6 +15,7 @@ struct ProductDetailModel: Codable {
     let likesCount: Int
     let options: [Option]
     let sellerId: Int
+    let sellerAccount: String
     let isLiked: Bool
     
     struct Option: Codable {

@@ -11,12 +11,14 @@ import PhotosUI
 
 final class UploadProductViewController: UIViewController {
     // MARK: - Properties
-    private var imageList: [UIImage] = []
+    var imageList: [UIImage] = [] // 상품 사진 담는 배열
+    var isPatch: Bool? // 상품 수정 여부
+    var productId: Int? // 상품 수정할 때 필요
 
     private var activeField: UIView?
     let statusArray = ["---- 선택 ----", "수요조사 중", "수요조사 종료", "판매 중", "판매 종료"]
     
-    private let uploadProductView = UploadProductView()
+    let uploadProductView = UploadProductView()
     
     private let datePicker = UIDatePicker()
     private let endDatePicker = UIDatePicker()
@@ -39,7 +41,13 @@ final class UploadProductViewController: UIViewController {
     }
     
     private func setupNaviBar() {
-        title = "상품 등록"
+        guard let isPatch = isPatch else { return }
+        if isPatch {
+            title = "상품 수정"
+        } else {
+            title = "상품 등록"
+        }
+        
     }
     
     // 텍스트필드 설정
@@ -142,21 +150,8 @@ final class UploadProductViewController: UIViewController {
 // MARK: - @objc
 extension UploadProductViewController {
     @objc private func dismissPickerView() {
-        if let startDatePicker = uploadProductView.startDateTextField.inputView as? UIDatePicker {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd"
-            uploadProductView.startDateTextField.text = formatter.string(from: startDatePicker.date)
-        }
-        
-        if let endDatePicker = uploadProductView.endDateTextField.inputView as? UIDatePicker {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd"
-            uploadProductView.endDateTextField.text = formatter.string(from: endDatePicker.date)
-        }
-        
         view.endEditing(true)
     }
-
     
     @objc private func dateChanged(_ sender: UIDatePicker) {
         let formatter = DateFormatter()
@@ -249,14 +244,32 @@ extension UploadProductViewController {
                 
                 print(parameters)
                 
-                ProductNetworkManager.shared.uploadProduct(parameters: parameters) { error in
-                    if let error = error {
-                        print("상품 등록 실패: \(error.localizedDescription)")
-                    } else {
-                        print("상품 등록 성공")
-                        if let productHomeVC = self.navigationController?.viewControllers.first(where: { $0 is ProductHomeViewController }) as? ProductHomeViewController {
-                            self.navigationController?.popViewController(animated: true)
-                            productHomeVC.fetchData()
+                guard let isPatch = self.isPatch,
+                      let productId = self.productId else { return }
+                
+                if isPatch { // 상품 수정일 때
+                    ProductNetworkManager.shared.patchProduct(productId: productId,
+                                                              parameters: parameters) { error in
+                        if let error = error {
+                            print("상품 수정 실패: \(error.localizedDescription)")
+                        } else {
+                            print("상품 수정 성공")
+                            if let productDetailVC = self.navigationController?.viewControllers.first(where: { $0 is ProductDetailViewController }) as? ProductDetailViewController {
+                                self.navigationController?.popViewController(animated: true)
+                                productDetailVC.fetchData()
+                            }
+                        }
+                    }
+                } else { // 상품 등록일 때
+                    ProductNetworkManager.shared.uploadProduct(parameters: parameters) { error in
+                        if let error = error {
+                            print("상품 등록 실패: \(error.localizedDescription)")
+                        } else {
+                            print("상품 등록 성공")
+                            if let productHomeVC = self.navigationController?.viewControllers.first(where: { $0 is ProductHomeViewController }) as? ProductHomeViewController {
+                                self.navigationController?.popViewController(animated: true)
+                                productHomeVC.fetchData()
+                            }
                         }
                     }
                 }

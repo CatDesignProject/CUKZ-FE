@@ -33,7 +33,7 @@ final class ProductDetailViewController: UIViewController {
         setupButton()
     }
     
-    private func fetchData() {
+    func fetchData() {
         guard let productId = self.productId else { return }
         ProductNetworkManager.shared.getProductDetail(productId: productId) { model in
             self.productDetailData = model
@@ -49,6 +49,10 @@ final class ProductDetailViewController: UIViewController {
         productDetailView.productImageCollectionView.reloadData()
         
         guard let data = self.productDetailData else { return }
+        
+        // 사진 맨앞장으로
+        let indexPath = IndexPath(item: 0, section: 0)
+        self.productDetailView.productImageCollectionView.scrollToItem(at: indexPath, at: .top, animated: true)
         
         // 좋아요
         self.isLiked = data.isLiked
@@ -150,13 +154,6 @@ extension ProductDetailViewController {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.fetchData()
-            
-            // refresh된 후 첫 번째 셀로 이동
-            if let productDetailData = self.productDetailData, !productDetailData.imageUrls.isEmpty {
-                let indexPath = IndexPath(item: 0, section: 0)
-                self.productDetailView.productImageCollectionView.scrollToItem(at: indexPath, at: .top, animated: true)
-            }
-            
             refresh.endRefreshing()
         }
     }
@@ -165,7 +162,7 @@ extension ProductDetailViewController {
     @objc private func menuButtonTapped() {
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let reportAction = UIAlertAction(title: "삭제하기", style: .destructive) { _ in
+        let deleteAction = UIAlertAction(title: "삭제하기", style: .destructive) {_ in
             if let productId = self.productDetailData?.id {
                 ProductNetworkManager.shared.deleteProduct(productId: productId) { error in
                     if let error = error {
@@ -182,13 +179,65 @@ extension ProductDetailViewController {
             }
         }
         
-        let blockingAction = UIAlertAction(title: "수정하기", style: .default) { _ in
-            // '차단하기' 액션이 선택되었을 때 수행할 작업
+        let patchAction = UIAlertAction(title: "수정하기", style: .default) {_ in 
+            let VC = UploadProductViewController()
+            guard let productId = self.productId,
+                  let data = self.productDetailData else { return }
+            
+            VC.isPatch = true
+            VC.productId = productId
+            VC.uploadProductView.productNameTextField.text = data.name
+            VC.uploadProductView.priceTextField.text = String(data.price)
+            VC.uploadProductView.accountTextField.text = data.sellerAccount
+            
+            switch data.status {
+            case "ON_DEMAND" :
+                VC.uploadProductView.statusTextField.text = "수요조사 중"
+            case "END_DEMAND" :
+                VC.uploadProductView.statusTextField.text = "수요조사 종료"
+            case "ON_SALE":
+                VC.uploadProductView.statusTextField.text = "판매 중"
+            case "END_SALE":
+                VC.uploadProductView.statusTextField.text = "판매 종료"
+            default:
+                return
+            }
+            
+            // "yyyy-MM-dd" 형식으로 변환하여
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+            let startDate = dateFormatter.date(from: data.startDate)
+            let endDate = dateFormatter.date(from: data.endDate)
+            
+            if let startDate = startDate, let endDate = endDate {
+                dateFormatter.dateFormat = "yyyy-MM-dd"
+                VC.uploadProductView.startDateTextField.text = dateFormatter.string(from: startDate)
+                VC.uploadProductView.endDateTextField.text = dateFormatter.string(from: endDate)
+            }
+            
+            VC.uploadProductView.descriptionTextView.text = data.info
+            
+            // 이미지 URL 배열을 반복하면서 이미지를 다운로드하여 배열에 추가
+            for imageUrl in data.imageUrls {
+                guard let url = URL(string: imageUrl) else { continue }
+                URLSession.shared.dataTask(with: url) { data, response, error in
+                    if let data = data, let image = UIImage(data: data) {
+                        // 이미지를 다운로드하고 배열에 추가
+                        VC.imageList.append(image)
+                        // 이미지를 다운로드한 후에는 컬렉션 뷰를 다시 로드하여 업데이트
+                        DispatchQueue.main.async {
+                            VC.uploadProductView.uploadImageView.collectionView.reloadData()
+                        }
+                    }
+                }.resume()
+            }
+            
+            self.navigationController?.pushViewController(VC, animated: true)
         }
         
         let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
         
-        [reportAction, blockingAction, cancelAction].forEach { alertController.addAction($0) }
+        [deleteAction, patchAction, cancelAction].forEach { alertController.addAction($0) }
         
         present(alertController, animated: true, completion: nil)
     }
