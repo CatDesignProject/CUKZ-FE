@@ -109,14 +109,8 @@ final class UploadProductView: UIView {
     
     // 시작 기간
     private let startDateLabel = UILabel().then {
-        $0.text = "시작 기간 (예시 2024-03-15T12:00:00)"
+        $0.text = "시작 기간"
         $0.font = UIFont.systemFont(ofSize: 18)
-        let attributedString = NSMutableAttributedString(string: $0.text ?? "")
-        let range = ($0.text as NSString?)?.range(of: "(예시 2024-03-15T12:00:00)")
-        if let range = range {
-            attributedString.addAttribute(.foregroundColor, value: UIColor.red, range: range)
-            $0.attributedText = attributedString
-        }
     }
     
     private let startDateRoundView = UIView().then {
@@ -126,7 +120,7 @@ final class UploadProductView: UIView {
     }
     
     let startDateTextField = UITextField().then {
-        $0.placeholder = "2024-03-15T12:00:00"
+        $0.placeholder = "시작 기간을 선택해주세요"
         $0.backgroundColor = .clear
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
@@ -136,14 +130,8 @@ final class UploadProductView: UIView {
     
     // 종료 기간
     private let endDateLabel = UILabel().then {
-        $0.text = "종료 기간 (예시 2024-03-15T12:00:00)"
+        $0.text = "종료 기간"
         $0.font = UIFont.systemFont(ofSize: 18)
-        let attributedString = NSMutableAttributedString(string: $0.text ?? "")
-        let range = ($0.text as NSString?)?.range(of: "(예시 2024-03-15T12:00:00)")
-        if let range = range {
-            attributedString.addAttribute(.foregroundColor, value: UIColor.red, range: range)
-            $0.attributedText = attributedString
-        }
     }
     
     private let endDateRoundView = UIView().then {
@@ -153,7 +141,7 @@ final class UploadProductView: UIView {
     }
     
     let endDateTextField = UITextField().then {
-        $0.placeholder = "2024-03-15T12:00:00"
+        $0.placeholder = "종료 기간을 선택해주세요"
         $0.backgroundColor = .clear
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no

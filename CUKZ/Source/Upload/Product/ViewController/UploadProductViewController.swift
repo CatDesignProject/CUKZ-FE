@@ -18,6 +18,9 @@ final class UploadProductViewController: UIViewController {
     
     private let uploadProductView = UploadProductView()
     
+    private let datePicker = UIDatePicker()
+    private let endDatePicker = UIDatePicker()
+
     // MARK: - View 설정
     override func loadView() {
         view = uploadProductView
@@ -49,6 +52,31 @@ final class UploadProductViewController: UIViewController {
          view.statusTextField,
          view.startDateTextField,
          view.endDateTextField].forEach { $0.delegate = self }
+
+        setupDatePicker(for: view.startDateTextField, datePicker: datePicker)
+        setupDatePicker(for: view.endDateTextField, datePicker: endDatePicker)
+    }
+    
+    private func setupDatePicker(for textField: UITextField, datePicker: UIDatePicker) {
+        datePicker.datePickerMode = .date
+        datePicker.locale = Locale(identifier: "ko_KR")
+        datePicker.calendar = Calendar(identifier: .gregorian)
+        datePicker.preferredDatePickerStyle = .wheels
+        datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
+        datePicker.minimumDate = Date() // 현재 날짜 이전은 선택 불가하게 설정
+        
+        textField.inputView = datePicker
+
+        // 피커 뷰 위에 툴바 추가
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(title: "완료", style: .plain, target: self, action: #selector(dismissPickerView))
+        toolbar.setItems([flexibleSpace, doneButton], animated: false)
+        toolbar.isUserInteractionEnabled = true
+
+        textField.inputAccessoryView = toolbar
     }
     
     // 텍스트뷰 설정
@@ -58,7 +86,7 @@ final class UploadProductViewController: UIViewController {
     
     // 버튼 설정
     private func setupButton() {
-        uploadProductView.uploadImageView.uploadButton.addTarget(self, action: #selector(uploadButtonTapped), for: .touchUpInside)
+        uploadProductView.uploadImageView.uploadButton.addTarget(self, action: #selector(imageUploadButtonTapped), for: .touchUpInside)
         uploadProductView.completeButton.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
     }
     
@@ -88,15 +116,60 @@ final class UploadProductViewController: UIViewController {
         uploadProductView.uploadImageView.collectionView.dataSource = self
         uploadProductView.uploadImageView.collectionView.register(UploadImageCell.self, forCellWithReuseIdentifier: "UploadImageCell")
     }
+    
+    // 작성완료 버튼 업데이트
+    private func updateCompleteButtonState() {
+        let isNameEmpty = uploadProductView.productNameTextField.text?.isEmpty ?? true
+        let isPriceEmpty = uploadProductView.priceTextField.text?.isEmpty ?? true
+        let isAccountEmpty = uploadProductView.accountTextField.text?.isEmpty ?? true
+        let isStatusEmpty = uploadProductView.statusTextField.text?.isEmpty ?? true
+        let isStatusValid = uploadProductView.statusTextField.text! == "---- 선택 ----"
+        let isStartDateEmpty = uploadProductView.startDateTextField.text?.isEmpty ?? true
+        let isEndDateEmpty = uploadProductView.endDateTextField.text?.isEmpty ?? true
+        let isInfoEmpty = uploadProductView.descriptionTextView.text?.isEmpty ?? true
+        let isImageEmpty = self.imageList.isEmpty
+        
+        if !isNameEmpty && !isPriceEmpty && !isAccountEmpty && !isStatusEmpty && !isStatusValid && !isStartDateEmpty && !isEndDateEmpty && !isInfoEmpty && !isImageEmpty {
+            uploadProductView.completeButton.isEnabled = true
+            uploadProductView.completeButton.backgroundColor = .gadaeBlue
+        } else {
+            uploadProductView.completeButton.isEnabled = false
+            uploadProductView.completeButton.backgroundColor = .lightGray
+        }
+    }
 }
 
 // MARK: - @objc
 extension UploadProductViewController {
     @objc private func dismissPickerView() {
+        if let startDatePicker = uploadProductView.startDateTextField.inputView as? UIDatePicker {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            uploadProductView.startDateTextField.text = formatter.string(from: startDatePicker.date)
+        }
+        
+        if let endDatePicker = uploadProductView.endDateTextField.inputView as? UIDatePicker {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            uploadProductView.endDateTextField.text = formatter.string(from: endDatePicker.date)
+        }
+        
         view.endEditing(true)
     }
 
-    @objc private func uploadButtonTapped() {
+    
+    @objc private func dateChanged(_ sender: UIDatePicker) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        
+        if sender == datePicker {
+            uploadProductView.startDateTextField.text = formatter.string(from: sender.date)
+        } else if sender == endDatePicker {
+            uploadProductView.endDateTextField.text = formatter.string(from: sender.date)
+        }
+    }
+
+    @objc private func imageUploadButtonTapped() {
         print("사진 업로드 버튼 눌림")
         let availableSlots = 10 - imageList.count
         if availableSlots > 0 {
@@ -120,6 +193,8 @@ extension UploadProductViewController {
         self.imageList.remove(at: index)
         print(self.imageList)
         self.uploadProductView.uploadImageView.collectionView.reloadData()
+        
+        updateCompleteButtonState() // 작성완료 버튼 업데이트
     }
     
     @objc private func completeButtonTapped() {
@@ -132,8 +207,8 @@ extension UploadProductViewController {
                       let price = self.uploadProductView.priceTextField.text,
                       let sellerAccount = self.uploadProductView.accountTextField.text,
                       var status = self.uploadProductView.statusTextField.text,
-                      let startDate = self.uploadProductView.startDateTextField.text,
-                      let endDate = self.uploadProductView.endDateTextField.text,
+                      let startDateText = self.uploadProductView.startDateTextField.text,
+                      let endDateText = self.uploadProductView.endDateTextField.text,
                       let info = self.uploadProductView.descriptionTextView.text else { return }
                 
                 switch status {
@@ -149,13 +224,24 @@ extension UploadProductViewController {
                     return
                 }
                 
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd'T'23:59:59"
+                guard let startDate = formatter.date(from: startDateText),
+                      let endDate = formatter.date(from: endDateText) else {
+                    print("날짜 형식 오류")
+                    return
+                }
+                
+                let formattedStartDate = formatter.string(from: startDate)
+                let formattedEndDate = formatter.string(from: endDate)
+                
                 let parameters = UploadProductRequest(
                     name: name,
                     price: Int(price) ?? 0,
                     sellerAccount: sellerAccount,
                     status: status,
-                    startDate: startDate,
-                    endDate: endDate,
+                    startDate: formattedStartDate,
+                    endDate: formattedEndDate,
                     info: info,
                     productImageIds: imageIds,
                     options: []
@@ -187,6 +273,10 @@ extension UploadProductViewController: UITextFieldDelegate {
         textField.resignFirstResponder()
         return true
     }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        updateCompleteButtonState() // 텍스트필드 입력이 끝날때 마다 작성완료 버튼 업데이트
+    }
 }
 
 // MARK: - UITextViewDelegate
@@ -197,6 +287,7 @@ extension UploadProductViewController: UITextViewDelegate {
 
     func textViewDidEndEditing(_ textView: UITextView) {
         activeField = nil
+        updateCompleteButtonState() // 텍스트뷰 입력이 끝날때 마다 작성완료 버튼 업데이트
     }
 }
 
@@ -251,6 +342,7 @@ extension UploadProductViewController: PHPickerViewControllerDelegate {
                 DispatchQueue.main.async {
                     self?.imageList.append(image)
                     self?.uploadProductView.uploadImageView.collectionView.reloadData()
+                    self?.updateCompleteButtonState() // 작성완료 버튼 업데이트
                 }
             }
         }
