@@ -101,6 +101,20 @@ class UserNetworkManager {
         }
     }
     
+    func postLogout(completion: @escaping (Error?) -> Void) {
+        AF.request("\(baseURL)/members/logout",
+                   method: .post)
+        .validate(statusCode: 200..<300)
+        .response { response in
+            switch response.result {
+            case .success:
+                completion(nil)
+            case .failure(let error):
+                completion(error)
+            }
+        }
+    }
+    
     // MARK: - 내 정보 조회
     func getUserInfo(completion: @escaping (Result<UserModel, Error>) -> Void) {
         AF.request("\(baseURL)/members/me",
