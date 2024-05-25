@@ -143,4 +143,39 @@ extension MyPageViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         50
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        switch indexPath.section {
+        case 2:
+            if indexPath.row == 0 {
+                print("로그아웃 버튼 클릭됨")
+                let sheet = UIAlertController(title: nil, message: "로그아웃 하시겠습니까?", preferredStyle: .alert)
+                sheet.addAction(UIAlertAction(title: "취소", style: .destructive, handler: { _ in
+                    print("취소 클릭")
+                }))
+                sheet.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+                    UserNetworkManager.shared.postLogout { error in
+                        if let error = error {
+                            print("로그아웃 실패: \(error.localizedDescription)")
+                        } else {
+                            print("로그아웃 성공")
+                            AppDelegate.isLogin = false
+                            AppDelegate.memberId = -1
+                            AppDelegate.role = ""
+                            
+                            // 탭바의 첫 번째 탭으로 이동
+                            if let tabBarController = self.tabBarController {
+                                tabBarController.selectedIndex = 0
+                            }
+                        }
+                    }
+                }))
+                present(sheet, animated: true)
+            }
+        default:
+            break
+        }
+    }
 }

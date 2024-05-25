@@ -21,7 +21,6 @@ struct MyPageSection {
     ]
 
     let section2 = [
-        "로그아웃",
-        "회원탈퇴"
+        "로그아웃"
     ]
 }
