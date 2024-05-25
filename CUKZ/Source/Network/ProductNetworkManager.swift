@@ -91,4 +91,54 @@ final class ProductNetworkManager {
             }
         }
     }
+    
+    // MARK: - 이미지 업로드
+    func uploadImage(images: [UIImage], 
+                     completion: @escaping (Result<[Int], Error>) -> Void) {
+        
+        let headers: HTTPHeaders = [
+            "Content-Type": "multipart/form-data"
+        ]
+        
+        AF.upload(multipartFormData: { multipartFormData in
+            for (index, image) in images.enumerated() {
+                if let jpegData = image.jpegData(compressionQuality: 0.2) {
+                    multipartFormData.append(jpegData,
+                                             withName: "files",
+                                             fileName: "image\(index).jpeg",
+                                             mimeType: "image/jpeg")
+                }
+            }
+        }, to: "\(baseURL)/products/image-upload", method: .post, headers: headers)
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: [UploadImageResponse].self) { response in
+            switch response.result {
+            case .success(let imageResponses):
+                let imageIds = imageResponses.map { $0.productImageId }
+                completion(.success(imageIds))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    // MARK: - 상품 등록
+    func uploadProduct(parameters: UploadProductRequest, 
+                       completion: @escaping (Error?) -> Void) {
+        
+        print("넘어온 파라미터 \n \(parameters)")
+        AF.request("\(baseURL)/products",
+                   method: .post,
+                   parameters: parameters,
+                   encoder: JSONParameterEncoder.default)
+        .validate(statusCode: 200..<300)
+        .response { response in
+            switch response.result {
+            case .success:
+                completion(nil)
+            case .failure(let error):
+                completion(error)
+            }
+        }
+    }
 }

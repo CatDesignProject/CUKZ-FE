@@ -20,6 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let tabBarVC = TabBarViewController()
         tabBarVC.selectedIndex = 0
         
+//        window?.rootViewController = UploadProductViewController()
         window?.rootViewController = tabBarVC
         window?.makeKeyAndVisible()
     }
