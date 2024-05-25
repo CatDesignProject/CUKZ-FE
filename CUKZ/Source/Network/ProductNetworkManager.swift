@@ -93,7 +93,9 @@ final class ProductNetworkManager {
     }
     
     // MARK: - 이미지 업로드
-    func uploadImage(images: [UIImage]) {
+    func uploadImage(images: [UIImage], 
+                     completion: @escaping (Result<[Int], Error>) -> Void) {
+        
         let headers: HTTPHeaders = [
             "Content-Type": "multipart/form-data"
         ]
@@ -109,13 +111,33 @@ final class ProductNetworkManager {
             }
         }, to: "\(baseURL)/products/image-upload", method: .post, headers: headers)
         .validate(statusCode: 200..<300)
+        .responseDecodable(of: [UploadImageResponse].self) { response in
+            switch response.result {
+            case .success(let imageResponses):
+                let imageIds = imageResponses.map { $0.productImageId }
+                completion(.success(imageIds))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    // MARK: - 상품 등록
+    func uploadProduct(parameters: UploadProductRequest, 
+                       completion: @escaping (Error?) -> Void) {
+        
+        print("넘어온 파라미터 \n \(parameters)")
+        AF.request("\(baseURL)/products",
+                   method: .post,
+                   parameters: parameters,
+                   encoder: JSONParameterEncoder.default)
+        .validate(statusCode: 200..<300)
         .response { response in
             switch response.result {
             case .success:
-                print("\(response)")
-                print("이미지 업로드 성공")
-            case .failure:
-                print("이미지 업로드 실패")
+                completion(nil)
+            case .failure(let error):
+                completion(error)
             }
         }
     }

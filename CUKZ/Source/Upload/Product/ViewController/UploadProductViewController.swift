@@ -11,11 +11,12 @@ import PhotosUI
 
 final class UploadProductViewController: UIViewController {
     // MARK: - Properties
-    var imageList: [UIImage] = []
+    private var imageList: [UIImage] = []
+
+    private var activeField: UIView?
+    let statusArray = ["---- 선택 ----", "수요조사 중", "수요조사 종료", "판매 중", "판매 종료"]
     
     private let uploadProductView = UploadProductView()
-    private var activeField: UIView?
-    let statusArray = ["---- 선택 ----", "수요조사 중", "수요조사 종료", "공동구매 중", "공동구매 종료"]
     
     // MARK: - View 설정
     override func loadView() {
@@ -38,26 +39,30 @@ final class UploadProductViewController: UIViewController {
         title = "상품 등록"
     }
     
-    // 텍스트필드
+    // 텍스트필드 설정
     private func setupTextField() {
         let view = uploadProductView
-        view.productNameTextField.delegate = self
-        view.statusTextField.delegate = self
-        view.endDateTextField.delegate = self
+        
+        [view.productNameTextField,
+         view.priceTextField,
+         view.accountTextField,
+         view.statusTextField,
+         view.startDateTextField,
+         view.endDateTextField].forEach { $0.delegate = self }
     }
     
-    // 텍스트뷰
+    // 텍스트뷰 설정
     private func setupTextView() {
-        uploadProductView.desciptionTextView.delegate = self
+        uploadProductView.descriptionTextView.delegate = self
     }
     
-    // 버튼
+    // 버튼 설정
     private func setupButton() {
         uploadProductView.uploadImageView.uploadButton.addTarget(self, action: #selector(uploadButtonTapped), for: .touchUpInside)
         uploadProductView.completeButton.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
     }
     
-    // 피커뷰
+    // 피커뷰 설정
     private func setupPickerView() {
         uploadProductView.pickerView.dataSource = self
         uploadProductView.pickerView.delegate = self
@@ -78,7 +83,7 @@ final class UploadProductViewController: UIViewController {
         uploadProductView.statusTextField.inputAccessoryView = toolbar
     }
     
-    // 컬렉션뷰
+    // 컬렉션뷰 설정
     private func setupCollectionView() {
         uploadProductView.uploadImageView.collectionView.dataSource = self
         uploadProductView.uploadImageView.collectionView.register(UploadImageCell.self, forCellWithReuseIdentifier: "UploadImageCell")
@@ -118,8 +123,61 @@ extension UploadProductViewController {
     }
     
     @objc private func completeButtonTapped() {
-        print("작성완료 버튼 눌림")
-        ProductNetworkManager.shared.uploadImage(images: self.imageList)
+        ProductNetworkManager.shared.uploadImage(images: self.imageList) { result in
+            switch result {
+            case .success(let imageIds): // 이미지 업로드에 성공 후, 상품 등록
+                print("업로드된 이미지 IDs: \(imageIds)")
+                
+                guard let name = self.uploadProductView.productNameTextField.text,
+                      let price = self.uploadProductView.priceTextField.text,
+                      let sellerAccount = self.uploadProductView.accountTextField.text,
+                      var status = self.uploadProductView.statusTextField.text,
+                      let startDate = self.uploadProductView.startDateTextField.text,
+                      let endDate = self.uploadProductView.endDateTextField.text,
+                      let info = self.uploadProductView.descriptionTextView.text else { return }
+                
+                switch status {
+                case "수요조사 중":
+                    status = "ON_DEMAND"
+                case "수요조사 종료" :
+                    status = "END_DEMAND"
+                case "판매 중":
+                    status = "ON_SALE"
+                case "판매 종료":
+                    status = "END_SALE"
+                default:
+                    return
+                }
+                
+                let parameters = UploadProductRequest(
+                    name: name,
+                    price: Int(price) ?? 0,
+                    sellerAccount: sellerAccount,
+                    status: status,
+                    startDate: startDate,
+                    endDate: endDate,
+                    info: info,
+                    productImageIds: imageIds,
+                    options: []
+                )
+                
+                print(parameters)
+                
+                ProductNetworkManager.shared.uploadProduct(parameters: parameters) { error in
+                    if let error = error {
+                        print("상품 등록 실패: \(error.localizedDescription)")
+                    } else {
+                        print("상품 등록 성공")
+                        if let productHomeVC = self.navigationController?.viewControllers.first(where: { $0 is ProductHomeViewController }) as? ProductHomeViewController {
+                            self.navigationController?.popViewController(animated: true)
+                            productHomeVC.fetchData()
+                        }
+                    }
+                }
+            case .failure(let error):
+                print("이미지 업로드 실패: \(error.localizedDescription)")
+            }
+        }
     }
 }
 

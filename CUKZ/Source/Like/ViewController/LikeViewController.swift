@@ -114,7 +114,7 @@ extension LikeViewController: UITableViewDataSource {
         cell.productPriceLabel.text = "\(data.price)원"
         
         var productStatus: String = ""
-        var productStatusColor: UIColor = .systemGray4
+        var productStatusColor: UIColor = .systemGray2
         
         switch data.status {
         case "ON_DEMAND":

@@ -54,7 +54,7 @@ final class UploadProductView: UIView {
         $0.layer.borderWidth = 1
     }
     
-    let priceDateTextField = UITextField().then {
+    let priceTextField = UITextField().then {
         $0.placeholder = "가격을 입력해주세요"
         $0.backgroundColor = .clear
         $0.autocapitalizationType = .none
@@ -162,12 +162,12 @@ final class UploadProductView: UIView {
     }
     
     // 상품 설명
-    private let desciptionLabel = UILabel().then {
+    private let descriptionLabel = UILabel().then {
         $0.text = "상품 설명"
         $0.font = UIFont.systemFont(ofSize: 18)
     }
     
-    let desciptionTextView = UITextView().then {
+    let descriptionTextView = UITextView().then {
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
         $0.spellCheckingType = .no
@@ -250,15 +250,15 @@ final class UploadProductView: UIView {
             endDateLabel,
             endDateRoundView,
             spacerView6, // 공백
-            desciptionLabel,
-            desciptionTextView,
+            descriptionLabel,
+            descriptionTextView,
             spacerView7, // 공백
             uploadImageLabel,
             uploadImageView
         ])
         
         productNameRoundView.addSubview(productNameTextField)
-        priceRoundView.addSubview(priceDateTextField)
+        priceRoundView.addSubview(priceTextField)
         accountRoundView.addSubview(accountTextField)
         statusRoundView.addSubview(statusTextField)
         startDateRoundView.addSubview(startDateTextField)
@@ -291,7 +291,7 @@ final class UploadProductView: UIView {
             make.edges.equalTo(productNameRoundView).inset(5)
         }
         
-        priceDateTextField.snp.makeConstraints { make in
+        priceTextField.snp.makeConstraints { make in
             make.edges.equalTo(priceRoundView).inset(5)
         }
         
@@ -311,7 +311,7 @@ final class UploadProductView: UIView {
             make.edges.equalTo(endDateRoundView).inset(5)
         }
         
-        desciptionTextView.snp.makeConstraints { make in
+        descriptionTextView.snp.makeConstraints { make in
             make.height.equalTo(180)
         }
         

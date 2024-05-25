@@ -27,14 +27,14 @@ final class ProductHomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        fetchData() // ** API 수정필요 **
+        fetchData()
         setupNaviBar()
         setupTableView()
         setupRefresh()
     }
     
     // 네트워킹
-    private func fetchData() {
+    func fetchData() {
         self.pageNum = 0
         ProductNetworkManager.shared.getProductAll(page: 0) { model in
             if let model = model {
@@ -179,7 +179,7 @@ extension ProductHomeViewController: UITableViewDataSource {
         cell.productPriceLabel.text = "\(data.price)원"
         
         var productStatus: String = ""
-        var productStatusColor: UIColor = .systemGray
+        var productStatusColor: UIColor = .systemGray2
         
         switch data.saleStatus {
         case "ON_DEMAND":
