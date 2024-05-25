@@ -34,6 +34,9 @@ final class ProductSearchViewController: UIViewController {
     // 네비게이션바 설정
     private func setupNaviBar() {
         let searchBar = UISearchBar()
+        searchBar.autocapitalizationType = .none
+        searchBar.autocorrectionType = .no
+        searchBar.spellCheckingType = .no
         searchBar.placeholder = "상품 이름"
         searchBar.becomeFirstResponder()
         searchBar.tintColor = .gadaeBlue // 원하는 색상으로 설정

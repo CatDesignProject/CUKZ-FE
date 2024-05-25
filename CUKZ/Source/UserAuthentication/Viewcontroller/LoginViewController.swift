@@ -82,13 +82,20 @@ extension LoginViewController {
               let password = loginView.passwordTextField.text else { return }
         
         UserNetworkManager.shared.postLogin(username: username,
-                                            password: password) { error in
-            DispatchQueue.main.async {
-                if error != nil { // 로그인 실패
-                    self.loginView.loginInfoLabel.isHidden = false
-                } else { // 로그인 성공
-                    AppDelegate.isLogin = true
+                                            password: password) { result in
+            switch result {
+            case .success(let data):
+                print("로그인 성공")
+                AppDelegate.isLogin = true
+                AppDelegate.memberId = data.memberId
+                AppDelegate.role = data.role
+                DispatchQueue.main.async {
                     self.dismiss(animated: true, completion: nil)
+                }
+            case .failure(let error):
+                print("로그인 실패 \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.loginView.loginInfoLabel.isHidden = false
                 }
             }
         }

@@ -75,7 +75,7 @@ class UserNetworkManager {
     // MARK: - 로그인
     func postLogin(username: String,
                    password: String,
-                   completion: @escaping (Error?) -> Void) {
+                   completion: @escaping (Result<LoginResponse, Error>) -> Void) {
         
         let parameters: [String: Any] = [
             "username": username,
@@ -87,18 +87,16 @@ class UserNetworkManager {
                    parameters: parameters,
                    encoding: JSONEncoding.default)
         .validate(statusCode: 200..<300)
-        .responseJSON { response in
+        .responseDecodable(of: LoginResponse.self) { response in
             switch response.result {
-            case .success:
+            case .success(let result):
                 if let headerFields = response.response?.allHeaderFields as? [String: String], let url = response.response?.url {
                     let cookies = HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: url)
                     let cookie = cookies.first(where: { $0.name == "JSESSIONID" })
                 }
-                completion(nil)
-                print("로그인 - 네트워킹 성공")
+                completion(.success(result))
             case .failure(let error):
-                completion(error)
-                print("로그인 - \(error)")
+                completion(.failure(error))
             }
         }
     }

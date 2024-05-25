@@ -192,7 +192,7 @@ final class UploadProductView: UIView {
     let completeButton = UIButton().then {
         $0.setTitle("작성완료", for: .normal)
         $0.backgroundColor = .lightGray
-//        $0.isEnabled = false
+        $0.isEnabled = false
     }
     
     // MARK: - Init
