@@ -88,6 +88,7 @@ extension LoginViewController {
                 print("로그인 성공")
                 AppDelegate.isLogin = true
                 AppDelegate.memberId = data.memberId
+                AppDelegate.role = data.role
                 DispatchQueue.main.async {
                     self.dismiss(animated: true, completion: nil)
                 }

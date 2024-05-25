@@ -127,12 +127,12 @@ final class ProductHomeViewController: UIViewController {
 extension ProductHomeViewController {
     // 업로드 버튼
     @objc func uploadButtonTapped() {
-        if AppDelegate.isLogin { // ⭐️⭐️ 총대인증 추가하기 ⭐️⭐️
+        if !AppDelegate.isLogin || AppDelegate.role == "user" {
+            showAlertWithDismissDelay(message: "총대신청을 진행해주세요.")
+        } else {
             let VC = UploadProductViewController()
             VC.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(VC, animated: true)
-        } else {
-            showAlertWithDismissDelay(message: "로그인 후 총대인증을 진행해주세요.")
         }
     }
     

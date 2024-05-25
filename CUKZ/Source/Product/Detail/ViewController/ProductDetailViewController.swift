@@ -27,7 +27,6 @@ final class ProductDetailViewController: UIViewController {
         super.viewDidLoad()
         
         fetchData()
-        setupNaviBar()
         setupScrollView()
         setupRefresh()
         setupImageCollectionView()
@@ -45,6 +44,8 @@ final class ProductDetailViewController: UIViewController {
     }
     
     private func updateUI() {
+        setupNaviBar()
+        
         productDetailView.productImageCollectionView.reloadData()
         
         guard let data = self.productDetailData else { return }
@@ -84,6 +85,18 @@ final class ProductDetailViewController: UIViewController {
     
     private func setupNaviBar() {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        
+        guard let sellerId = self.productDetailData?.sellerId else { return }
+        
+        if AppDelegate.memberId == sellerId {
+            let menuButton = UIButton().then {
+                let imageConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .light)
+                let image = UIImage(systemName: "ellipsis.circle", withConfiguration: imageConfig)
+                $0.setImage(image, for: .normal)
+                $0.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
+            }
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton) // 오른쪽
+        }
     }
     
     private func setupScrollView() {
@@ -146,6 +159,38 @@ extension ProductDetailViewController {
             
             refresh.endRefreshing()
         }
+    }
+    
+    // 메뉴
+    @objc private func menuButtonTapped() {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let reportAction = UIAlertAction(title: "삭제하기", style: .destructive) { _ in
+            if let productId = self.productDetailData?.id {
+                ProductNetworkManager.shared.deleteProduct(productId: productId) { error in
+                    if let error = error {
+                        print("상품 삭제 실패: \(error.localizedDescription)")
+                        self.showAlertWithDismissDelay(message: "수요조사 종료 및 판매 종료 상품은 삭제할 수 없습니다.")
+                    } else {
+                        print("상품 삭제 성공")
+                        if let productHomeVC = self.navigationController?.viewControllers.first(where: { $0 is ProductHomeViewController }) as? ProductHomeViewController {
+                            self.navigationController?.popViewController(animated: true)
+                            productHomeVC.fetchData()
+                        }
+                    }
+                }
+            }
+        }
+        
+        let blockingAction = UIAlertAction(title: "수정하기", style: .default) { _ in
+            // '차단하기' 액션이 선택되었을 때 수행할 작업
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        [reportAction, blockingAction, cancelAction].forEach { alertController.addAction($0) }
+        
+        present(alertController, animated: true, completion: nil)
     }
     
     // 총대 리뷰보기
