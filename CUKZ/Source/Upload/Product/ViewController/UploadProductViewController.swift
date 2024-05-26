@@ -13,7 +13,7 @@ final class UploadProductViewController: UIViewController {
     // MARK: - Properties
     var imageList: [UIImage] = [] // 상품 사진 담는 배열
     var optionList: [Options] = [] // 옵션 담는 배열
-    var isPatch: Bool? // 상품 수정 여부
+    var isPatch: Bool = false // 상품 수정 여부
     var productId: Int? // 상품 수정할 때 필요
 
     private var activeField: UIView?
@@ -42,7 +42,6 @@ final class UploadProductViewController: UIViewController {
     }
     
     private func setupNaviBar() {
-        guard let isPatch = isPatch else { return }
         if isPatch {
             title = "상품 수정"
         } else {
@@ -195,7 +194,7 @@ extension UploadProductViewController {
                     
             self.present(imagePicker, animated: true)
         } else {
-            showAlertWithDismissDelay(message: "이미지는 최대 10장까지만 업로드 가능합니다.")
+            showAlertWithDismissDelay(message: "최대 10장까지 가능합니다.")
         }
     }
     
@@ -212,15 +211,55 @@ extension UploadProductViewController {
     
     // 옵션추가 버튼
     @objc private func addOptionButtonTapped() {
-        print("옵션 추가 버튼 눌림")
+        guard self.optionList.count < 10 else {
+            self.showAlertWithDismissDelay(message: "최대 10개까지 가능합니다.")
+            return
+        }
+        
+        // 텍스트필드 alert 띄우기
+        let alertController = UIAlertController(title: "옵션 추가", message: nil, preferredStyle: .alert)
+
+        alertController.addTextField {
+            $0.placeholder = "옵션 이름"
+            $0.autocapitalizationType = .none
+            $0.autocorrectionType = .no
+            $0.spellCheckingType = .no
+        }
+
+        alertController.addTextField {
+            $0.placeholder = "추가 가격"
+            $0.keyboardType = .numberPad
+        }
+
+        let cancelAction = UIAlertAction(title: "취소", style: .destructive, handler: nil)
+        let addAction = UIAlertAction(title: "추가", style: .default) { _ in
+            guard let optionName = alertController.textFields?[0].text,
+                  let additionalPriceText = alertController.textFields?[1].text,
+                  let additionalPrice = Int(additionalPriceText), !optionName.isEmpty else {
+                self.showAlertWithDismissDelay(message: "빈칸을 모두 입력해주세요.\n추가가격이 없을 시 0을 입력해주세요.")
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self.optionList.append(Options(name: optionName, additionalPrice: additionalPrice))
+                self.uploadProductView.uploadOptionView.collectionView.reloadData()
+                print("옵션 추가 --- \(self.optionList)")
+            }
+        }
+
+        alertController.addAction(cancelAction)
+        alertController.addAction(addAction)
+
+        present(alertController, animated: true, completion: nil)
     }
+
     
     // 옵션삭제 버튼
     @objc func optionDeleteButtonTapped(sender: UIButton) {
         let index = sender.tag
         
         self.optionList.remove(at: index)
-        print(self.optionList)
+        print("옵션 삭제 --- \(self.optionList)")
         self.uploadProductView.uploadOptionView.collectionView.reloadData()
         
         updateCompleteButtonState() // 작성완료 버튼 업데이트
@@ -255,15 +294,22 @@ extension UploadProductViewController {
                 }
                 
                 let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd'T'23:59:59"
+                formatter.dateFormat = "yyyy-MM-dd"
+
+                let startDateFormatter = DateFormatter()
+                startDateFormatter.dateFormat = "yyyy-MM-dd'T'00:00:01"
+
+                let endDateFormatter = DateFormatter()
+                endDateFormatter.dateFormat = "yyyy-MM-dd'T'00:50:59"
+
                 guard let startDate = formatter.date(from: startDateText),
                       let endDate = formatter.date(from: endDateText) else {
                     print("날짜 형식 오류")
                     return
                 }
-                
-                let formattedStartDate = formatter.string(from: startDate)
-                let formattedEndDate = formatter.string(from: endDate)
+
+                let formattedStartDate = startDateFormatter.string(from: startDate)
+                let formattedEndDate = endDateFormatter.string(from: endDate)
                 
                 let parameters = UploadProductRequest(
                     name: name,
@@ -274,15 +320,14 @@ extension UploadProductViewController {
                     endDate: formattedEndDate,
                     info: info,
                     productImageIds: imageIds,
-                    options: []
+                    options: self.optionList
                 )
                 
                 print(parameters)
                 
-                guard let isPatch = self.isPatch,
-                      let productId = self.productId else { return }
-                
-                if isPatch { // 상품 수정일 때
+                if self.isPatch { // 상품 수정일 때
+                    guard let productId = self.productId else { return }
+                    
                     ProductNetworkManager.shared.patchProduct(productId: productId,
                                                               parameters: parameters) { error in
                         if let error = error {
@@ -387,7 +432,7 @@ extension UploadProductViewController: UICollectionViewDataSource {
             
             let data = self.optionList[indexPath.row]
             cell.optionNameLabel.text = data.name
-            cell.additionalPrice.text = String(data.additionalPrice)
+            cell.additionalPrice.text = "+ \(data.additionalPrice)"
             cell.deleteButton.addTarget(self,
                                         action: #selector(optionDeleteButtonTapped),
                                         for: .touchUpInside)
