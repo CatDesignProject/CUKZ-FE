@@ -15,9 +15,16 @@ struct UploadProductRequest: Codable {
     let info: String
     let productImageIds: [Int]
     let options: [Options]
+    
+    struct Options: Codable {
+        let name: String
+        let additionalPrice: Int
+    }
 }
 
-struct Options: Codable {
-    let name: String
-    let additionalPrice: Int
+extension UploadProductRequest.Options { // 상품 수정할 때
+    init(from option: ProductDetailModel.Option) {
+        self.name = option.name
+        self.additionalPrice = option.additionalPrice
+    }
 }

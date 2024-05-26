@@ -144,7 +144,7 @@ final class ProductDetailView: UIView {
         
         pageNumBackView.snp.makeConstraints { make in
             make.height.equalTo(30)
-            make.width.equalTo(45)
+            make.width.equalTo(55)
             make.top.trailing.equalTo(productImageCollectionView).inset(20)
         }
         

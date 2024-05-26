@@ -1,17 +1,17 @@
 //
-//  UploadImageView.swift
+//  UploadOptionView.swift
 //  CUKZ
 //
-//  Created by 이승민 on 5/24/24.
+//  Created by 이승민 on 5/26/24.
 //
 
 import UIKit
 
-final class UploadImageView: UIView {
+final class UploadOptionView: UIView {
     // MARK: - View
-    let addImageButton = UIButton().then {
-        $0.tintColor = .gadaeBlue
-        $0.setImage(UIImage(systemName: "camera.fill"), for: .normal)
+    let addOptionButton = UIButton().then {
+        $0.setTitle("옵션추가", for: .normal)
+        $0.setTitleColor(.gadaeBlue, for: .normal)
         $0.layer.cornerRadius = 8
         $0.layer.borderWidth = 1
         $0.layer.borderColor = UIColor.black.cgColor
@@ -44,22 +44,23 @@ final class UploadImageView: UIView {
     // MARK: - UI
     private func addViews() {
         self.addSubviews([
-            addImageButton,
+            addOptionButton,
             collectionView,
         ])
     }
     
     private func configureConstraints() {
-        addImageButton.snp.makeConstraints { make in
+        addOptionButton.snp.makeConstraints { make in
             make.top.leading.equalToSuperview()
             make.size.equalTo(100)
         }
         
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(addImageButton)
-            make.bottom.equalTo(addImageButton).inset(5)
-            make.leading.equalTo(addImageButton.snp.trailing).offset(16)
+            make.top.equalTo(addOptionButton)
+            make.bottom.equalTo(addOptionButton)
+            make.leading.equalTo(addOptionButton.snp.trailing).offset(16)
             make.trailing.equalToSuperview()
         }
     }
 }
+

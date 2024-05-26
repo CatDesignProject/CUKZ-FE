@@ -179,6 +179,20 @@ final class UploadProductView: UIView {
     
     let uploadImageView = UploadImageView()
     
+    // 옵션
+    private let optionLabel = UILabel().then {
+        $0.text = "옵션 (최소1개, 최대 10개)"
+        $0.font = UIFont.systemFont(ofSize: 18)
+        let attributedString = NSMutableAttributedString(string: $0.text ?? "")
+        let range = ($0.text as NSString?)?.range(of: "(최소1개, 최대 10개)")
+        if let range = range {
+            attributedString.addAttribute(.foregroundColor, value: UIColor.red, range: range)
+            $0.attributedText = attributedString
+        }
+    }
+    
+    let uploadOptionView = UploadOptionView()
+    
     // 공백뷰
     private let spacerView1 = UIView()
     private let spacerView2 = UIView()
@@ -187,6 +201,7 @@ final class UploadProductView: UIView {
     private let spacerView5 = UIView()
     private let spacerView6 = UIView()
     private let spacerView7 = UIView()
+    private let spacerView8 = UIView()
     
     // 작성완료 버튼
     let completeButton = UIButton().then {
@@ -242,7 +257,10 @@ final class UploadProductView: UIView {
             descriptionTextView,
             spacerView7, // 공백
             uploadImageLabel,
-            uploadImageView
+            uploadImageView,
+            spacerView8, //공백
+            optionLabel,
+            uploadOptionView
         ])
         
         productNameRoundView.addSubview(productNameTextField)
@@ -307,6 +325,10 @@ final class UploadProductView: UIView {
             make.height.equalTo(115)
         }
         
+        uploadOptionView.snp.makeConstraints { make in
+            make.height.equalTo(115)
+        }
+        
         // 작성완료 버튼
         completeButton.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
@@ -314,7 +336,7 @@ final class UploadProductView: UIView {
         }
         
         // 공백뷰
-        [spacerView1, spacerView2, spacerView3, spacerView4, spacerView5, spacerView6, spacerView7].forEach {
+        [spacerView1, spacerView2, spacerView3, spacerView4, spacerView5, spacerView6, spacerView7, spacerView8].forEach {
             $0.snp.makeConstraints { make in
                 make.height.equalTo(20)
             }

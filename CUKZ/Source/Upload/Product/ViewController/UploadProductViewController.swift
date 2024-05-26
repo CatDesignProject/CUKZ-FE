@@ -12,7 +12,8 @@ import PhotosUI
 final class UploadProductViewController: UIViewController {
     // MARK: - Properties
     var imageList: [UIImage] = [] // 상품 사진 담는 배열
-    var isPatch: Bool? // 상품 수정 여부
+    var optionList: [UploadProductRequest.Options] = [] // 옵션 담는 배열
+    var isPatch: Bool = false // 상품 수정 여부
     var productId: Int? // 상품 수정할 때 필요
 
     private var activeField: UIView?
@@ -41,7 +42,6 @@ final class UploadProductViewController: UIViewController {
     }
     
     private func setupNaviBar() {
-        guard let isPatch = isPatch else { return }
         if isPatch {
             title = "상품 수정"
         } else {
@@ -94,8 +94,17 @@ final class UploadProductViewController: UIViewController {
     
     // 버튼 설정
     private func setupButton() {
-        uploadProductView.uploadImageView.uploadButton.addTarget(self, action: #selector(imageUploadButtonTapped), for: .touchUpInside)
-        uploadProductView.completeButton.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
+        uploadProductView.uploadImageView.addImageButton.addTarget(self, 
+                                                                   action: #selector(addImageButtonTapped),
+                                                                   for: .touchUpInside)
+        
+        uploadProductView.uploadOptionView.addOptionButton.addTarget(self,
+                                                                     action: #selector(addOptionButtonTapped),
+                                                                     for: .touchUpInside)
+        
+        uploadProductView.completeButton.addTarget(self, 
+                                                   action: #selector(completeButtonTapped),
+                                                   for: .touchUpInside)
     }
     
     // 피커뷰 설정
@@ -121,8 +130,13 @@ final class UploadProductViewController: UIViewController {
     
     // 컬렉션뷰 설정
     private func setupCollectionView() {
+        // 사진
         uploadProductView.uploadImageView.collectionView.dataSource = self
         uploadProductView.uploadImageView.collectionView.register(UploadImageCell.self, forCellWithReuseIdentifier: "UploadImageCell")
+        
+        // 옵션
+        uploadProductView.uploadOptionView.collectionView.dataSource = self
+        uploadProductView.uploadOptionView.collectionView.register(UploadOptionCell.self, forCellWithReuseIdentifier: "UploadOptionCell")
     }
     
     // 작성완료 버튼 업데이트
@@ -136,8 +150,9 @@ final class UploadProductViewController: UIViewController {
         let isEndDateEmpty = uploadProductView.endDateTextField.text?.isEmpty ?? true
         let isInfoEmpty = uploadProductView.descriptionTextView.text?.isEmpty ?? true
         let isImageEmpty = self.imageList.isEmpty
+        let isOptionEmpty = self.optionList.isEmpty
         
-        if !isNameEmpty && !isPriceEmpty && !isAccountEmpty && !isStatusEmpty && !isStatusValid && !isStartDateEmpty && !isEndDateEmpty && !isInfoEmpty && !isImageEmpty {
+        if !isNameEmpty && !isPriceEmpty && !isAccountEmpty && !isStatusEmpty && !isStatusValid && !isStartDateEmpty && !isEndDateEmpty && !isInfoEmpty && !isImageEmpty && !isOptionEmpty {
             uploadProductView.completeButton.isEnabled = true
             uploadProductView.completeButton.backgroundColor = .gadaeBlue
         } else {
@@ -149,6 +164,7 @@ final class UploadProductViewController: UIViewController {
 
 // MARK: - @objc
 extension UploadProductViewController {
+    // 피커뷰 완료 버튼
     @objc private func dismissPickerView() {
         view.endEditing(true)
     }
@@ -164,7 +180,8 @@ extension UploadProductViewController {
         }
     }
 
-    @objc private func imageUploadButtonTapped() {
+    // 사진추가 버튼
+    @objc private func addImageButtonTapped() {
         print("사진 업로드 버튼 눌림")
         let availableSlots = 10 - imageList.count
         if availableSlots > 0 {
@@ -178,11 +195,12 @@ extension UploadProductViewController {
                     
             self.present(imagePicker, animated: true)
         } else {
-            showAlertWithDismissDelay(message: "이미지는 최대 10장까지만 업로드 가능합니다.")
+            showAlertWithDismissDelay(message: "최대 10장까지 가능합니다.")
         }
     }
     
-    @objc func deleteButtonTapped(sender: UIButton) {
+    // 사진삭제 버튼
+    @objc func imageDeleteButtonTapped(sender: UIButton) {
         let index = sender.tag
         
         self.imageList.remove(at: index)
@@ -192,7 +210,67 @@ extension UploadProductViewController {
         updateCompleteButtonState() // 작성완료 버튼 업데이트
     }
     
+    // 옵션추가 버튼
+    @objc private func addOptionButtonTapped() {
+        guard self.optionList.count < 10 else {
+            self.showAlertWithDismissDelay(message: "최대 10개까지 가능합니다.")
+            return
+        }
+        
+        // 텍스트필드 alert 띄우기
+        let alertController = UIAlertController(title: "옵션 추가", message: nil, preferredStyle: .alert)
+
+        alertController.addTextField {
+            $0.placeholder = "옵션 이름"
+            $0.autocapitalizationType = .none
+            $0.autocorrectionType = .no
+            $0.spellCheckingType = .no
+        }
+
+        alertController.addTextField {
+            $0.placeholder = "추가 가격"
+            $0.keyboardType = .numberPad
+        }
+
+        let cancelAction = UIAlertAction(title: "취소", style: .destructive, handler: nil)
+        let addAction = UIAlertAction(title: "추가", style: .default) { _ in
+            guard let optionName = alertController.textFields?[0].text,
+                  let additionalPriceText = alertController.textFields?[1].text,
+                  let additionalPrice = Int(additionalPriceText), !optionName.isEmpty else {
+                self.showAlertWithDismissDelay(message: "빈칸을 모두 입력해주세요.\n추가가격이 없을 시 0을 입력해주세요.")
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self.optionList.append(UploadProductRequest.Options(name: optionName, additionalPrice: additionalPrice))
+                self.uploadProductView.uploadOptionView.collectionView.reloadData()
+                self.updateCompleteButtonState()
+                print("옵션 추가 --- \(self.optionList)")
+            }
+        }
+
+        alertController.addAction(cancelAction)
+        alertController.addAction(addAction)
+
+        present(alertController, animated: true, completion: nil)
+    }
+
+    
+    // 옵션삭제 버튼
+    @objc func optionDeleteButtonTapped(sender: UIButton) {
+        let index = sender.tag
+        
+        self.optionList.remove(at: index)
+        print("옵션 삭제 --- \(self.optionList)")
+        self.uploadProductView.uploadOptionView.collectionView.reloadData()
+        
+        updateCompleteButtonState() // 작성완료 버튼 업데이트
+    }
+    
+    // 작성완료 버튼
     @objc private func completeButtonTapped() {
+        uploadProductView.completeButton.isHidden = false
+        
         ProductNetworkManager.shared.uploadImage(images: self.imageList) { result in
             switch result {
             case .success(let imageIds): // 이미지 업로드에 성공 후, 상품 등록
@@ -220,15 +298,22 @@ extension UploadProductViewController {
                 }
                 
                 let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd'T'23:59:59"
+                formatter.dateFormat = "yyyy-MM-dd"
+
+                let startDateFormatter = DateFormatter()
+                startDateFormatter.dateFormat = "yyyy-MM-dd'T'00:00:01"
+
+                let endDateFormatter = DateFormatter()
+                endDateFormatter.dateFormat = "yyyy-MM-dd'T'23:59:59"
+
                 guard let startDate = formatter.date(from: startDateText),
                       let endDate = formatter.date(from: endDateText) else {
                     print("날짜 형식 오류")
                     return
                 }
-                
-                let formattedStartDate = formatter.string(from: startDate)
-                let formattedEndDate = formatter.string(from: endDate)
+
+                let formattedStartDate = startDateFormatter.string(from: startDate)
+                let formattedEndDate = endDateFormatter.string(from: endDate)
                 
                 let parameters = UploadProductRequest(
                     name: name,
@@ -239,15 +324,14 @@ extension UploadProductViewController {
                     endDate: formattedEndDate,
                     info: info,
                     productImageIds: imageIds,
-                    options: []
+                    options: self.optionList
                 )
                 
                 print(parameters)
                 
-                guard let isPatch = self.isPatch,
-                      let productId = self.productId else { return }
-                
-                if isPatch { // 상품 수정일 때
+                if self.isPatch { // 상품 수정일 때
+                    guard let productId = self.productId else { return }
+                    
                     ProductNetworkManager.shared.patchProduct(productId: productId,
                                                               parameters: parameters) { error in
                         if let error = error {
@@ -328,18 +412,38 @@ extension UploadProductViewController: UIPickerViewDelegate {
 // MARK: - UICollectionViewDataSource
 extension UploadProductViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.imageList.count
+        if collectionView == uploadProductView.uploadImageView.collectionView {
+            return self.imageList.count
+        } else {
+            return self.optionList.count
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UploadImageCell", for: indexPath) as! UploadImageCell
+        if collectionView == uploadProductView.uploadImageView.collectionView { // 사진
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UploadImageCell", for: indexPath) as! UploadImageCell
+            
+            let image = self.imageList[indexPath.item]
+            cell.uploadedImageView.image = image
+            cell.deleteButton.tag = indexPath.row
+            cell.deleteButton.addTarget(self, 
+                                        action: #selector(imageDeleteButtonTapped),
+                                        for: .touchUpInside)
+            return cell
+            
+        } else { // 옵션
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UploadOptionCell", for: indexPath) as! UploadOptionCell
+            
+            let data = self.optionList[indexPath.row]
+            cell.optionNameLabel.text = data.name
+            cell.additionalPrice.text = "+ \(data.additionalPrice)"
+            cell.deleteButton.addTarget(self,
+                                        action: #selector(optionDeleteButtonTapped),
+                                        for: .touchUpInside)
+            return cell
+        }
         
-        let image = self.imageList[indexPath.item]
-        cell.uploadedImageView.image = image
-        cell.deleteButton.tag = indexPath.row
-        cell.deleteButton.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
         
-        return cell
     }
 }
 
