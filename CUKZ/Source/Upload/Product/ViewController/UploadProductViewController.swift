@@ -12,7 +12,7 @@ import PhotosUI
 final class UploadProductViewController: UIViewController {
     // MARK: - Properties
     var imageList: [UIImage] = [] // 상품 사진 담는 배열
-    var optionList: [Options] = [] // 옵션 담는 배열
+    var optionList: [UploadProductRequest.Options] = [] // 옵션 담는 배열
     var isPatch: Bool = false // 상품 수정 여부
     var productId: Int? // 상품 수정할 때 필요
 
@@ -242,7 +242,7 @@ extension UploadProductViewController {
             }
             
             DispatchQueue.main.async {
-                self.optionList.append(Options(name: optionName, additionalPrice: additionalPrice))
+                self.optionList.append(UploadProductRequest.Options(name: optionName, additionalPrice: additionalPrice))
                 self.uploadProductView.uploadOptionView.collectionView.reloadData()
                 self.updateCompleteButtonState()
                 print("옵션 추가 --- \(self.optionList)")

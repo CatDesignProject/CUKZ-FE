@@ -164,9 +164,7 @@ extension ProductDetailViewController {
         
         let deleteAction = UIAlertAction(title: "삭제하기", style: .destructive) {_ in
             let sheet = UIAlertController(title: nil, message: "삭제 하시겠습니까?", preferredStyle: .alert)
-            sheet.addAction(UIAlertAction(title: "취소", style: .destructive, handler: { _ in
-                print("취소 클릭")
-            }))
+            sheet.addAction(UIAlertAction(title: "취소", style: .destructive))
             sheet.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
                 if let productId = self.productDetailData?.id {
                     ProductNetworkManager.shared.deleteProduct(productId: productId) { error in
@@ -238,6 +236,8 @@ extension ProductDetailViewController {
                     }
                 }.resume()
             }
+            
+            VC.optionList = data.options.map { UploadProductRequest.Options(from: $0) }
             
             self.navigationController?.pushViewController(VC, animated: true)
         }
