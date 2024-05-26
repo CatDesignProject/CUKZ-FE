@@ -14,12 +14,23 @@ final class LikeViewController: UIViewController {
     var totalPageNum: Int = 0
     var pageNum: Int = 1
     var isLastPage: Bool = false
+    var isLoggedOut: Bool = false // 로그아웃 여부
     
     private let likeView = LikeView()
     
     // MARK: - View 설정
     override func loadView() {
         view = likeView
+    }
+    
+    // MARK: - ViewWillAppear
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if isLoggedOut { // 로그아웃 하고 처음 들어왔을 때
+            fetchData()
+            isLoggedOut = false
+        }
     }
     
     // MARK: - ViewDidLodad
