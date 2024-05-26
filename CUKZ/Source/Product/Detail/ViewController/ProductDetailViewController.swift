@@ -163,20 +163,27 @@ extension ProductDetailViewController {
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
         let deleteAction = UIAlertAction(title: "삭제하기", style: .destructive) {_ in
-            if let productId = self.productDetailData?.id {
-                ProductNetworkManager.shared.deleteProduct(productId: productId) { error in
-                    if let error = error {
-                        print("상품 삭제 실패: \(error.localizedDescription)")
-                        self.showAlertWithDismissDelay(message: "수요조사 종료 및 판매 종료 상품은 삭제할 수 없습니다.")
-                    } else {
-                        print("상품 삭제 성공")
-                        if let productHomeVC = self.navigationController?.viewControllers.first(where: { $0 is ProductHomeViewController }) as? ProductHomeViewController {
-                            self.navigationController?.popViewController(animated: true)
-                            productHomeVC.fetchData()
+            let sheet = UIAlertController(title: nil, message: "삭제 하시겠습니까?", preferredStyle: .alert)
+            sheet.addAction(UIAlertAction(title: "취소", style: .destructive, handler: { _ in
+                print("취소 클릭")
+            }))
+            sheet.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+                if let productId = self.productDetailData?.id {
+                    ProductNetworkManager.shared.deleteProduct(productId: productId) { error in
+                        if let error = error {
+                            print("상품 삭제 실패: \(error.localizedDescription)")
+                            self.showAlertWithDismissDelay(message: "수요조사 종료 및 판매 종료 상품은 삭제할 수 없습니다.")
+                        } else {
+                            print("상품 삭제 성공")
+                            if let productHomeVC = self.navigationController?.viewControllers.first(where: { $0 is ProductHomeViewController }) as? ProductHomeViewController {
+                                self.navigationController?.popViewController(animated: true)
+                                productHomeVC.fetchData()
+                            }
                         }
                     }
                 }
-            }
+            }))
+            self.present(sheet, animated: true)
         }
         
         let patchAction = UIAlertAction(title: "수정하기", style: .default) {_ in 

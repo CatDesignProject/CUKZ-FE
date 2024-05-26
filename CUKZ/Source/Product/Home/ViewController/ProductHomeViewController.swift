@@ -129,7 +129,7 @@ extension ProductHomeViewController {
     @objc func uploadButtonTapped() {
         if !AppDelegate.isLogin || AppDelegate.role == "user" {
             showAlertWithDismissDelay(message: "총대신청을 진행해주세요.")
-        } else {
+        } else if AppDelegate.isLogin || AppDelegate.role == "manager" {
             let VC = UploadProductViewController()
             VC.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(VC, animated: true)

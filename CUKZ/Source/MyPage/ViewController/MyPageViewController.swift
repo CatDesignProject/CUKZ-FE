@@ -13,6 +13,8 @@ final class MyPageViewController: UIViewController {
     
     private let myPageSection = MyPageSection()
     
+    var isLoggedOut: Bool = false // 로그아웃 여부
+    
     let myPageView = MyPageView()
     
     // MARK: - View 설정
@@ -23,7 +25,13 @@ final class MyPageViewController: UIViewController {
     // MARK: - viewWillAppear
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
+        
+        if isLoggedOut { // 로그아웃 하고 처음 들어왔을 때
+            fetchData()
+            isLoggedOut = false
+        }
     }
     
     // MARK: - viewWillDisappear
@@ -70,7 +78,18 @@ final class MyPageViewController: UIViewController {
         
         let myPageTopView = MyPageTopView(frame: CGRect(x: 0, y: 0, width: myPageView.tableView.bounds.width, height: 150))
         myPageTopView.nicknameLabel.text = data.nickname
-        myPageTopView.leaderLabel.text = (data.role == "user") ? "총대인증 ❌" : "총대인증 ✅"
+        
+        switch data.role {
+        case "user":
+            myPageTopView.leaderLabel.text = "총대인증 ❌"
+        case "manager":
+            myPageTopView.leaderLabel.text = "총대인증 ✅"
+        case "admin":
+            myPageTopView.leaderLabel.text = "관리자 🛠️"
+        default:
+            break
+        }
+        
         myPageView.tableView.tableHeaderView = myPageTopView
     }
     
@@ -164,6 +183,18 @@ extension MyPageViewController: UITableViewDelegate {
                             AppDelegate.isLogin = false
                             AppDelegate.memberId = -1
                             AppDelegate.role = ""
+                            
+                            if let tabBarControllers = self.tabBarController?.viewControllers {
+                                for vc in tabBarControllers {
+                                    if let navVC = vc as? UINavigationController, let likeVC = navVC.viewControllers.first(where: { $0 is LikeViewController }) as? LikeViewController {
+                                        likeVC.isLoggedOut = true
+                                    }
+                                    
+                                    if let navVC = vc as? UINavigationController, let myPageVC = navVC.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
+                                        myPageVC.isLoggedOut = true
+                                    }
+                                }
+                            }
                             
                             // 탭바의 첫 번째 탭으로 이동
                             if let tabBarController = self.tabBarController {
