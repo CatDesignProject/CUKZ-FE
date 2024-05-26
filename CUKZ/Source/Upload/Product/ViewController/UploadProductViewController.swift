@@ -150,8 +150,9 @@ final class UploadProductViewController: UIViewController {
         let isEndDateEmpty = uploadProductView.endDateTextField.text?.isEmpty ?? true
         let isInfoEmpty = uploadProductView.descriptionTextView.text?.isEmpty ?? true
         let isImageEmpty = self.imageList.isEmpty
+        let isOptionEmpty = self.optionList.isEmpty
         
-        if !isNameEmpty && !isPriceEmpty && !isAccountEmpty && !isStatusEmpty && !isStatusValid && !isStartDateEmpty && !isEndDateEmpty && !isInfoEmpty && !isImageEmpty {
+        if !isNameEmpty && !isPriceEmpty && !isAccountEmpty && !isStatusEmpty && !isStatusValid && !isStartDateEmpty && !isEndDateEmpty && !isInfoEmpty && !isImageEmpty && !isOptionEmpty {
             uploadProductView.completeButton.isEnabled = true
             uploadProductView.completeButton.backgroundColor = .gadaeBlue
         } else {
@@ -243,6 +244,7 @@ extension UploadProductViewController {
             DispatchQueue.main.async {
                 self.optionList.append(Options(name: optionName, additionalPrice: additionalPrice))
                 self.uploadProductView.uploadOptionView.collectionView.reloadData()
+                self.updateCompleteButtonState()
                 print("옵션 추가 --- \(self.optionList)")
             }
         }
@@ -267,6 +269,8 @@ extension UploadProductViewController {
     
     // 작성완료 버튼
     @objc private func completeButtonTapped() {
+        uploadProductView.completeButton.isHidden = false
+        
         ProductNetworkManager.shared.uploadImage(images: self.imageList) { result in
             switch result {
             case .success(let imageIds): // 이미지 업로드에 성공 후, 상품 등록
@@ -300,7 +304,7 @@ extension UploadProductViewController {
                 startDateFormatter.dateFormat = "yyyy-MM-dd'T'00:00:01"
 
                 let endDateFormatter = DateFormatter()
-                endDateFormatter.dateFormat = "yyyy-MM-dd'T'00:50:59"
+                endDateFormatter.dateFormat = "yyyy-MM-dd'T'23:59:59"
 
                 guard let startDate = formatter.date(from: startDateText),
                       let endDate = formatter.date(from: endDateText) else {
