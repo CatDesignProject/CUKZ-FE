@@ -287,7 +287,7 @@ extension ProductDetailViewController {
         switch data.status {
         case "ON_DEMAND":
             let VC = DemandParticipateViewController()
-            VC.options = data.options
+            VC.optionList = data.options
             navigationController?.pushViewController(VC, animated: true)
         case "ON_SALE":
             print("구매하기 눌림")

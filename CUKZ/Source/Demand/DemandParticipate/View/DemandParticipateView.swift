@@ -28,6 +28,11 @@ final class DemandParticipateView: UIView {
         $0.spellCheckingType = .no
     }
     
+    let quantityLabel = UILabel().then {
+        $0.text = "수량"
+        $0.font = UIFont.systemFont(ofSize: 18)
+    }
+    
     let tableView = UITableView().then {
         $0.separatorInset.left = 20
         $0.separatorInset.right = 20
@@ -58,6 +63,7 @@ final class DemandParticipateView: UIView {
             emailLabel,
             emailRoundView,
             emailTextField,
+            quantityLabel,
             tableView,
             completeButton
         ])
@@ -79,8 +85,13 @@ final class DemandParticipateView: UIView {
             make.edges.equalTo(emailRoundView).inset(5)
         }
         
-        tableView.snp.makeConstraints { make in
+        quantityLabel.snp.makeConstraints { make in
             make.top.equalTo(emailRoundView.snp.bottom).offset(20)
+            make.trailing.equalToSuperview().inset(35)
+        }
+        
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(quantityLabel.snp.bottom)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
