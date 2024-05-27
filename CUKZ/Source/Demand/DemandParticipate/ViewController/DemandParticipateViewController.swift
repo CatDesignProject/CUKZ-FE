@@ -12,6 +12,9 @@ final class DemandParticipateViewController: UIViewController {
     var optionList: [ProductDetailModel.Option]? // 상세보기에서 넘어온 옵션 배열
     var demandParticipateList: [DemandParticipateRequest] = [] // post 보낼 때 담는 배열
     
+    var isAllDemand: Int?
+    var demandId: Int?
+    
     private let demandParticipateView = DemandParticipateView()
     
     // MARK: - View 설정
