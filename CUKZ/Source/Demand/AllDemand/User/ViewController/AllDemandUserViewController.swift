@@ -88,7 +88,13 @@ extension AllDemandUserViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 extension AllDemandUserViewController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let VC = DemandParticipateViewController()
+        VC.isAllDemand = true
+        VC.demandId = self.arrayContent[indexPath.row].id
+        VC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(VC, animated: true)
+    }
 }
 
 // MARK: - UITableViewDataSourcePrefetching
