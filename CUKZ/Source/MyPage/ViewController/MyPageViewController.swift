@@ -45,6 +45,7 @@ final class MyPageViewController: UIViewController {
         super.viewDidLoad()
         
         fetchData()
+        setupNaviBar()
         setupTableView()
         setupRefresh()
     }
@@ -61,6 +62,13 @@ final class MyPageViewController: UIViewController {
                 print("내 정보 조회 - \(error)")
             }
         }
+    }
+    
+    private func setupNaviBar() {
+        navigationController?.navigationBar.barTintColor = .white
+        navigationController?.navigationBar.tintColor = .gadaeBlue
+        
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
     
     // 테이블뷰 설정
@@ -167,8 +175,14 @@ extension MyPageViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         
         switch indexPath.section {
+        case 0:
+            if indexPath.row == 1 { // 내가 참여한 수요조사
+                let VC = AllDemandUserViewController()
+                VC.hidesBottomBarWhenPushed = true // 탭바 숨기기
+                navigationController?.pushViewController(VC, animated: true)
+            }
         case 2:
-            if indexPath.row == 0 {
+            if indexPath.row == 0 { // 로그아웃
                 print("로그아웃 버튼 클릭됨")
                 let sheet = UIAlertController(title: nil, message: "로그아웃 하시겠습니까?", preferredStyle: .alert)
                 sheet.addAction(UIAlertAction(title: "취소", style: .destructive, handler: { _ in

@@ -1,11 +1,11 @@
 //
-//  DemandRequest.swift
+//  DemandParticipateRequest.swift
 //  CUKZ
 //
 //  Created by 이승민 on 5/28/24.
 //
 
-struct DemandRequest: Codable {
+struct DemandParticipateRequest: Codable {
     let email: String
     let optionList: [OptionList]
     

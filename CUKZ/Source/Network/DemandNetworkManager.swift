@@ -18,7 +18,7 @@ final class DemandNetworkManager {
     
     // MARK: - 수요조사 참여
     func postDemand(productId: Int,
-                    parameters: DemandRequest,
+                    parameters: DemandParticipateRequest,
                     completion: @escaping (Error?) -> Void) {
         
         AF.request("\(baseURL)/products/\(productId)/demand/members",
@@ -35,5 +35,26 @@ final class DemandNetworkManager {
             }
         }
     }
-}
     
+    // MARK: - 내가 참여한 수요조사 전체 목록 조회
+    func getAllDemandUser(page: Int, completion: @escaping (Result<AllDemandUserRespose?, Error>) -> Void) {
+        let parameters: [String: Any] = [
+            "page" : page,
+            "size": 10
+        ]
+        
+        AF.request("\(baseURL)/members/demand",
+                   method: .get,
+                   parameters: parameters,
+                   encoding: URLEncoding.default)
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: AllDemandUserRespose.self) { response in
+            switch response.result {
+            case .success(let result):
+                completion(.success(result))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+}
