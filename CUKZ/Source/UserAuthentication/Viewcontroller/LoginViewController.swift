@@ -85,7 +85,7 @@ extension LoginViewController {
                                             password: password) { result in
             switch result {
             case .success(let data):
-                print("로그인 성공")
+                print("로그인 성공 - \(data)")
                 AppDelegate.isLogin = true
                 AppDelegate.memberId = data.memberId
                 AppDelegate.role = data.role
@@ -93,7 +93,7 @@ extension LoginViewController {
                     self.dismiss(animated: true, completion: nil)
                 }
             case .failure(let error):
-                print("로그인 실패 \(error.localizedDescription)")
+                print("로그인 실패 - \(error.localizedDescription)")
                 DispatchQueue.main.async {
                     self.loginView.loginInfoLabel.isHidden = false
                 }

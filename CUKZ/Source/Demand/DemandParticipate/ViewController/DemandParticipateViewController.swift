@@ -9,7 +9,8 @@ import UIKit
 
 final class DemandParticipateViewController: UIViewController {
     // MARK: - Properties
-    var options: [ProductDetailModel.Option]?
+    var optionList: [ProductDetailModel.Option]? // 상세보기에서 넘어온 옵션 배열
+    var demandList: [DemandRequest] = [] // post 보낼 때 담는 배열
     
     private let demandParticipateView = DemandParticipateView()
     
@@ -35,15 +36,16 @@ final class DemandParticipateViewController: UIViewController {
 
 extension DemandParticipateViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        self.options?.count ?? 0
+        self.optionList?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DemandParticipateCell", for: indexPath) as! DemandParticipateCell
         
-        guard let options = self.options else { return UITableViewCell() }
+        guard let options = self.optionList else { return UITableViewCell() }
         
         cell.optionNameLabel.text = options[indexPath.row].name
+        cell.additionalPrice.text = "+ \(options[indexPath.row].additionalPrice)원"
         
         return cell
     }

@@ -11,6 +11,8 @@ final class DemandParticipateCell: UITableViewCell {
     // MARK: - View
     let optionNameLabel = UILabel()
     
+    let additionalPrice = UILabel()
+    
     let quantityTextField = UITextField().then {
         $0.placeholder = "수량"
         $0.text = "0"
@@ -38,6 +40,7 @@ final class DemandParticipateCell: UITableViewCell {
     private func addViews() {
         contentView.addSubviews([
             optionNameLabel,
+            additionalPrice,
             quantityTextField
         ])
     }
@@ -45,6 +48,11 @@ final class DemandParticipateCell: UITableViewCell {
     private func configureConstraints() {
         optionNameLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(20)
+            make.centerY.equalToSuperview()
+        }
+        
+        additionalPrice.snp.makeConstraints { make in
+            make.trailing.equalTo(quantityTextField.snp.leading).offset(-5)
             make.centerY.equalToSuperview()
         }
         
