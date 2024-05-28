@@ -47,7 +47,6 @@ final class MyPageViewController: UIViewController {
         fetchData()
         setupNaviBar()
         setupTableView()
-        setupRefresh()
     }
     
     private func fetchData() {
@@ -99,15 +98,6 @@ final class MyPageViewController: UIViewController {
         }
         
         myPageView.tableView.tableHeaderView = myPageTopView
-    }
-    
-    // 새로고침 설정
-    private func setupRefresh() {
-        let rc = myPageView.refreshControl
-        rc.addTarget(self, action: #selector(refreshTable(refresh:)), for: .valueChanged)
-        rc.tintColor = .gadaeBlue
-        
-        myPageView.tableView.refreshControl = rc
     }
 }
 
