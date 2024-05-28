@@ -177,4 +177,27 @@ final class ProductNetworkManager {
             }
         }
     }
+    
+    // MARK: - 내가 등록한 상품 목록 전체 조회
+    func getMyProductAll(page: Int,
+                         completion: @escaping (Result<ProductHomeModel?, Error>) -> Void) {
+        
+        let parameters: [String: Any] = [
+            "page": page
+        ]
+        
+        AF.request("\(baseURL)/products/me",
+                   method: .get,
+                   parameters: parameters,
+                   encoding: URLEncoding.default)
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: ProductHomeModel.self) { response in
+            switch response.result {
+            case .success(let result):
+                completion(.success(result))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
 }

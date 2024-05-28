@@ -142,8 +142,6 @@ extension MyPageViewController: UITableViewDataSource {
             return myPageSection.section1.count
         case 2:
             return myPageSection.section2.count
-        case 3:
-            return myPageSection.section3.count
         default:
             return 0
         }
@@ -159,8 +157,6 @@ extension MyPageViewController: UITableViewDataSource {
             cell.titleLabel.text = myPageSection.section1[indexPath.row]
         case 2:
             cell.titleLabel.text = myPageSection.section2[indexPath.row]
-        case 3:
-            cell.titleLabel.text = myPageSection.section3[indexPath.row]
         default:
             cell.titleLabel.text = ""
         }
@@ -180,23 +176,23 @@ extension MyPageViewController: UITableViewDelegate {
         
         switch indexPath.section {
         case 0:
+            if indexPath.row == 0 {
+                guard AppDelegate.role != "user" else {
+                    showAlertWithDismissDelay(message: "총대신청을 진행해주세요.")
+                    return
+                }
+                
+                let VC = ProductHomeViewController()
+                VC.hidesBottomBarWhenPushed = true // 탭바 숨기기
+                VC.isMyproduct = true
+                navigationController?.pushViewController(VC, animated: true)
+            }
             if indexPath.row == 1 { // 내가 참여한 수요조사
                 let VC = AllDemandUserViewController()
                 VC.hidesBottomBarWhenPushed = true // 탭바 숨기기
                 navigationController?.pushViewController(VC, animated: true)
             }
-        case 1:
-            guard AppDelegate.role != "user" else {
-                showAlertWithDismissDelay(message: "총대신청을 진행해주세요.")
-                return
-            }
-            
-            if indexPath.row == 0 { // 수요조사 상품 관리
-                
-            } else if indexPath.row == 1 { // 판매 상품 관리
-                
-            }
-        case 3:
+        case 2:
             if indexPath.row == 0 { // 로그아웃
                 print("로그아웃 버튼 클릭됨")
                 let sheet = UIAlertController(title: nil, message: "로그아웃 하시겠습니까?", preferredStyle: .alert)
