@@ -44,7 +44,7 @@ final class AllDemandUserViewController: UIViewController {
                     self.allDemandUserView.tableView.reloadData()
                 }
             case .failure(let error):
-                print("내가 참여한 수요조사 전체 목록 조회 실패: \(error)")
+                print("내가 참여한 수요조사 전체 목록 조회 실패: \(error.localizedDescription)")
             }
         }
     }
@@ -117,7 +117,7 @@ extension AllDemandUserViewController: UITableViewDataSourcePrefetching {
                             self.allDemandUserView.tableView.reloadData()
                         }
                     case .failure(let error):
-                        print("내가 참여한 수요조사 전체 목록 조회 페이징 실패: \(error)")
+                        print("내가 참여한 수요조사 전체 목록 조회 페이징 실패: \(error.localizedDescription)")
                     }
                 }
             }

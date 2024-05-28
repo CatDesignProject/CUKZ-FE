@@ -9,8 +9,6 @@ import UIKit
 
 final class MyPageView: UIView {
     // MARK: - View
-    let refreshControl = UIRefreshControl()
-    
     let tableView = UITableView().then {
         $0.separatorStyle = .none
     }

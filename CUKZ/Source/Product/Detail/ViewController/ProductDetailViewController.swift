@@ -93,13 +93,28 @@ final class ProductDetailViewController: UIViewController {
         guard let sellerId = self.productDetailData?.sellerId else { return }
         
         if AppDelegate.memberId == sellerId {
+            let docButton = UIButton().then {
+                let imageConfig = UIImage.SymbolConfiguration(pointSize: 19, weight: .light)
+                let image = UIImage(systemName: "list.clipboard", withConfiguration: imageConfig)
+                $0.setImage(image, for: .normal)
+                $0.addTarget(self, action: #selector(gearButtonTapped), for: .touchUpInside)
+            }
+            
             let menuButton = UIButton().then {
                 let imageConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .light)
                 let image = UIImage(systemName: "ellipsis.circle", withConfiguration: imageConfig)
                 $0.setImage(image, for: .normal)
                 $0.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
             }
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton) // 오른쪽
+            
+            
+            let itemsStackView = UIStackView.init(arrangedSubviews: [docButton, menuButton])
+            itemsStackView.distribution = .fillEqually
+            itemsStackView.axis = .horizontal
+            itemsStackView.alignment = .center
+            itemsStackView.spacing = 12
+            
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: itemsStackView) // 오른쪽
         }
     }
     
@@ -156,6 +171,25 @@ extension ProductDetailViewController {
             self.fetchData()
             refresh.endRefreshing()
         }
+    }
+    
+    // 수요조사, 구매 목록 보기
+    @objc private func gearButtonTapped() {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let demandAction = UIAlertAction(title: "수요조사 목록 보기", style: .default) {_ in
+            
+        }
+        
+        let purchaseAction = UIAlertAction(title: "구매 목록 보기", style: .default) {_ in
+            
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        [demandAction, purchaseAction, cancelAction].forEach { alertController.addAction($0) }
+        
+        present(alertController, animated: true, completion: nil)
     }
     
     // 메뉴
@@ -277,12 +311,15 @@ extension ProductDetailViewController {
     
     // 수요조사 참여, 구매하기
     @objc func statusButtonTapped() {
-        if !AppDelegate.isLogin {
+        guard let data = self.productDetailData else { return }
+        
+        if !AppDelegate.isLogin  {
             showAlertWithDismissDelay(message: "로그인 후 이용해주세요.")
             return
+        } else if AppDelegate.memberId == data.sellerId {
+            showAlertWithDismissDelay(message: "내가 작성한 글입니다.")
+            return
         }
-        
-        guard let data = self.productDetailData else { return }
         
         switch data.status {
         case "ON_DEMAND":

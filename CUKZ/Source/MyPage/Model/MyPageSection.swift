@@ -6,7 +6,7 @@
 //
 
 struct MyPageSection {
-    let sections = ["MY", "총대", "기본정보", "설정"]
+    let sections = ["MY", "기본정보", "설정"]
 
     let section0 = [
         "내가 작성한 상품",
@@ -15,15 +15,10 @@ struct MyPageSection {
     ]
     
     let section1 = [
-        "수요조사 상품 관리",
-        "판매 상품 관리"
-    ]
-    
-    let section2 = [
         "앱 버전 1.0.0"
     ]
 
-    let section3 = [
+    let section2 = [
         "로그아웃"
     ]
 }

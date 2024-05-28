@@ -16,6 +16,8 @@ final class ProductHomeViewController: UIViewController {
     private var isLastPage: Bool = false
     private var keyword: String?
     
+    var isMyproduct: Bool = false
+    
     private let productHomeView = ProductHomeView()
     
     // MARK: - View 설정
@@ -36,13 +38,33 @@ final class ProductHomeViewController: UIViewController {
     // 네트워킹
     func fetchData() {
         self.pageNum = 0
-        ProductNetworkManager.shared.getProductAll(page: 0) { model in
-            if let model = model {
-                self.totalPageNum = model.totalPage
-                self.isLastPage = model.last
-                self.arrayProduct = model.content
-                DispatchQueue.main.async {
-                    self.productHomeView.tableView.reloadData()
+        
+        if isMyproduct {
+            ProductNetworkManager.shared.getMyProductAll(page: 0) { result in
+                switch result {
+                case .success(let data):
+                    print("내가 등록한 상품 목록 전체 조회 성공")
+                    guard let data = data else { return }
+                    
+                    self.totalPageNum = data.totalPage
+                    self.isLastPage = data.last
+                    self.arrayProduct = data.content
+                    DispatchQueue.main.async {
+                        self.productHomeView.tableView.reloadData()
+                    }
+                case .failure(let error):
+                    print("내가 등록한 상품 목록 전체 조회 실패: \(error.localizedDescription)")
+                }
+            }
+        } else {
+            ProductNetworkManager.shared.getProductAll(page: 0) { model in
+                if let model = model {
+                    self.totalPageNum = model.totalPage
+                    self.isLastPage = model.last
+                    self.arrayProduct = model.content
+                    DispatchQueue.main.async {
+                        self.productHomeView.tableView.reloadData()
+                    }
                 }
             }
         }
@@ -50,11 +72,14 @@ final class ProductHomeViewController: UIViewController {
     
     // 네비게이션바 설정
     private func setupNaviBar() {
-        title = "상품"
+        title = isMyproduct ? "내가 작성한 상품" : "상품"
+        
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.tintColor = .gadaeBlue
         
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        
+        guard isMyproduct == false else { return }
         
         // leftBarButtonItem, rightBarButtonItem 스택뷰 커스텀
         let uploadButton = UIButton().then {
@@ -63,7 +88,7 @@ final class ProductHomeViewController: UIViewController {
             $0.setImage(image, for: .normal)
             $0.addTarget(self, action: #selector(uploadButtonTapped), for: .touchUpInside)
         }
-
+        
         let searchButton = UIButton().then {
             let imageConfig = UIImage.SymbolConfiguration(pointSize: 21, weight: .light)
             let image = UIImage(systemName: "magnifyingglass", withConfiguration: imageConfig)
@@ -88,7 +113,6 @@ final class ProductHomeViewController: UIViewController {
                              children: [on_demand, end_demand, on_sale, end_sale])
             $0.showsMenuAsPrimaryAction = true // 꾹 안눌러도 메뉴 표시
         }
-
         
         let itemsStackView = UIStackView.init(arrangedSubviews: [searchButton, menuButton])
         itemsStackView.distribution = .equalSpacing
