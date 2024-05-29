@@ -11,7 +11,7 @@ extension UIViewController {
     func showAlertWithDismissDelay(message: String) {
         let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
         self.present(alert, animated: true, completion: nil)
-        Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
+        Timer.scheduledTimer(withTimeInterval: 1.7, repeats: false) { _ in
             alert.dismiss(animated: true, completion: nil)
         }
     }

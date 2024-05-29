@@ -12,15 +12,15 @@ final class TabBarViewController: UITabBarController {
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .gadaeBlue
         
         tabBarConfig()
     }
     
     private func tabBarConfig() {
         delegate = self
-        tabBar.barTintColor = .white
-        tabBar.tintColor = .gadaeBlue
+        tabBar.barTintColor = .gadaeBlue
+        tabBar.tintColor = .white
         tabBar.isTranslucent = false
         
         let productHomeVC = UINavigationController(rootViewController: ProductHomeViewController())

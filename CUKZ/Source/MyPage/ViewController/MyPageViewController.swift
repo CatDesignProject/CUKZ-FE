@@ -212,6 +212,7 @@ extension MyPageViewController: UITableViewDelegate {
                             // 탭바의 첫 번째 탭으로 이동
                             if let tabBarController = self.tabBarController {
                                 tabBarController.selectedIndex = 0
+                                self.showAlertWithDismissDelay(message: "로그아웃 되었습니다.")
                             }
                         }
                     }
