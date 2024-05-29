@@ -29,8 +29,6 @@ final class DemandParticipateViewController: UIViewController {
         
         if isAllDemand { // 참여한 수요조사 전체 목록 조회에서 push 됐을 때
             fetchData()
-            demandParticipateView.emailTextField.isEnabled = false
-            demandParticipateView.completeButton.isHidden = true
         }
         
         setupNaviBar()
@@ -48,6 +46,9 @@ final class DemandParticipateViewController: UIViewController {
                     self.demandData = data
                     
                     DispatchQueue.main.async {
+                        self.demandParticipateView.emailTextField.text = data.email
+                        self.demandParticipateView.emailTextField.isEnabled = false
+                        self.demandParticipateView.completeButton.isHidden = true
                         self.demandParticipateView.tableView.reloadData()
                     }
                 case .failure(let error):
@@ -99,7 +100,7 @@ extension DemandParticipateViewController: UITableViewDataSource {
         
         if isAllDemand {
             guard let options = self.demandData?.optionList[indexPath.row] else { return UITableViewCell() }
-            cell.optionNameLabel.text = "\(options.optionId)"
+            cell.optionNameLabel.text = "\(options.optionName)"
             cell.quantityTextField.text = "\(options.quantity)"
             cell.quantityTextField.isEnabled = false
         } else {

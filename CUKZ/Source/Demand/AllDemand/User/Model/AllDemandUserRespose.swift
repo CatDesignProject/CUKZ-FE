@@ -13,10 +13,15 @@ struct AllDemandUserRespose: Codable {
     
     struct Content: Codable {
         let id, productId, memberId: Int
+        let email, productName: String
+        let price: Int
+        let status: String
+        let imageUrlList: [String]
         let optionList: [OptionList]
     }
     
     struct OptionList: Codable {
         let optionId, quantity: Int
+        let optionName: String
     }
 }

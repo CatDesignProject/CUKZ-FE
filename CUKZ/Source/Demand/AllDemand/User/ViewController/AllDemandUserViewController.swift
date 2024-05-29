@@ -82,6 +82,36 @@ extension AllDemandUserViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ProductHomeCell", for: indexPath) as! ProductHomeCell
         
+        let data = arrayContent[indexPath.row]
+        
+        if let imageUrlString = data.imageUrlList.first,
+           let imageUrl = URL(string: imageUrlString) {
+            cell.thumnailImage.kf.setImage(with: imageUrl)
+        }
+        cell.productNameLabel.text = data.productName
+        cell.productPriceLabel.text = "\(data.price)원"
+        
+        var productStatus: String = ""
+        var productStatusColor: UIColor = .systemGray2
+        
+        switch data.status {
+        case "ON_DEMAND":
+            productStatus = "수요조사 중"
+            productStatusColor = .systemPink
+        case "END_DEMAND":
+            productStatus = "수요조사 종료"
+        case "ON_SALE":
+            productStatus = "판매 중"
+            productStatusColor = .systemBlue
+        case "END_SALE":
+            productStatus = "판매 종료"
+        default:
+            print("")
+        }
+        
+        cell.productStateLabel.text = productStatus
+        cell.productStateLabel.textColor = productStatusColor
+        
         return cell
     }
 }
