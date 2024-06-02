@@ -1,20 +1,19 @@
 //
-//  LikeView.swift
+//  ProductHomeView.swift
 //  CUKZ
 //
-//  Created by 이승민 on 3/12/24.
+//  Created by 이승민 on 3/16/24.
 //
 
 import UIKit
 
-final class LikeView: UIView {
+final class ProductHomeView: UIView {
     // MARK: - View
     let refreshControl = UIRefreshControl()
     
     let tableView = UITableView().then {
         $0.separatorInset.left = 20
         $0.separatorInset.right = 20
-        $0.tableHeaderView = UIView()
     }
     
     // MARK: - Init
@@ -32,7 +31,9 @@ final class LikeView: UIView {
     
     // MARK: - UI
     private func addViews() {
-        self.addSubviews([tableView])
+        self.addSubviews([
+            tableView
+        ])
     }
     
     private func configureConstraints() {

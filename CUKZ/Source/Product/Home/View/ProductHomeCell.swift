@@ -1,16 +1,16 @@
 //
-//  LikeCell.swift
+//  ProductHomeCell.swift
 //  CUKZ
 //
-//  Created by 이승민 on 3/12/24.
+//  Created by 이승민 on 3/16/24.
 //
 
 import UIKit
 
-final class LikeCell: UITableViewCell {
+final class ProductHomeCell: UITableViewCell {
     // MARK: - View
     let thumnailImage = UIImageView().then {
-        $0.image = UIImage(named: "testImage")
+        $0.image = UIImage(named: "testImage2")
         $0.backgroundColor = .green
         $0.layer.cornerRadius = 5
         $0.clipsToBounds = true
@@ -20,27 +20,21 @@ final class LikeCell: UITableViewCell {
     }
     
     let productNameLabel = UILabel().then {
-        $0.text = "컴퓨터정보공학부 과잠"
+        $0.text = "2024년 꽃학잠"
         $0.font = UIFont.boldSystemFont(ofSize: 17)
         $0.numberOfLines = 2
     }
     
     let productPriceLabel = UILabel().then {
-        $0.text = "45000원"
+        $0.text = "53000원"
         $0.font = UIFont.boldSystemFont(ofSize: 17)
         $0.numberOfLines = 1
     }
     
     let productStateLabel = UILabel().then {
-        $0.text = "공동구매 중"
-        $0.textColor = .purple
+        $0.text = "수요조사 중"
+        $0.textColor = .orange
         $0.font = UIFont.boldSystemFont(ofSize: 17)
-    }
-    
-    private let heartIcon = UIImageView().then {
-        $0.image = UIImage(systemName: "heart.fill")
-        $0.tintColor = .gadaeBlue
-        $0.contentMode = .scaleAspectFit
     }
     
     // MARK: - Init
@@ -62,8 +56,7 @@ final class LikeCell: UITableViewCell {
             thumnailImage,
             productNameLabel,
             productPriceLabel,
-            productStateLabel,
-            heartIcon
+            productStateLabel
         ])
     }
     
@@ -77,7 +70,7 @@ final class LikeCell: UITableViewCell {
         productNameLabel.snp.makeConstraints { make in
             make.top.equalTo(thumnailImage)
             make.leading.equalTo(thumnailImage.snp.trailing).offset(15)
-            make.trailing.equalTo(heartIcon.snp.leading).inset(10)
+            make.trailing.equalTo(contentView).inset(10)
         }
         
         productPriceLabel.snp.makeConstraints { make in
@@ -90,10 +83,5 @@ final class LikeCell: UITableViewCell {
             make.bottom.equalTo(contentView).inset(10)
         }
         
-        heartIcon.snp.makeConstraints { make in
-            make.size.equalTo(30)
-            make.top.equalTo(thumnailImage)
-            make.trailing.equalTo(contentView).inset(10)
-        }
     }
 }

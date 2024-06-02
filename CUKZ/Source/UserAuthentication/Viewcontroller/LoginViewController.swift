@@ -9,73 +9,103 @@ import UIKit
 
 final class LoginViewController: UIViewController {
     // MARK: - Properties
-    private let loginMainView = LoginMainView()
+    private let loginView = LoginView()
     
     // MARK: - View 설정
     override func loadView() {
-        view = loginMainView
+        view = loginView
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     // MARK: - viewDidLoad
     override func viewDidLoad () {
         super.viewDidLoad ()
-        
-        prepare()
-        setupNotifications()
+
+        setupNaviBar()
         setupTextField()
         setupButton()
     }
     
-    private func prepare() {
-        
+    private func setupNaviBar() {
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
     
     private func setupTextField() {
-        loginMainView.emailTextField.delegate = self
-        loginMainView.passwordTextField.delegate = self
+        loginView.idTextField.delegate = self
+        loginView.passwordTextField.delegate = self
         
-        loginMainView.emailTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
-        loginMainView.passwordTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
+        loginView.idTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
+        loginView.passwordTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
     }
     
     private func setupButton() {
-        loginMainView.loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
-        loginMainView.signUpButton.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
+        loginView.loginButton.addTarget(self, 
+                                        action: #selector(loginButtonTapped),
+                                        for: .touchUpInside)
+        
+        loginView.signUpButton.addTarget(self,
+                                         action: #selector(signUpButtonTapped),
+                                         for: .touchUpInside)
+        
+        loginView.dismissButton.addTarget(self,
+                                          action: #selector(dismissButtonTapped),
+                                          for: .touchUpInside)
     }
-    
-    @objc func loginButtonTapped() {
-        print("로그인 눌림")
+
+    // UserDefaults
+    private func loginSuccess(sessionId:String, username: String, password: String) {
+        UserDefaults.standard.set(sessionId, forKey: "sessionId")
+        UserDefaults.standard.set(username, forKey: "username")
+        UserDefaults.standard.set(password, forKey: "password")
+        UserDefaults.standard.synchronize()
     }
-    
-    @objc func signUpButtonTapped() {
-        print("회원가입 화면으로")
-    }
-    
 }
 
-// MARK: - 키보드 관련
 extension LoginViewController {
-    private func setupNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    // 닫기 버튼
+    @objc private func dismissButtonTapped() {
+        self.dismiss(animated: true, completion: nil)
     }
     
-    @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y == 0 {
-                self.view.frame.origin.y -= keyboardSize.height / 3
+    // 로그인 버튼
+    @objc private func loginButtonTapped() {
+        guard let username = loginView.idTextField.text,
+              let password = loginView.passwordTextField.text else { return }
+        
+        UserNetworkManager.shared.postLogin(username: username,
+                                            password: password) { result in
+            switch result {
+            case .success(let data):
+                print("로그인 성공 - \(data)")
+                AppDelegate.isLogin = true
+                AppDelegate.memberId = data.memberId
+                AppDelegate.role = data.role
+                DispatchQueue.main.async {
+                    self.dismiss(animated: true, completion: nil)
+                }
+            case .failure(let error):
+                print("로그인 실패 - \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.loginView.loginInfoLabel.isHidden = false
+                }
             }
         }
     }
     
-    @objc func keyboardWillHide(notification: NSNotification) {
-        if self.view.frame.origin.y != 0 {
-            self.view.frame.origin.y = 0
-        }
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.view.endEditing(true)
+    // 회원가입 버튼
+    @objc private func signUpButtonTapped() {
+        let VC = SignUpViewController()
+        VC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(VC, animated: true)
     }
 }
 
@@ -84,43 +114,43 @@ extension LoginViewController: UITextFieldDelegate {
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
         
-        if textField == loginMainView.emailTextField {
-            loginMainView.emailTextFieldView.backgroundColor = .white
-            loginMainView.emailInfoLabel.font = UIFont.systemFont(ofSize: 11)
-            loginMainView.emailInfoLabelCenterYConstraint?.update(offset: -13)
+        if textField == loginView.idTextField {
+            loginView.idTextFieldView.backgroundColor = .white
+            loginView.idInfoLabel.font = UIFont.systemFont(ofSize: 11)
+            loginView.emailInfoLabelCenterYConstraint?.update(offset: -13)
         }
-        if textField == loginMainView.passwordTextField {
-            loginMainView.passwordTextFieldView.backgroundColor = .white
-            loginMainView.passwordInfoLabel.font = UIFont.systemFont(ofSize: 11)
-            loginMainView.passwordInfoLabelCenterYConstraint?.update(offset: -13)
+        if textField == loginView.passwordTextField {
+            loginView.passwordTextFieldView.backgroundColor = .white
+            loginView.passwordInfoLabel.font = UIFont.systemFont(ofSize: 11)
+            loginView.passwordInfoLabelCenterYConstraint?.update(offset: -13)
         }
         
         UIView.animate(withDuration: 0.3) {
-            self.loginMainView.stackView.layoutIfNeeded()
+            self.loginView.stackView.layoutIfNeeded()
         }
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         
-        if textField == loginMainView.emailTextField {
-            loginMainView.emailTextFieldView.backgroundColor = .white
+        if textField == loginView.idTextField {
+            loginView.idTextFieldView.backgroundColor = .white
             
-            if loginMainView.emailTextField.text == "" {
-                loginMainView.emailInfoLabel.font = UIFont.systemFont(ofSize: 18)
-                loginMainView.emailInfoLabelCenterYConstraint?.update(offset: 0)
+            if loginView.idTextField.text == "" {
+                loginView.idInfoLabel.font = UIFont.systemFont(ofSize: 18)
+                loginView.emailInfoLabelCenterYConstraint?.update(offset: 0)
             }
         }
-        if textField == loginMainView.passwordTextField {
-            loginMainView.passwordTextFieldView.backgroundColor = .white
+        if textField == loginView.passwordTextField {
+            loginView.passwordTextFieldView.backgroundColor = .white
             
-            if loginMainView.passwordTextField.text == "" {
-                loginMainView.passwordInfoLabel.font = UIFont.systemFont(ofSize: 18)
-                loginMainView.passwordInfoLabelCenterYConstraint?.update(offset: 0)
+            if loginView.passwordTextField.text == "" {
+                loginView.passwordInfoLabel.font = UIFont.systemFont(ofSize: 18)
+                loginView.passwordInfoLabelCenterYConstraint?.update(offset: 0)
             }
         }
         
         UIView.animate(withDuration: 0.3) {
-            self.loginMainView.stackView.layoutIfNeeded()
+            self.loginView.stackView.layoutIfNeeded()
         }
     }
     
@@ -133,15 +163,15 @@ extension LoginViewController: UITextFieldDelegate {
             }
         }
         guard
-            let email = loginMainView.emailTextField.text, !email.isEmpty,
-            let password = loginMainView.passwordTextField.text, !password.isEmpty
+            let email = loginView.idTextField.text, !email.isEmpty,
+            let password = loginView.passwordTextField.text, !password.isEmpty
         else {
-            loginMainView.loginButton.backgroundColor = .clear
-            loginMainView.loginButton.isEnabled = false
+            loginView.loginButton.backgroundColor = .clear
+            loginView.loginButton.isEnabled = false
             return
         }
-        loginMainView.loginButton.backgroundColor = .gadaeGray
-        loginMainView.loginButton.isEnabled = true
+        loginView.loginButton.backgroundColor = .gadaeGray
+        loginView.loginButton.isEnabled = true
     }
     
     // 엔터 누르면 키보드 내림
