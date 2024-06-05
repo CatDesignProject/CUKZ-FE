@@ -16,8 +16,6 @@ final class DemandParticipateViewController: UIViewController {
     var demandId: Int? // 단건 조회 아이디
     private var demandData: AllDemandUserRespose.Content?
     
-    var isRequestLeader = false // 총대 신청에서 push 여부
-    
     let demandParticipateView = DemandParticipateView()
     
     // MARK: - View 설정
@@ -98,19 +96,7 @@ extension DemandParticipateViewController {
     }
     
     @objc private func completeButtonTapped() {
-        if isRequestLeader { // 총대 신청
-            let alertController = UIAlertController(title: nil, message: "해당 이메일로 인증 메일을 발송했습니다.", preferredStyle: .alert)
-            let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
-                if let myPageVC = self.navigationController?.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
-                    self.navigationController?.popViewController(animated: true)
-                    myPageVC.fetchData()
-                }
-            }
-            alertController.addAction(confirmAction)
-            present(alertController, animated: true, completion: nil)
-        } else { // 수요조사 참여
-            
-        }
+        
     }
 }
 

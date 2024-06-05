@@ -28,6 +28,8 @@ final class MyPageViewController: UIViewController, MyPageTopViewDelegate {
         
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
         
+        fetchData()
+        
         if isLoggedOut { // 로그아웃 하고 처음 들어왔을 때
             fetchData()
             isLoggedOut = false
@@ -44,7 +46,7 @@ final class MyPageViewController: UIViewController, MyPageTopViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        fetchData()
+//        fetchData()
         setupNaviBar()
         setupTableView()
     }
@@ -54,6 +56,7 @@ final class MyPageViewController: UIViewController, MyPageTopViewDelegate {
             switch result {
             case .success(let data):
                 self.userInfoData = data
+                AppDelegate.role = data.role
                 DispatchQueue.main.async {
                     self.updateHeaderView()
                 }
@@ -106,14 +109,9 @@ final class MyPageViewController: UIViewController, MyPageTopViewDelegate {
         if AppDelegate.role == "manager" {
             showAlertWithDismissDelay(message: "이미 총대 신청을 했습니다.")
         } else {
-            let VC = DemandParticipateViewController()
-            VC.hidesBottomBarWhenPushed = true
-            VC.isRequestLeader = true
-            
-            VC.demandParticipateView.quantityLabel.isHidden = true
-            VC.demandParticipateView.tableView.isHidden = true
-            VC.demandParticipateView.completeButton.setTitle("신청하기", for: .normal)
-            navigationController?.pushViewController(VC, animated: true)
+            let VC = UINavigationController(rootViewController: RequestLeaderViewController())
+            VC.modalPresentationStyle = .fullScreen
+            self.present(VC, animated: true, completion: nil) // 로그인 화면 모달로 뜨게
         }
     }
 }
