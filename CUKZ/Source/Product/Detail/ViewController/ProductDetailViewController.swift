@@ -72,6 +72,9 @@ final class ProductDetailViewController: UIViewController {
             productStatusColor = .systemBlue
         case "END_SALE":
             productStatus = "판매 종료"
+        case "COMPLETE":
+            productStatus = "총대 리뷰 작성"
+            productStatusColor = .systemPurple
         default:
             return
         }
@@ -177,8 +180,9 @@ extension ProductDetailViewController {
     @objc private func gearButtonTapped() {
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let demandAction = UIAlertAction(title: "수요조사 목록 보기", style: .default) {_ in
-            
+        let demandAction = UIAlertAction(title: "수요조사 참여인원 보기", style: .default) {_ in
+            let VC = AllDemandManagerViewController()
+            self.navigationController?.pushViewController(VC, animated: true)
         }
         
         let purchaseAction = UIAlertAction(title: "구매 목록 보기", style: .default) {_ in
@@ -327,7 +331,13 @@ extension ProductDetailViewController {
             VC.optionList = data.options
             navigationController?.pushViewController(VC, animated: true)
         case "ON_SALE":
-            print("구매하기 눌림")
+            let VC = PurchaseParticipateViewController()
+            navigationController?.pushViewController(VC, animated: true)
+        case "COMPLETE":
+            let VC = ReviewViewController()
+            VC.sellerId = productDetailData?.sellerId
+            VC.productId = productDetailData?.id
+            navigationController?.pushViewController(VC, animated: true)
         default:
             showAlertWithDismissDelay(message: "종료되었습니다.")
         }

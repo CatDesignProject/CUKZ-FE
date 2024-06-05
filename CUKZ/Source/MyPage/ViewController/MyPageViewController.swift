@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class MyPageViewController: UIViewController {
+final class MyPageViewController: UIViewController, MyPageTopViewDelegate {
     // MARK: - Properties
     private var userInfoData: UserModel?
     
@@ -49,7 +49,7 @@ final class MyPageViewController: UIViewController {
         setupTableView()
     }
     
-    private func fetchData() {
+    func fetchData() {
         UserNetworkManager.shared.getUserInfo { result in
             switch result {
             case .success(let data):
@@ -88,16 +88,33 @@ final class MyPageViewController: UIViewController {
         
         switch data.role {
         case "user":
-            myPageTopView.leaderLabel.text = "총대인증 ❌"
+            myPageTopView.leaderLabel.text = "총대 ❌"
         case "manager":
-            myPageTopView.leaderLabel.text = "총대인증 ✅"
+            myPageTopView.leaderLabel.text = "총대 ✅"
         case "admin":
             myPageTopView.leaderLabel.text = "관리자 🛠️"
         default:
             break
         }
         
+        myPageTopView.delegate = self
+        
         myPageView.tableView.tableHeaderView = myPageTopView
+    }
+    
+    func requestLeaderButtonTapped() {
+        if AppDelegate.role == "manager" {
+            showAlertWithDismissDelay(message: "이미 총대 신청을 했습니다.")
+        } else {
+            let VC = DemandParticipateViewController()
+            VC.hidesBottomBarWhenPushed = true
+            VC.isRequestLeader = true
+            
+            VC.demandParticipateView.quantityLabel.isHidden = true
+            VC.demandParticipateView.tableView.isHidden = true
+            VC.demandParticipateView.completeButton.setTitle("신청하기", for: .normal)
+            navigationController?.pushViewController(VC, animated: true)
+        }
     }
 }
 
@@ -166,7 +183,7 @@ extension MyPageViewController: UITableViewDelegate {
         
         switch indexPath.section {
         case 0:
-            if indexPath.row == 0 {
+            if indexPath.row == 0 { // 내가 작성한 상품
                 guard AppDelegate.role != "user" else {
                     showAlertWithDismissDelay(message: "총대신청을 진행해주세요.")
                     return
