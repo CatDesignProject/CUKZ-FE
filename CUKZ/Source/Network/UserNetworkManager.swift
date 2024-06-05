@@ -130,4 +130,27 @@ class UserNetworkManager {
             }
         }
     }
+    
+    // MARK: - 총대 인증
+    func postRequestLeader(email: String, 
+                           completion: @escaping (Error?) -> Void) {
+        
+        let parameters: [String : Any] = [
+            "email" : email
+        ]
+        
+        AF.request("\(baseURL)/members/verify-email",
+                   method: .post,
+                   parameters: parameters,
+                   encoding: JSONEncoding.default)
+        .validate(statusCode: 200..<300)
+        .response { response in
+            switch response.result {
+            case .success:
+                completion(nil)
+            case .failure(let error):
+                completion(error)
+            }
+        }
+    }
 }
