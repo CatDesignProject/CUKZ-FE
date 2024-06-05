@@ -7,7 +7,14 @@
 
 import UIKit
 
+protocol MyPageTopViewDelegate: AnyObject {
+    func requestLeaderButtonTapped()
+}
+
 final class MyPageTopView: UIView {
+    // MARK: - Properties
+    weak var delegate: MyPageTopViewDelegate?
+    
     // MARK: - View
     private let backView = UIView()
     
@@ -40,6 +47,7 @@ final class MyPageTopView: UIView {
         
         addViews()
         configureConstraints()
+        setupActions()
     }
     
     required init?(coder: NSCoder) {
@@ -83,5 +91,16 @@ final class MyPageTopView: UIView {
             make.width.equalTo(backView)
             make.bottom.equalTo(backView)
         }
+    }
+}
+
+extension MyPageTopView {
+    // MARK: - Actions
+    private func setupActions() {
+        requestLeaderButton.addTarget(self, action: #selector(requestLeaderButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc private func requestLeaderButtonTapped() {
+        delegate?.requestLeaderButtonTapped()
     }
 }

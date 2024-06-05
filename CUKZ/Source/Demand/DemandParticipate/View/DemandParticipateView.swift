@@ -26,6 +26,7 @@ final class DemandParticipateView: UIView {
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
         $0.spellCheckingType = .no
+        $0.keyboardType = .emailAddress
     }
     
     let quantityLabel = UILabel().then {

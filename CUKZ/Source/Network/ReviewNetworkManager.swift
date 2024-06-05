@@ -33,5 +33,36 @@ final class ReviewNetworkManager {
             }
         }
     }
+    
+    // MARK: - 리뷰 작성
+    func postReview(sellerId: Int,
+                    productId: Int,
+                    sellerKindness: Bool,
+                    goodNotification: Bool,
+                    arrivalSatisfactory: Bool,
+                    descriptionMatch: Bool,
+                    completion: @escaping (Error?) -> Void) {
+        
+        let parameters: [String: Any] = [
+            "sellerKindness": sellerKindness,
+            "goodNotification": goodNotification,
+            "arrivalSatisfactory": arrivalSatisfactory,
+            "descriptionMatch": descriptionMatch
+        ]
+        
+        AF.request("\(baseURL)/reviews/member/\(sellerId)/purchaseForm/\(productId)",
+                   method: .post,
+                   parameters: parameters,
+                   encoding: JSONEncoding.default)
+        .validate(statusCode: 200..<300)
+        .response { response in
+            print(parameters)
+            switch response.result {
+            case .success:
+                completion(nil)
+            case .failure(let error):
+                completion(error)
+            }
+        }
+    }
 }
-

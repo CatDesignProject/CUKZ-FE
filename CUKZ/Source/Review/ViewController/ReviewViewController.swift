@@ -11,6 +11,13 @@ final class ReviewViewController: UIViewController {
     // MARK: - Properties
     var isLeave: Bool?
     var sellerId: Int?
+    var productId: Int?
+    
+    private var isSellerKindnessSelected = false
+    private var isGoodNotificationSelected = false
+    private var isArrivalSatisfactorySelected = false
+    private var isDescriptionMatchSelected = false
+    
     private var reviewData: ReviewModel?
     
     private let reviewView = ReviewView()
@@ -88,16 +95,19 @@ final class ReviewViewController: UIViewController {
 // MARK: - @objc
 extension ReviewViewController {
     @objc private func questionButtonTapped(_ sender: UIButton) {
-        // 각 버튼의 태그 값을 기반으로 해당 버튼의 질문 뷰의 테두리 색을 토글
         switch sender.tag {
         case 1:
-            reviewView.firstQuestionView.layer.borderColor = (reviewView.firstQuestionView.layer.borderColor == UIColor.clear.cgColor) ? UIColor.gadaeBlue.cgColor : UIColor.clear.cgColor
+            isSellerKindnessSelected.toggle()
+            reviewView.firstQuestionView.layer.borderColor = isSellerKindnessSelected ? UIColor.gadaeBlue.cgColor : UIColor.clear.cgColor
         case 2:
-            reviewView.secondQuestionView.layer.borderColor = (reviewView.secondQuestionView.layer.borderColor == UIColor.clear.cgColor) ? UIColor.gadaeBlue.cgColor : UIColor.clear.cgColor
+            isGoodNotificationSelected.toggle()
+            reviewView.secondQuestionView.layer.borderColor = isGoodNotificationSelected ? UIColor.gadaeBlue.cgColor : UIColor.clear.cgColor
         case 3:
-            reviewView.thirdQuestionView.layer.borderColor = (reviewView.thirdQuestionView.layer.borderColor == UIColor.clear.cgColor) ? UIColor.gadaeBlue.cgColor : UIColor.clear.cgColor
+            isDescriptionMatchSelected.toggle()
+            reviewView.thirdQuestionView.layer.borderColor = isDescriptionMatchSelected ? UIColor.gadaeBlue.cgColor : UIColor.clear.cgColor
         case 4:
-            reviewView.fourthQuestionView.layer.borderColor = (reviewView.fourthQuestionView.layer.borderColor == UIColor.clear.cgColor) ? UIColor.gadaeBlue.cgColor : UIColor.clear.cgColor
+            isArrivalSatisfactorySelected.toggle()
+            reviewView.fourthQuestionView.layer.borderColor = isArrivalSatisfactorySelected ? UIColor.gadaeBlue.cgColor : UIColor.clear.cgColor
         default:
             break
         }
@@ -106,6 +116,20 @@ extension ReviewViewController {
     }
     
     @objc private func completeButtonTapped() {
-        print("리뷰하기 버튼 눌림")
+        guard let sellerId = self.sellerId,
+              let productId = self.productId else { return }
+        
+        ReviewNetworkManager.shared.postReview(sellerId: sellerId,
+                                               productId: productId,
+                                               sellerKindness: self.isSellerKindnessSelected,
+                                               goodNotification: self.isGoodNotificationSelected,
+                                               arrivalSatisfactory: self.isArrivalSatisfactorySelected,
+                                               descriptionMatch: self.isDescriptionMatchSelected) { error in
+            if let error = error {
+                print("리뷰 전송 실패: \(error.localizedDescription)")
+            } else {
+                print("리뷰 전송 성공")
+            }
+        }
     }
 }

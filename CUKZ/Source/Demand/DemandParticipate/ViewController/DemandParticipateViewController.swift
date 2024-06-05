@@ -16,7 +16,9 @@ final class DemandParticipateViewController: UIViewController {
     var demandId: Int? // 단건 조회 아이디
     private var demandData: AllDemandUserRespose.Content?
     
-    private let demandParticipateView = DemandParticipateView()
+    var isRequestLeader = false // 총대 신청에서 push 여부
+    
+    let demandParticipateView = DemandParticipateView()
     
     // MARK: - View 설정
     override func loadView() {
@@ -33,6 +35,7 @@ final class DemandParticipateViewController: UIViewController {
         
         setupNaviBar()
         setupTableView()
+        setupButton()
     }
     
     private func fetchData() {
@@ -70,6 +73,22 @@ final class DemandParticipateViewController: UIViewController {
         }
     }
     
+    private func setupTableView() {
+        let tb = demandParticipateView.tableView
+        tb.register(DemandParticipateCell.self, forCellReuseIdentifier: "DemandParticipateCell")
+        tb.dataSource = self
+        tb.rowHeight = 55
+    }
+    
+    private func setupButton() {
+        demandParticipateView.completeButton.addTarget(self,
+                                                       action: #selector(completeButtonTapped),
+                                                       for: .touchUpInside)
+    }
+}
+
+// MARK: - Actions
+extension DemandParticipateViewController {
     @objc private func goToProductButtonTapped() {
         let VC = ProductDetailViewController()
         if let productId = self.demandData?.productId {
@@ -78,14 +97,24 @@ final class DemandParticipateViewController: UIViewController {
         navigationController?.pushViewController(VC, animated: true)
     }
     
-    private func setupTableView() {
-        let tb = demandParticipateView.tableView
-        tb.register(DemandParticipateCell.self, forCellReuseIdentifier: "DemandParticipateCell")
-        tb.dataSource = self
-        tb.rowHeight = 55
+    @objc private func completeButtonTapped() {
+        if isRequestLeader { // 총대 신청
+            let alertController = UIAlertController(title: nil, message: "해당 이메일로 인증 메일을 발송했습니다.", preferredStyle: .alert)
+            let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+                if let myPageVC = self.navigationController?.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
+                    self.navigationController?.popViewController(animated: true)
+                    myPageVC.fetchData()
+                }
+            }
+            alertController.addAction(confirmAction)
+            present(alertController, animated: true, completion: nil)
+        } else { // 수요조사 참여
+            
+        }
     }
 }
 
+// MARK: - UITableViewDataSource
 extension DemandParticipateViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if isAllDemand {
