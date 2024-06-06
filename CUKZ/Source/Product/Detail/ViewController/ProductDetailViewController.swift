@@ -182,6 +182,7 @@ extension ProductDetailViewController {
         
         let demandAction = UIAlertAction(title: "수요조사 참여인원 보기", style: .default) {_ in
             let VC = AllDemandManagerViewController()
+            VC.productId = self.productId
             self.navigationController?.pushViewController(VC, animated: true)
         }
         

@@ -9,10 +9,8 @@ import UIKit
 
 final class AllDemandManagerViewController: UIViewController {
     // MARK: - Properties
-    private var arrayProduct: [ProductHomeModel.Content] = []
-    private var totalPageNum: Int = 0
-    private var pageNum: Int = 0
-    private var isLastPage: Bool = false
+    private var arrayProduct: [AllDemandCountRespose] = []
+    var productId: Int?
     
     private let allDemandManagerView = ProductHomeView()
     
@@ -21,7 +19,7 @@ final class AllDemandManagerViewController: UIViewController {
         view = allDemandManagerView
     }
     
-    // MARK: - ViewDidLodad
+    // MARK: - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -32,7 +30,19 @@ final class AllDemandManagerViewController: UIViewController {
     }
     
     private func fetchData() {
-        
+        guard let productId = self.productId else { return }
+        DemandNetworkManager.shared.getDemandManager(productId: productId) { [weak self] result in
+            switch result {
+            case .success(let data):
+                print("수요조사 폼 통계 조회 성공")
+                self?.arrayProduct = data // 데이터 배열 할당
+                DispatchQueue.main.async {
+                    self?.allDemandManagerView.tableView.reloadData()
+                }
+            case .failure(let error):
+                print("수요조사 폼 통계 조회 실패 - \(error.localizedDescription)")
+            }
+        }
     }
     
     private func setupNaviBar() {
@@ -42,7 +52,6 @@ final class AllDemandManagerViewController: UIViewController {
     private func setupTableView() {
         let tb = allDemandManagerView.tableView
         tb.dataSource = self
-        tb.prefetchDataSource = self // 페이징
         
         tb.tableHeaderView = UIView()
         tb.rowHeight = 55
@@ -72,19 +81,17 @@ extension AllDemandManagerViewController {
 // MARK: - UITableViewDataSource
 extension AllDemandManagerViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return self.arrayProduct.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DemandParticipateCell", for: indexPath) as! DemandParticipateCell
+        cell.quantityTextField.isEnabled = false
         
+        let product = arrayProduct[indexPath.row]
+        cell.additionalPrice.text = "+ \(product.additionalPrice)원"
+        cell.optionNameLabel.text = product.optionName
+        cell.quantityTextField.text = "\(product.quantity)"
         return cell
-    }
-}
-
-// MARK: - UITableViewDataSourcePrefetching
-extension AllDemandManagerViewController: UITableViewDataSourcePrefetching {
-    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        
     }
 }

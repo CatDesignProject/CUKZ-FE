@@ -76,4 +76,21 @@ final class DemandNetworkManager {
             }
         }
     }
+    
+    // MARK: - 수요조사 통계 조회 (총대)
+    func getDemandManager(productId: Int,
+                          completion: @escaping (Result<[AllDemandCountRespose], Error>) -> Void) {
+        
+        AF.request("\(baseURL)/products/\(productId)/demand/count",
+                   method: .get)
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: [AllDemandCountRespose].self) { response in
+            switch response.result {
+            case .success(let result):
+                completion(.success(result))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
 }

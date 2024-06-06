@@ -118,6 +118,7 @@ extension DemandParticipateViewController: UITableViewDataSource {
             cell.optionNameLabel.text = "\(options.optionName)"
             cell.quantityTextField.text = "\(options.quantity)"
             cell.quantityTextField.isEnabled = false
+            cell.additionalPrice.text = "+ \(options.additionalPrice)원"
         } else {
             guard let options = self.optionList?[indexPath.row] else { return UITableViewCell() }
             cell.optionNameLabel.text = options.name
