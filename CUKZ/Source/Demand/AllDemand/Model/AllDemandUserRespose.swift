@@ -22,6 +22,6 @@ struct AllDemandUserRespose: Codable {
     
     struct OptionList: Codable {
         let optionId, quantity, additionalPrice: Int
-        let optionName: String?
+        let optionName: String
     }
 }

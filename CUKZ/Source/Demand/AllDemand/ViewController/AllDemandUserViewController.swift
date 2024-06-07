@@ -28,6 +28,7 @@ final class AllDemandUserViewController: UIViewController {
         fetchData()
         setupNaviBar()
         setupTableView()
+        setupRefresh()
     }
     
     private func fetchData() {
@@ -64,6 +65,24 @@ final class AllDemandUserViewController: UIViewController {
         tb.tableHeaderView = UIView()
         tb.rowHeight = 120
         tb.register(ProductHomeCell.self, forCellReuseIdentifier: "ProductHomeCell")
+    }
+    
+    private func setupRefresh() {
+        let rc = allDemandUserView.refreshControl
+        rc.addTarget(self, action: #selector(refreshTable(refresh:)), for: .valueChanged)
+        rc.tintColor = .gadaeBlue
+        
+        allDemandUserView.tableView.refreshControl = rc
+    }
+}
+
+// MARK: - Actions
+extension AllDemandUserViewController{
+    @objc func refreshTable(refresh: UIRefreshControl) {
+       DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.fetchData()
+            refresh.endRefreshing()
+        }
     }
 }
 
