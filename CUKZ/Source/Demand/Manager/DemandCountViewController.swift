@@ -1,5 +1,5 @@
 //
-//  AllDemandManagerViewController.swift
+//  DemandCountViewController.swift
 //  CUKZ
 //
 //  Created by 이승민 on 5/31/24.
@@ -7,9 +7,9 @@
 
 import UIKit
 
-final class AllDemandManagerViewController: UIViewController {
+final class DemandCountViewController: UIViewController {
     // MARK: - Properties
-    private var arrayProduct: [AllDemandCountRespose] = []
+    private var arrayProduct: [AllDemandUserRespose.OptionList] = []
     var productId: Int?
     
     private let allDemandManagerView = ProductHomeView()
@@ -68,7 +68,7 @@ final class AllDemandManagerViewController: UIViewController {
 }
 
 // MARK: - Actions
-extension AllDemandManagerViewController {
+extension DemandCountViewController {
     // 새로고침
     @objc func refreshTable(refresh: UIRefreshControl) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -79,9 +79,14 @@ extension AllDemandManagerViewController {
 }
 
 // MARK: - UITableViewDataSource
-extension AllDemandManagerViewController: UITableViewDataSource {
+extension DemandCountViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.arrayProduct.count
+        if arrayProduct.isEmpty {
+            tableView.setEmptyMessage("참여한 인원이 없습니다.")
+        } else {
+            tableView.restore()
+        }
+        return arrayProduct.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

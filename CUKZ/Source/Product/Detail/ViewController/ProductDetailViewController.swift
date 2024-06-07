@@ -181,7 +181,7 @@ extension ProductDetailViewController {
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
         let demandAction = UIAlertAction(title: "수요조사 참여인원 보기", style: .default) {_ in
-            let VC = AllDemandManagerViewController()
+            let VC = DemandCountViewController()
             VC.productId = self.productId
             self.navigationController?.pushViewController(VC, animated: true)
         }
@@ -327,11 +327,12 @@ extension ProductDetailViewController {
         }
         
         switch data.status {
-        case "ON_DEMAND":
+        case "ON_DEMAND": // 수요조사 참여
             let VC = DemandParticipateViewController()
             VC.optionList = data.options
+            VC.productId = self.productId
             navigationController?.pushViewController(VC, animated: true)
-        case "ON_SALE":
+        case "ON_SALE": // 구매하기
             let VC = PurchaseParticipateViewController()
             navigationController?.pushViewController(VC, animated: true)
         case "COMPLETE":

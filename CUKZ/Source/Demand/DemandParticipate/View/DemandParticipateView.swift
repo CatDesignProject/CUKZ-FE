@@ -41,8 +41,7 @@ final class DemandParticipateView: UIView {
     
     let completeButton = UIButton().then {
         $0.setTitle("수요조사 참여하기", for: .normal)
-        $0.backgroundColor = .lightGray
-        $0.isEnabled = false
+        $0.backgroundColor = .gadaeBlue
     }
     
     // MARK: - Init
