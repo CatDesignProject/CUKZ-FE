@@ -47,6 +47,7 @@ final class MyPageViewController: UIViewController, MyPageTopViewDelegate {
         super.viewDidLoad()
         
 //        fetchData()
+        setupRefresh()
         setupNaviBar()
         setupTableView()
     }
@@ -64,6 +65,14 @@ final class MyPageViewController: UIViewController, MyPageTopViewDelegate {
                 print("내 정보 조회 - \(error)")
             }
         }
+    }
+    
+    private func setupRefresh() {
+        let rc = myPageView.refreshControl
+        rc.addTarget(self, action: #selector(refreshTable(refresh:)), for: .valueChanged)
+        rc.tintColor = .gadaeBlue
+        
+        myPageView.tableView.refreshControl = rc
     }
     
     private func setupNaviBar() {
@@ -120,7 +129,6 @@ final class MyPageViewController: UIViewController, MyPageTopViewDelegate {
 extension MyPageViewController {
     // 새로고침
     @objc func refreshTable(refresh: UIRefreshControl) {
-        print("새로고침 시작")
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.fetchData()

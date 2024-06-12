@@ -58,4 +58,29 @@ final class PurchaseNetworkManager {
             }
         }
     }
+    
+    // MARK: - (총대) 구매하기한 인원 전체 목록 조회
+    func getAllPurchaseManager(productId: Int,
+                               page: Int,
+                               completion: @escaping (Result<AllPurchaseUserResponse, Error>) -> Void) {
+        
+        let parameters: [String: Any] = [
+            "page" : page,
+            "size": 10
+        ]
+        
+        AF.request("\(baseURL)/products/\(productId)/purchase",
+                   method: .get,
+                   parameters: parameters,
+                   encoding: URLEncoding.default)
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: AllPurchaseUserResponse.self) { response in
+            switch response.result {
+            case .success(let result):
+                completion(.success(result))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
 }

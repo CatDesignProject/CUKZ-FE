@@ -1,5 +1,5 @@
 //
-//  AllPurchaseUserViewController.swift
+//  PurchaseManagerViewController.swift
 //  CUKZ
 //
 //  Created by 이승민 on 6/13/24.
@@ -7,18 +7,20 @@
 
 import UIKit
 
-final class AllPurchaseUserViewController: UIViewController {
+final class PurchaseManagerViewController: UIViewController {
     // MARK: - Properties
+    var productId: Int?
+    
     private var arrayContent: [AllPurchaseUserResponse.Content] = []
     private var totalPageNum: Int = 0
     private var pageNum: Int = 0
     private var isLastPage: Bool = false
     
-    private let allDemandUserView = ProductHomeView()
+    private let purchaseManagerView = ProductHomeView()
     
     // MARK: - View 설정
     override func loadView() {
-        view = allDemandUserView
+        view = purchaseManagerView
     }
     
     // MARK: - ViewDidLodad
@@ -33,50 +35,52 @@ final class AllPurchaseUserViewController: UIViewController {
     
     private func fetchData() {
         self.pageNum = 1
-        PurchaseNetworkManager.shared.getAllPurchaseUser(page: 1) { result in
+        guard let productId = self.productId else { return }
+        PurchaseNetworkManager.shared.getAllPurchaseManager(productId: productId, 
+                                                            page: 1) { result in
             switch result {
             case .success(let data):
-                print("내가 구매한 상품 전체 목록 조회 성공")
+                print("(총대) 구매하기한 인원 전체 목록 조회 성공")
                 self.totalPageNum = data.totalPage
                 self.isLastPage = data.last
                 self.arrayContent = data.content
                 DispatchQueue.main.async {
-                    self.allDemandUserView.tableView.reloadData()
+                    self.purchaseManagerView.tableView.reloadData()
                 }
             case .failure(let error):
-                print("내가 구매한 상품 전체 목록 조회 실패: \(error.localizedDescription)")
+                print("(총대) 구매하기한 인원 전체 목록 조회 실패: \(error.localizedDescription)")
             }
         }
     }
     
     private func setupNaviBar() {
-        title = "내가 구매하기한 상품"
+        title = "구매하기한 인원"
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
     
     // 테이블뷰 설정
     private func setupTableView() {
-        let tb = allDemandUserView.tableView
+        let tb = purchaseManagerView.tableView
         tb.dataSource = self
         tb.delegate = self
         tb.prefetchDataSource = self // 페이징
         
         tb.tableHeaderView = UIView()
         tb.rowHeight = 120
-        tb.register(ProductHomeCell.self, forCellReuseIdentifier: "ProductHomeCell")
+        tb.register(PurchaseManagerCell.self, forCellReuseIdentifier: "PurchaseManagerCell")
     }
     
     private func setupRefresh() {
-        let rc = allDemandUserView.refreshControl
+        let rc = purchaseManagerView.refreshControl
         rc.addTarget(self, action: #selector(refreshTable(refresh:)), for: .valueChanged)
         rc.tintColor = .gadaeBlue
         
-        allDemandUserView.tableView.refreshControl = rc
+        purchaseManagerView.tableView.refreshControl = rc
     }
 }
 
 // MARK: - Actions
-extension AllPurchaseUserViewController{
+extension PurchaseManagerViewController{
     @objc func refreshTable(refresh: UIRefreshControl) {
        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.fetchData()
@@ -86,10 +90,10 @@ extension AllPurchaseUserViewController{
 }
 
 // MARK: - UITableViewDataSource
-extension AllPurchaseUserViewController: UITableViewDataSource {
+extension PurchaseManagerViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if arrayContent.count == 0 {
-            tableView.setEmptyMessage("내가 구매한 상품이 없습니다.")
+            tableView.setEmptyMessage("구매하기한 인원이 없습니다.")
         } else {
             tableView.restore()
         }
@@ -98,24 +102,20 @@ extension AllPurchaseUserViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ProductHomeCell", for: indexPath) as! ProductHomeCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PurchaseManagerCell", for: indexPath) as! PurchaseManagerCell
         
         let data = arrayContent[indexPath.row]
         
-        if let imageUrlString = data.imageUrlList.first,
-           let imageUrl = URL(string: imageUrlString) {
-            cell.thumnailImage.kf.setImage(with: imageUrl)
-        }
-        cell.productNameLabel.text = data.productName
-        cell.productPriceLabel.text = "총 \(data.totalPrice)원"
-        cell.productStateLabel.isHidden = true
+        cell.payerNameLabel.text = data.payerName
+        cell.buyerPhoneLabel.text = data.buyerPhone
+        cell.totalPriceLabel.text = "총 \(data.totalPrice)원"
         
         return cell
     }
 }
 
 // MARK: - UITableViewDelegate
-extension AllPurchaseUserViewController: UITableViewDelegate {
+extension PurchaseManagerViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let VC = PurchaseParticipateOptionViewController()
         VC.productId = self.arrayContent[indexPath.row].productId
@@ -127,28 +127,30 @@ extension AllPurchaseUserViewController: UITableViewDelegate {
 }
 
 // MARK: - UITableViewDataSourcePrefetching
-extension AllPurchaseUserViewController: UITableViewDataSourcePrefetching {
+extension PurchaseManagerViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths { // 페이징
-            if arrayContent.count - 1 == indexPath.row && pageNum < totalPageNum && !isLastPage {
+            guard let productId = self.productId else { return }
+            
+            if arrayContent.count - 1 == indexPath.row && pageNum <= totalPageNum && !isLastPage {
 
                 pageNum += 1
                 
-                PurchaseNetworkManager.shared.getAllPurchaseUser(page: pageNum) { result in
+                PurchaseNetworkManager.shared.getAllPurchaseManager(productId: productId,
+                                                                    page: pageNum) { result in
                     switch result {
                     case .success(let data):
-                        print("내가 구매한 상품 전체 목록 조회 페이징 성공")
+                        print("(총대) 구매하기한 인원 전체 목록 조회 페이징 성공")
                         self.isLastPage = data.last
                         self.arrayContent += data.content
                         DispatchQueue.main.async {
-                            self.allDemandUserView.tableView.reloadData()
+                            self.purchaseManagerView.tableView.reloadData()
                         }
                     case .failure(let error):
-                        print("내가 구매한 상품 전체 목록 조회 페이징 실패: \(error.localizedDescription)")
+                        print("(총대) 구매하기한 인원 전체 목록 조회 페이징 실패: \(error.localizedDescription)")
                     }
                 }
             }
         }
     }
 }
-
