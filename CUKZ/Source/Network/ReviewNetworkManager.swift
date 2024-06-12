@@ -36,7 +36,7 @@ final class ReviewNetworkManager {
     
     // MARK: - 리뷰 작성
     func postReview(sellerId: Int,
-                    productId: Int,
+                    purchaseFormId: Int,
                     sellerKindness: Bool,
                     goodNotification: Bool,
                     arrivalSatisfactory: Bool,
@@ -50,7 +50,7 @@ final class ReviewNetworkManager {
             "descriptionMatch": descriptionMatch
         ]
         
-        AF.request("\(baseURL)/reviews/member/\(sellerId)/purchaseForm/\(productId)",
+        AF.request("\(baseURL)/reviews/members/\(sellerId)/purchaseForm/\(purchaseFormId)",
                    method: .post,
                    parameters: parameters,
                    encoding: JSONEncoding.default)

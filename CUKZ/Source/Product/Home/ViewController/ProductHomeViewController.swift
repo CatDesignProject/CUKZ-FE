@@ -216,8 +216,10 @@ extension ProductHomeViewController: UITableViewDataSource {
             productStatusColor = .systemBlue
         case "END_SALE":
             productStatus = "판매 종료"
+        case "COMPLETE":
+            productStatus = "공구 종료"
         default:
-            print("")
+            break
         }
         
         cell.productStateLabel.text = productStatus

@@ -12,6 +12,7 @@ final class ReviewViewController: UIViewController {
     var isLeave: Bool?
     var sellerId: Int?
     var productId: Int?
+    var purchaseFormId: Int?
     
     private var isSellerKindnessSelected = false
     private var isGoodNotificationSelected = false
@@ -119,8 +120,11 @@ extension ReviewViewController {
         guard let sellerId = self.sellerId,
               let productId = self.productId else { return }
         
-        ReviewNetworkManager.shared.postReview(sellerId: sellerId,
-                                               productId: productId,
+        print(sellerId)
+        print(productId)
+        
+        ReviewNetworkManager.shared.postReview(sellerId: 525,
+                                               purchaseFormId: 11,
                                                sellerKindness: self.isSellerKindnessSelected,
                                                goodNotification: self.isGoodNotificationSelected,
                                                arrivalSatisfactory: self.isArrivalSatisfactorySelected,

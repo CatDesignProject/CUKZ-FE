@@ -73,8 +73,12 @@ final class ProductDetailViewController: UIViewController {
         case "END_SALE":
             productStatus = "판매 종료"
         case "COMPLETE":
-            productStatus = "총대 리뷰 작성"
-            productStatusColor = .systemPurple
+            if data.isBuy {
+                productStatus = "총대 리뷰 작성"
+                productStatusColor = .systemPurple
+            } else {
+                productStatus = "공구 종료"
+            }
         default:
             return
         }
@@ -314,9 +318,10 @@ extension ProductDetailViewController {
         }
     }
     
-    // 수요조사 참여, 구매하기
+    // 수요조사 참여, 구매하기, 리뷰 작성
     @objc func statusButtonTapped() {
-        guard let data = self.productDetailData else { return }
+        guard let data = self.productDetailData,
+              let productId = self.productId else { return }
         
         if !AppDelegate.isLogin  {
             showAlertWithDismissDelay(message: "로그인 후 이용해주세요.")
@@ -330,16 +335,19 @@ extension ProductDetailViewController {
         case "ON_DEMAND": // 수요조사 참여
             let VC = DemandParticipateViewController()
             VC.optionList = data.options
-            VC.productId = self.productId
+            VC.productId = productId
             navigationController?.pushViewController(VC, animated: true)
         case "ON_SALE": // 구매하기
-            let VC = PurchaseParticipateViewController()
+            let VC = PurchaseParticipateOptionViewController()
+            VC.optionList = data.options
+            VC.productId = productId
             navigationController?.pushViewController(VC, animated: true)
         case "COMPLETE":
-            let VC = ReviewViewController()
-            VC.sellerId = productDetailData?.sellerId
-            VC.productId = productDetailData?.id
-            navigationController?.pushViewController(VC, animated: true)
+            if data.isBuy {
+                showAlertWithDismissDelay(message: "내가 구매한 상품 목록에서 리뷰 가능합니다.")
+            } else {
+                showAlertWithDismissDelay(message: "종료되었습니다.")
+            }
         default:
             showAlertWithDismissDelay(message: "종료되었습니다.")
         }
