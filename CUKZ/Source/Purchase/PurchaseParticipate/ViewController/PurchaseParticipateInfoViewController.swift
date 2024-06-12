@@ -38,10 +38,9 @@ final class PurchaseParticipateInfoViewController: UIViewController {
     private func setupUI() {
         guard let purchaseProduct = self.purchaseProduct else { return }
         DispatchQueue.main.async {
-            self.purchaseParticipateInfoView.completeButton.removeFromSuperview()
-            self.purchaseParticipateInfoView.scrollView.snp.makeConstraints { make in
-                make.bottom.equalToSuperview()
-            }
+            self.purchaseParticipateInfoView.completeButton.setTitle("총 \(purchaseProduct.totalPrice)원\n총대계좌: 농협123456789", for: .normal)
+            self.purchaseParticipateInfoView.completeButton.titleLabel?.numberOfLines = 0
+            self.purchaseParticipateInfoView.completeButton.titleLabel?.textAlignment = .center
             self.purchaseParticipateInfoView.buyerNameTextField.text = purchaseProduct.buyerName
             self.purchaseParticipateInfoView.buyerPhoneTextField.text = purchaseProduct.buyerPhone
             self.purchaseParticipateInfoView.recipientNameTextField.text = purchaseProduct.recipientName
@@ -68,6 +67,15 @@ final class PurchaseParticipateInfoViewController: UIViewController {
     
     private func setupNaviBar() {
         title = "개인정보 입력"
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        if self.isAllPurchase {
+            let goToProductButton = UIBarButtonItem(title: "상품 보기",
+                                                    style: .plain,
+                                                    target: self,
+                                                    action: #selector(goToProductButtonTapped))
+            
+            navigationItem.rightBarButtonItem = goToProductButton
+        }
     }
     
     private func setupButton() {
@@ -80,6 +88,15 @@ final class PurchaseParticipateInfoViewController: UIViewController {
 
 // MARK: - Actions
 extension PurchaseParticipateInfoViewController {
+    // 상품보기 버튼
+    @objc private func goToProductButtonTapped() {
+        let VC = ProductDetailViewController()
+        if let productId = self.productId {
+            VC.productId = productId
+        }
+        navigationController?.pushViewController(VC, animated: true)
+    }
+    
     // 구매하기 버튼
     @objc private func completeButtonTapped() {
         guard let productId = self.productId,
