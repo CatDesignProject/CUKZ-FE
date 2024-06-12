@@ -82,11 +82,12 @@ final class PurchaseParticipateInfoViewController: UIViewController {
             
             navigationItem.rightBarButtonItem = goToProductButton
         } else if self.isPurchaseManager {
-            let payCheckButton = UIBarButtonItem(title: "입금 확인",
+            guard let purchaseProduct = self.purchaseProduct else { return }
+            let title = purchaseProduct.payStatus ? "입금 확인 취소" : "입금 확인"
+            let payCheckButton = UIBarButtonItem(title: title,
                                                  style: .plain,
                                                  target: self,
                                                  action: #selector(payCheckButtonTapped))
-            
             navigationItem.rightBarButtonItem = payCheckButton
         }
     }
@@ -119,15 +120,30 @@ extension PurchaseParticipateInfoViewController {
     @objc private func payCheckButtonTapped() {
         guard let purchaseProduct = self.purchaseProduct else { return }
         
-        let sheet = UIAlertController(title: nil, message: "입금 확인 하시겠습니까?", preferredStyle: .alert)
+        let actionTitle = purchaseProduct.payStatus ? "입금 확인 취소" : "입금 확인"
+        let alertMessage = purchaseProduct.payStatus ? "입금 확인 취소 완료" : "입금 확인 완료"
+        
+        let sheet = UIAlertController(title: nil, message: "\(actionTitle) 하시겠습니까?", preferredStyle: .alert)
         sheet.addAction(UIAlertAction(title: "취소", style: .destructive, handler: nil))
         sheet.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
             PurchaseNetworkManager.shared.postPurchasePayCheck(purchaseFormId: purchaseProduct.id,
                                                                payStatus: !purchaseProduct.payStatus) { error in
                 if let error = error {
-                    print("입금 확인 실패: \(error.localizedDescription)")
+                    print("\(actionTitle) 실패: \(error.localizedDescription)")
                 } else {
-                    print("입금 확인 성공")
+                    print("\(actionTitle) 성공")
+                    DispatchQueue.main.async {
+                        if let navigationController = self.navigationController {
+                            for viewController in navigationController.viewControllers {
+                                if let purchaseManagerVC = viewController as? PurchaseManagerViewController {
+                                    purchaseManagerVC.fetchData()
+                                    navigationController.popToViewController(purchaseManagerVC, animated: true)
+                                    break
+                                }
+                            }
+                        }
+                        self.showAlertWithDismissDelay(message: alertMessage)
+                    }
                 }
             }
         }))

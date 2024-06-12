@@ -33,7 +33,7 @@ final class PurchaseManagerViewController: UIViewController {
         setupRefresh()
     }
     
-    private func fetchData() {
+    func fetchData() {
         self.pageNum = 1
         guard let productId = self.productId else { return }
         PurchaseNetworkManager.shared.getAllPurchaseManager(productId: productId, 
