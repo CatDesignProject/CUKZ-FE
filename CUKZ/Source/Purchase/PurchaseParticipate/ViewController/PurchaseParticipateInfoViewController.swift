@@ -81,15 +81,27 @@ final class PurchaseParticipateInfoViewController: UIViewController {
                                                     action: #selector(goToProductButtonTapped))
             
             navigationItem.rightBarButtonItem = goToProductButton
+        } else if self.isPurchaseManager {
+            let payCheckButton = UIBarButtonItem(title: "입금 확인",
+                                                 style: .plain,
+                                                 target: self,
+                                                 action: #selector(payCheckButtonTapped))
+            
+            navigationItem.rightBarButtonItem = payCheckButton
         }
     }
     
     private func setupButton() {
-        purchaseParticipateInfoView.completeButton.addTarget(self,
-                                                         action: #selector(completeButtonTapped),
-                                                         for: .touchUpInside)
+        if self.isPurchaseManager {
+            DispatchQueue.main.async {
+                
+            }
+        } else {
+            purchaseParticipateInfoView.completeButton.addTarget(self,
+                                                             action: #selector(completeButtonTapped),
+                                                             for: .touchUpInside)
+        }
     }
-    
 }
 
 // MARK: - Actions
@@ -101,6 +113,25 @@ extension PurchaseParticipateInfoViewController {
             VC.productId = productId
         }
         navigationController?.pushViewController(VC, animated: true)
+    }
+    
+    // 입금확인
+    @objc private func payCheckButtonTapped() {
+        guard let purchaseProduct = self.purchaseProduct else { return }
+        
+        let sheet = UIAlertController(title: nil, message: "입금 확인 하시겠습니까?", preferredStyle: .alert)
+        sheet.addAction(UIAlertAction(title: "취소", style: .destructive, handler: nil))
+        sheet.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            PurchaseNetworkManager.shared.postPurchasePayCheck(purchaseFormId: purchaseProduct.id,
+                                                               payStatus: !purchaseProduct.payStatus) { error in
+                if let error = error {
+                    print("입금 확인 실패: \(error.localizedDescription)")
+                } else {
+                    print("입금 확인 성공")
+                }
+            }
+        }))
+        present(sheet, animated: true)
     }
     
     // 구매하기 버튼

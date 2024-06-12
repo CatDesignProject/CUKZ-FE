@@ -25,6 +25,7 @@ struct AllPurchaseUserResponse: Codable {
         let recipientName: String
         let recipientPhone: String
         let address: String
+        let payStatus: Bool
         let payerName: String
         let refundName: String
         let refundAccount: String

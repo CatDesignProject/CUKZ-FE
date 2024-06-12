@@ -32,11 +32,15 @@ final class PurchaseManagerCell: UITableViewCell {
         $0.font = UIFont.boldSystemFont(ofSize: 17)
     }
     
+    let checkIcon = UIImageView().then {
+        $0.image = UIImage(systemName: "checkmark.square.fill")
+        $0.tintColor = .systemGreen
+    }
+    
     // MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
-        self.accessoryType = .disclosureIndicator
         
         addViews()
         configureConstraints()
@@ -49,7 +53,8 @@ final class PurchaseManagerCell: UITableViewCell {
     // MARK: - UI
     private func addViews() {
         contentView.addSubviews([
-            stackView
+            stackView,
+            checkIcon
         ])
         
         stackView.addArrangedSubviews([
@@ -62,7 +67,14 @@ final class PurchaseManagerCell: UITableViewCell {
     private func configureConstraints() {
         stackView.snp.makeConstraints { make in
             make.centerY.equalTo(contentView)
-            make.leading.equalTo(20)
+            make.leading.equalTo(contentView).offset(20)
+            make.trailing.equalTo(checkIcon.snp.leading)
+        }
+        
+        checkIcon.snp.makeConstraints { make in
+            make.centerY.equalTo(contentView)
+            make.trailing.equalTo(contentView).inset(20)
+            make.size.equalTo(35)
         }
     }
 }

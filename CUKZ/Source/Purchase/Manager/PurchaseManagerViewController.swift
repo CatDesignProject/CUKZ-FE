@@ -109,6 +109,7 @@ extension PurchaseManagerViewController: UITableViewDataSource {
         cell.buyerNameLabel.text = data.buyerName
         cell.buyerPhoneLabel.text = data.buyerPhone
         cell.totalPriceLabel.text = "총 \(data.totalPrice)원"
+        cell.checkIcon.isHidden = !data.payStatus
         
         return cell
     }
