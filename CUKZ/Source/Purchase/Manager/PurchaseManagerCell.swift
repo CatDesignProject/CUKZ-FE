@@ -1,0 +1,69 @@
+//
+//  PurchaseManagerCell.swift
+//  CUKZ
+//
+//  Created by 이승민 on 6/13/24.
+//
+
+import UIKit
+
+final class PurchaseManagerCell: UITableViewCell {
+    // MARK: - View
+    let stackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.spacing = 10
+    }
+    
+    let buyerNameLabel = UILabel().then {
+        $0.text = "홍길동"
+        $0.font = UIFont.boldSystemFont(ofSize: 17)
+        $0.numberOfLines = 2
+    }
+    
+    let buyerPhoneLabel = UILabel().then {
+        $0.text = "01033337777"
+        $0.font = UIFont.boldSystemFont(ofSize: 17)
+        $0.numberOfLines = 1
+    }
+    
+    let totalPriceLabel = UILabel().then {
+        $0.text = "53000원"
+        $0.textColor = .gadaeBlue
+        $0.font = UIFont.boldSystemFont(ofSize: 17)
+    }
+    
+    // MARK: - Init
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.selectionStyle = .none
+        self.accessoryType = .disclosureIndicator
+        
+        addViews()
+        configureConstraints()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - UI
+    private func addViews() {
+        contentView.addSubviews([
+            stackView
+        ])
+        
+        stackView.addArrangedSubviews([
+            buyerNameLabel,
+            buyerPhoneLabel,
+            totalPriceLabel
+        ])
+    }
+    
+    private func configureConstraints() {
+        stackView.snp.makeConstraints { make in
+            make.centerY.equalTo(contentView)
+            make.leading.equalTo(20)
+        }
+    }
+}
+

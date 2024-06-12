@@ -12,8 +12,11 @@ final class PurchaseParticipateOptionViewController: UIViewController {
     var optionList: [ProductDetailModel.Option]? // 상세보기에서 넘어온 옵션 배열
     var productId: Int?
     
-    var isAllPurchase: Bool = false
-    var purchaseProduct: AllPurchaseUserResponse.Content? // 내가 구매한 상품 전체 목록에서 넘어왔을 떄
+    var isAllPurchase: Bool = false // 내가 구매한 상품 전체 목록에서 넘어왔을 떄
+    var isPurchaseManager: Bool = false
+    var purchaseProduct: AllPurchaseUserResponse.Content?
+    
+    
     
     private let purchaseParticipateOptionView = PurchaseParticipateOptionView()
     
@@ -44,7 +47,7 @@ final class PurchaseParticipateOptionViewController: UIViewController {
     }
     
     private func setupButton() {
-        if isAllPurchase {
+        if isAllPurchase || isPurchaseManager {
             DispatchQueue.main.async {
                 self.purchaseParticipateOptionView.completeButton.setTitle("개인정보 보기", for: .normal)
             }
@@ -62,11 +65,15 @@ extension PurchaseParticipateOptionViewController {
     @objc private func completeButtonTapped() {
         guard let productId = self.productId else { return }
         
-        if self.isAllPurchase {
+        if self.isAllPurchase || isPurchaseManager {
             guard let purchaseProduct = self.purchaseProduct else { return }
             let VC = PurchaseParticipateInfoViewController()
             VC.productId = productId
-            VC.isAllPurchase = true
+            if isAllPurchase {
+                VC.isAllPurchase = true
+            } else if isPurchaseManager {
+                VC.isPurchaseManager = true
+            }
             VC.purchaseProduct = purchaseProduct
             navigationController?.pushViewController(VC, animated: true)
         } else {
@@ -104,7 +111,7 @@ extension PurchaseParticipateOptionViewController {
 // MARK: - UITableViewDataSource
 extension PurchaseParticipateOptionViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if self.isAllPurchase {
+        if self.isAllPurchase || self.isPurchaseManager {
             return self.purchaseProduct?.optionList.count ?? 0
         } else {
             return self.optionList?.count ?? 0
@@ -114,7 +121,7 @@ extension PurchaseParticipateOptionViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DemandParticipateCell", for: indexPath) as! DemandParticipateCell
         
-        if self.isAllPurchase {
+        if self.isAllPurchase || self.isPurchaseManager {
             guard let options = self.purchaseProduct?.optionList[indexPath.row] else { return UITableViewCell() }
             cell.optionNameLabel.text = options.optionName
             cell.additionalPrice.text = "+ \(options.additionalPrice)원"

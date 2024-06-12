@@ -32,6 +32,7 @@ final class AllDemandUserViewController: UIViewController {
     }
     
     private func fetchData() {
+        self.pageNum = 1
         DemandNetworkManager.shared.getAllDemandUser(page: 1) { result in
             switch result {
             case .success(let data):
@@ -150,7 +151,7 @@ extension AllDemandUserViewController: UITableViewDelegate {
 extension AllDemandUserViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths { // 페이징
-            if arrayContent.count - 1 == indexPath.row && pageNum < totalPageNum && !isLastPage {
+            if arrayContent.count - 1 == indexPath.row && pageNum <= totalPageNum && !isLastPage {
 
                 pageNum += 1
                 

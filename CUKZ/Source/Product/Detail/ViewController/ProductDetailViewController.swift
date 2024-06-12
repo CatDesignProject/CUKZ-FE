@@ -193,18 +193,20 @@ extension ProductDetailViewController {
         }
     }
     
-    // 수요조사, 구매 목록 보기
+    // 수요조사, 구매 인원 보기
     @objc private func gearButtonTapped() {
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let demandAction = UIAlertAction(title: "수요조사 참여인원 보기", style: .default) {_ in
+        let demandAction = UIAlertAction(title: "수요조사 참여 인원 수", style: .default) {_ in
             let VC = DemandCountViewController()
             VC.productId = self.productId
             self.navigationController?.pushViewController(VC, animated: true)
         }
         
-        let purchaseAction = UIAlertAction(title: "구매 목록 보기", style: .default) {_ in
-            
+        let purchaseAction = UIAlertAction(title: "구매하기한 인원 목록", style: .default) {_ in
+            let VC = PurchaseManagerViewController()
+            VC.productId = self.productId
+            self.navigationController?.pushViewController(VC, animated: true)
         }
         
         let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
