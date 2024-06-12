@@ -41,6 +41,7 @@ final class PurchaseManagerViewController: UIViewController {
             switch result {
             case .success(let data):
                 print("(총대) 구매하기한 인원 전체 목록 조회 성공")
+                self.title = "구매하기한 인원 \(data.totalElements)명"
                 self.totalPageNum = data.totalPage
                 self.isLastPage = data.last
                 self.arrayContent = data.content
@@ -54,7 +55,6 @@ final class PurchaseManagerViewController: UIViewController {
     }
     
     private func setupNaviBar() {
-        title = "구매하기한 인원"
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
     
@@ -106,7 +106,7 @@ extension PurchaseManagerViewController: UITableViewDataSource {
         
         let data = arrayContent[indexPath.row]
         
-        cell.payerNameLabel.text = data.payerName
+        cell.buyerNameLabel.text = data.buyerName
         cell.buyerPhoneLabel.text = data.buyerPhone
         cell.totalPriceLabel.text = "총 \(data.totalPrice)원"
         
@@ -119,7 +119,7 @@ extension PurchaseManagerViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let VC = PurchaseParticipateOptionViewController()
         VC.productId = self.arrayContent[indexPath.row].productId
-        VC.isAllPurchase = true
+        VC.isPurchaseManager = true
         VC.purchaseProduct = self.arrayContent[indexPath.row]
         VC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(VC, animated: true)

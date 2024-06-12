@@ -14,7 +14,7 @@ final class PurchaseManagerCell: UITableViewCell {
         $0.spacing = 10
     }
     
-    let payerNameLabel = UILabel().then {
+    let buyerNameLabel = UILabel().then {
         $0.text = "홍길동"
         $0.font = UIFont.boldSystemFont(ofSize: 17)
         $0.numberOfLines = 2
@@ -53,7 +53,7 @@ final class PurchaseManagerCell: UITableViewCell {
         ])
         
         stackView.addArrangedSubviews([
-            payerNameLabel,
+            buyerNameLabel,
             buyerPhoneLabel,
             totalPriceLabel
         ])

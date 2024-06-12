@@ -13,6 +13,7 @@ final class PurchaseParticipateInfoViewController: UIViewController {
     var productId: Int?
     
     var isAllPurchase: Bool = false
+    var isPurchaseManager:Bool = false
     var purchaseProduct: AllPurchaseUserResponse.Content? // 내가 구매한 상품 전체 목록에서 넘어왔을 떄
     
     private let purchaseParticipateInfoView = PurchaseParticipateInfoView()
@@ -26,7 +27,7 @@ final class PurchaseParticipateInfoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if self.isAllPurchase {
+        if self.isAllPurchase || self.isPurchaseManager {
             setupUI()
         }
         
@@ -38,7 +39,12 @@ final class PurchaseParticipateInfoViewController: UIViewController {
     private func setupUI() {
         guard let purchaseProduct = self.purchaseProduct else { return }
         DispatchQueue.main.async {
-            self.purchaseParticipateInfoView.completeButton.setTitle("총 \(purchaseProduct.totalPrice)원\n총대계좌: 농협123456789", for: .normal)
+            if self.isAllPurchase {
+                self.purchaseParticipateInfoView.completeButton.setTitle("총 \(purchaseProduct.totalPrice)원\n총대계좌: 농협123456789", for: .normal)
+            } else if self.isPurchaseManager {
+                self.purchaseParticipateInfoView.completeButton.setTitle("총 \(purchaseProduct.totalPrice)원", for: .normal)
+            }
+            
             self.purchaseParticipateInfoView.completeButton.titleLabel?.numberOfLines = 0
             self.purchaseParticipateInfoView.completeButton.titleLabel?.textAlignment = .center
             self.purchaseParticipateInfoView.buyerNameTextField.text = purchaseProduct.buyerName
