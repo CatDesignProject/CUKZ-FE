@@ -116,9 +116,10 @@ extension AllPurchaseUserViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension AllPurchaseUserViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let VC = DemandParticipateViewController()
-        VC.isAllDemand = true
-        VC.demandId = self.arrayContent[indexPath.row].id
+        let VC = PurchaseParticipateOptionViewController()
+        VC.productId = self.arrayContent[indexPath.row].productId
+        VC.isAllPurchase = true
+        VC.purchaseProduct = self.arrayContent[indexPath.row]
         VC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(VC, animated: true)
     }
