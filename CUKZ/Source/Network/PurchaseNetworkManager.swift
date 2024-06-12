@@ -83,4 +83,31 @@ final class PurchaseNetworkManager {
             }
         }
     }
+    
+    // MARK: - 입금확인
+    func postPurchasePayCheck(purchaseFormId: Int, 
+                              payStatus: Bool,
+                              completion: @escaping (Error?) -> Void) {
+        
+        let parameters: [String: Any] = [
+            "payStatus" : payStatus
+        ]
+        
+        print("purchaseFormId \(purchaseFormId)")
+        print("payStatus \(payStatus)")
+        
+        AF.request("\(baseURL)/purchase/\(purchaseFormId)/pay",
+                   method: .patch,
+                   parameters: parameters,
+                   encoding: JSONEncoding.default)
+        .validate(statusCode: 200..<300)
+        .response { response in
+            switch response.result {
+            case .success:
+                completion(nil)
+            case .failure(let error):
+                completion(error)
+            }
+        }
+    }
 }
