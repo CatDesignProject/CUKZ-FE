@@ -85,6 +85,7 @@ final class ProductDetailViewController: UIViewController {
         
         productDetailView.pageNumLabel.text = "1 / \(data.imageUrls.count)"
         productDetailView.nicknameLabel.text = data.nickname
+        productDetailView.dateLabel.text = "기간: \(formatDate(data.startDate)) ~ \(formatDate(data.endDate))"
         productDetailView.productNameLabel.text = data.name
         productDetailView.productPriceLabel.text = "\(data.price)원"
         productDetailView.productDescriptionLabel.text = data.info
@@ -92,6 +93,17 @@ final class ProductDetailViewController: UIViewController {
         updateLikeButtonAppearance()
         productDetailView.productDetailBottomView.statusButton.setTitle(productStatus, for: .normal)
         productDetailView.productDetailBottomView.statusButton.backgroundColor = productStatusColor
+        
+        func formatDate(_ dateString: String) -> String {
+            let inputFormatter = DateFormatter()
+            inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+            guard let date = inputFormatter.date(from: dateString) else {
+                return dateString
+            }
+            let outputFormatter = DateFormatter()
+            outputFormatter.dateFormat = "yyyy-MM-dd"
+            return outputFormatter.string(from: date)
+        }
     }
     
     private func setupNaviBar() {

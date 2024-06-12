@@ -73,7 +73,7 @@ extension PurchaseParticipateInfoViewController {
                             }
                         }
                     }
-                    self.showAlertWithDismissDelay(message: "구매하기 참여 완료")
+                    self.showAlertWithDismissDelay(message: "구매하기 완료")
                 }
             }
         }
