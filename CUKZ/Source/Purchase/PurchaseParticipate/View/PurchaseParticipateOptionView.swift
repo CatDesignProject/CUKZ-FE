@@ -20,8 +20,8 @@ final class PurchaseParticipateOptionView: UIView {
     }
     
     let completeButton = UIButton().then {
-        $0.setTitle("수요조사 참여하기", for: .normal)
-        $0.backgroundColor = .gadaeBlue
+        $0.setTitle("개인정보 입력", for: .normal)
+        $0.backgroundColor = .systemBlue
     }
     
     // MARK: - Init

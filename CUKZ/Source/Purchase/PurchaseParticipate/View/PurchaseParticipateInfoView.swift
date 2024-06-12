@@ -1,14 +1,18 @@
 //
-//  PurchaseParticipateTopView.swift
+//  PurchaseParticipateInfoView.swift
 //  CUKZ
 //
-//  Created by 이승민 on 5/31/24.
+//  Created by 이승민 on 6/12/24.
 //
 
 import UIKit
 
-final class PurchaseParticipateTopView: UIView {
+final class PurchaseParticipateInfoView: UIView {
     // MARK: - View
+    let scrollView = UIScrollView()
+    
+    let contentView = UIView()
+    
     private let stackView = UIStackView().then {
         $0.axis = .vertical
     }
@@ -184,6 +188,12 @@ final class PurchaseParticipateTopView: UIView {
         $0.font = UIFont.systemFont(ofSize: 19)
     }
     
+    // 구매하기 버튼
+    let completeButton = UIButton().then {
+        $0.setTitle("구매하기", for: .normal)
+        $0.backgroundColor = .systemBlue
+    }
+    
     // 공백뷰
     private let spacerView1 = UIView()
     private let spacerView2 = UIView()
@@ -209,8 +219,13 @@ final class PurchaseParticipateTopView: UIView {
     // MARK: - UI
     private func addViews() {
         self.addSubviews([
-            stackView
+            scrollView,
+            completeButton
         ])
+        
+        scrollView.addSubview(contentView)
+        
+        contentView.addSubview(stackView)
         
         stackView.addArrangedSubviews([
             buyerNameLabel,
@@ -256,9 +271,19 @@ final class PurchaseParticipateTopView: UIView {
     }
     
     private func configureConstraints() {
+        scrollView.snp.makeConstraints { make in
+            make.top.equalTo(self.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(completeButton.snp.top)
+        }
+        
+        contentView.snp.makeConstraints { make in
+            make.width.equalTo(scrollView)
+            make.edges.equalTo(scrollView)
+        }
+        
         stackView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(20)
+            make.edges.equalTo(contentView).inset(20)
         }
         
         [buyerNameRoundView, buyerPhoneRoundView, recipientNameRoundView, recipientPhoneRoundView, addressRoundView, payerNameRoundView, refundNameRoundView, refundAccountRoundView].forEach {
@@ -304,15 +329,10 @@ final class PurchaseParticipateTopView: UIView {
                 make.height.equalTo(20)
             }
         }
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        self.invalidateIntrinsicContentSize()
-    }
-    
-    override var intrinsicContentSize: CGSize {
-        let height = stackView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
-        return CGSize(width: UIView.noIntrinsicMetric, height: height)
+        
+        completeButton.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(80)
+        }
     }
 }
