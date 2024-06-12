@@ -1,24 +1,27 @@
 //
-//  PurchaseParticipateView.swift
+//  PurchaseParticipateOptionView.swift
 //  CUKZ
 //
-//  Created by 이승민 on 5/31/24.
+//  Created by 이승민 on 6/11/24.
 //
 
 import UIKit
 
-final class PurchaseParticipateView: UIView {
+final class PurchaseParticipateOptionView: UIView {
     // MARK: - View
+    private let quantityLabel = UILabel().then {
+        $0.text = "수량"
+        $0.font = UIFont.systemFont(ofSize: 18)
+    }
+    
     let tableView = UITableView().then {
-        $0.keyboardDismissMode = .onDrag // 스크롤 할 때 키보드 내리기
         $0.separatorInset.left = 20
         $0.separatorInset.right = 20
     }
     
     let completeButton = UIButton().then {
-        $0.setTitle("구매하기", for: .normal)
-        $0.backgroundColor = .lightGray
-        $0.isEnabled = false
+        $0.setTitle("개인정보 입력", for: .normal)
+        $0.backgroundColor = .systemBlue
     }
     
     // MARK: - Init
@@ -37,16 +40,22 @@ final class PurchaseParticipateView: UIView {
     // MARK: - UI
     private func addViews() {
         self.addSubviews([
+            quantityLabel,
             tableView,
             completeButton
         ])
     }
     
     private func configureConstraints() {
-        tableView.snp.makeConstraints { make in
+        quantityLabel.snp.makeConstraints { make in
             make.top.equalTo(self.safeAreaLayoutGuide)
+            make.trailing.equalToSuperview().inset(35)
+        }
+        
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(quantityLabel.snp.bottom)
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(completeButton.snp.top)
+            make.bottom.equalToSuperview()
         }
         
         completeButton.snp.makeConstraints { make in
@@ -55,3 +64,4 @@ final class PurchaseParticipateView: UIView {
         }
     }
 }
+
