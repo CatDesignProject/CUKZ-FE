@@ -38,7 +38,7 @@ final class DemandNetworkManager {
     
     // MARK: - 내가 참여한 수요조사 전체 목록 조회
     func getAllDemandUser(page: Int, 
-                          completion: @escaping (Result<AllDemandUserRespose?, Error>) -> Void) {
+                          completion: @escaping (Result<AllDemandUserResponse?, Error>) -> Void) {
         
         let parameters: [String: Any] = [
             "page" : page,
@@ -50,7 +50,7 @@ final class DemandNetworkManager {
                    parameters: parameters,
                    encoding: URLEncoding.default)
         .validate(statusCode: 200..<300)
-        .responseDecodable(of: AllDemandUserRespose.self) { response in
+        .responseDecodable(of: AllDemandUserResponse.self) { response in
             switch response.result {
             case .success(let result):
                 completion(.success(result))
@@ -62,12 +62,12 @@ final class DemandNetworkManager {
     
     // MARK: - 내가 참여한 수요조사 단건 조회
     func getDemandUser(demandId: Int,
-                       completion: @escaping (Result<AllDemandUserRespose.Content?, Error>) -> Void) {
+                       completion: @escaping (Result<AllDemandUserResponse.Content?, Error>) -> Void) {
         
         AF.request("\(baseURL)/members/demand/\(demandId)",
                    method: .get)
         .validate(statusCode: 200..<300)
-        .responseDecodable(of: AllDemandUserRespose.Content.self) { response in
+        .responseDecodable(of: AllDemandUserResponse.Content.self) { response in
             switch response.result {
             case .success(let result):
                 completion(.success(result))
@@ -79,12 +79,12 @@ final class DemandNetworkManager {
     
     // MARK: - 수요조사 통계 조회 (총대)
     func getDemandManager(productId: Int,
-                          completion: @escaping (Result<[AllDemandUserRespose.OptionList], Error>) -> Void) {
+                          completion: @escaping (Result<[AllDemandUserResponse.OptionList], Error>) -> Void) {
         
         AF.request("\(baseURL)/products/\(productId)/demand/count",
                    method: .get)
         .validate(statusCode: 200..<300)
-        .responseDecodable(of: [AllDemandUserRespose.OptionList].self) { response in
+        .responseDecodable(of: [AllDemandUserResponse.OptionList].self) { response in
             switch response.result {
             case .success(let result):
                 completion(.success(result))

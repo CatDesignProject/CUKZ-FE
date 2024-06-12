@@ -14,7 +14,7 @@ final class DemandParticipateViewController: UIViewController {
     var productId: Int?
     var isAllDemand: Bool = false // 참여한 수요조사 전체 목록 조회에서 push 여부
     var demandId: Int? // 단건 조회 아이디
-    private var demandData: AllDemandUserRespose.Content?
+    private var demandData: AllDemandUserResponse.Content?
     
     let demandParticipateView = DemandParticipateView()
     

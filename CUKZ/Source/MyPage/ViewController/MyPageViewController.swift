@@ -197,6 +197,11 @@ extension MyPageViewController: UITableViewDelegate {
                 VC.hidesBottomBarWhenPushed = true // 탭바 숨기기
                 navigationController?.pushViewController(VC, animated: true)
             }
+            if indexPath.row == 2 { // 내가 참여한 수요조사
+                let VC = AllPurchaseUserViewController()
+                VC.hidesBottomBarWhenPushed = true // 탭바 숨기기
+                navigationController?.pushViewController(VC, animated: true)
+            }
         case 2:
             if indexPath.row == 0 { // 로그아웃
                 print("로그아웃 버튼 클릭됨")

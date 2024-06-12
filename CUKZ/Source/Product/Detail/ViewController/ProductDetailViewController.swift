@@ -85,6 +85,7 @@ final class ProductDetailViewController: UIViewController {
         
         productDetailView.pageNumLabel.text = "1 / \(data.imageUrls.count)"
         productDetailView.nicknameLabel.text = data.nickname
+        productDetailView.accountLabel.text = data.sellerAccount
         productDetailView.dateLabel.text = "기간: \(formatDate(data.startDate)) ~ \(formatDate(data.endDate))"
         productDetailView.productNameLabel.text = data.name
         productDetailView.productPriceLabel.text = "\(data.price)원"
