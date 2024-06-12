@@ -9,7 +9,7 @@ import UIKit
 
 final class DemandCountViewController: UIViewController {
     // MARK: - Properties
-    private var arrayProduct: [AllDemandUserRespose.OptionList] = []
+    private var arrayProduct: [AllDemandUserResponse.OptionList] = []
     var productId: Int?
     
     private let allDemandManagerView = ProductHomeView()
