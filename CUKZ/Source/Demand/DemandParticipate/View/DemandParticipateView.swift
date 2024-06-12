@@ -26,6 +26,7 @@ final class DemandParticipateView: UIView {
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
         $0.spellCheckingType = .no
+        $0.keyboardType = .emailAddress
     }
     
     let quantityLabel = UILabel().then {
@@ -40,8 +41,7 @@ final class DemandParticipateView: UIView {
     
     let completeButton = UIButton().then {
         $0.setTitle("수요조사 참여하기", for: .normal)
-        $0.backgroundColor = .lightGray
-        $0.isEnabled = false
+        $0.backgroundColor = .gadaeBlue
     }
     
     // MARK: - Init

@@ -33,12 +33,19 @@ final class UploadProductViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        prepare()
         setupNaviBar()
         setupTextField()
         setupTextView()
         setupButton()
         setupPickerView()
         setupCollectionView()
+    }
+    
+    private func prepare() {
+        if isPatch {
+            uploadProductView.completeButton.setTitle("수정하기", for: .normal)
+        }
     }
     
     private func setupNaviBar() {
@@ -269,7 +276,7 @@ extension UploadProductViewController {
     
     // 작성완료 버튼
     @objc private func completeButtonTapped() {
-        uploadProductView.completeButton.isHidden = false
+        uploadProductView.completeButton.isEnabled = false
         
         ProductNetworkManager.shared.uploadImage(images: self.imageList) { result in
             switch result {

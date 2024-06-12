@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class MyPageViewController: UIViewController {
+final class MyPageViewController: UIViewController, MyPageTopViewDelegate {
     // MARK: - Properties
     private var userInfoData: UserModel?
     
@@ -28,6 +28,8 @@ final class MyPageViewController: UIViewController {
         
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
         
+        fetchData()
+        
         if isLoggedOut { // 로그아웃 하고 처음 들어왔을 때
             fetchData()
             isLoggedOut = false
@@ -44,16 +46,18 @@ final class MyPageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        fetchData()
+//        fetchData()
+        setupRefresh()
         setupNaviBar()
         setupTableView()
     }
     
-    private func fetchData() {
+    func fetchData() {
         UserNetworkManager.shared.getUserInfo { result in
             switch result {
             case .success(let data):
                 self.userInfoData = data
+                AppDelegate.role = data.role
                 DispatchQueue.main.async {
                     self.updateHeaderView()
                 }
@@ -61,6 +65,14 @@ final class MyPageViewController: UIViewController {
                 print("내 정보 조회 - \(error)")
             }
         }
+    }
+    
+    private func setupRefresh() {
+        let rc = myPageView.refreshControl
+        rc.addTarget(self, action: #selector(refreshTable(refresh:)), for: .valueChanged)
+        rc.tintColor = .gadaeBlue
+        
+        myPageView.tableView.refreshControl = rc
     }
     
     private func setupNaviBar() {
@@ -88,16 +100,28 @@ final class MyPageViewController: UIViewController {
         
         switch data.role {
         case "user":
-            myPageTopView.leaderLabel.text = "총대인증 ❌"
+            myPageTopView.leaderLabel.text = "총대 ❌"
         case "manager":
-            myPageTopView.leaderLabel.text = "총대인증 ✅"
+            myPageTopView.leaderLabel.text = "총대 ✅"
         case "admin":
             myPageTopView.leaderLabel.text = "관리자 🛠️"
         default:
             break
         }
         
+        myPageTopView.delegate = self
+        
         myPageView.tableView.tableHeaderView = myPageTopView
+    }
+    
+    func requestLeaderButtonTapped() {
+        if AppDelegate.role == "manager" {
+            showAlertWithDismissDelay(message: "이미 총대 신청을 했습니다.")
+        } else {
+            let VC = UINavigationController(rootViewController: RequestLeaderViewController())
+            VC.modalPresentationStyle = .fullScreen
+            self.present(VC, animated: true, completion: nil) // 로그인 화면 모달로 뜨게
+        }
     }
 }
 
@@ -105,7 +129,6 @@ final class MyPageViewController: UIViewController {
 extension MyPageViewController {
     // 새로고침
     @objc func refreshTable(refresh: UIRefreshControl) {
-        print("새로고침 시작")
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.fetchData()
@@ -166,7 +189,7 @@ extension MyPageViewController: UITableViewDelegate {
         
         switch indexPath.section {
         case 0:
-            if indexPath.row == 0 {
+            if indexPath.row == 0 { // 내가 작성한 상품
                 guard AppDelegate.role != "user" else {
                     showAlertWithDismissDelay(message: "총대신청을 진행해주세요.")
                     return
@@ -179,6 +202,11 @@ extension MyPageViewController: UITableViewDelegate {
             }
             if indexPath.row == 1 { // 내가 참여한 수요조사
                 let VC = AllDemandUserViewController()
+                VC.hidesBottomBarWhenPushed = true // 탭바 숨기기
+                navigationController?.pushViewController(VC, animated: true)
+            }
+            if indexPath.row == 2 { // 내가 참여한 수요조사
+                let VC = AllPurchaseUserViewController()
                 VC.hidesBottomBarWhenPushed = true // 탭바 숨기기
                 navigationController?.pushViewController(VC, animated: true)
             }

@@ -48,8 +48,7 @@ class LikeNetworkManager {
     func postLike(productId: Int) {
         
         AF.request("\(baseURL)/products/\(productId)/likes",
-                   method: .post,
-                   encoding: JSONEncoding.default)
+                   method: .post)
         .validate(statusCode: 200..<300)
         .response { response in
             switch response.result {
@@ -66,8 +65,7 @@ class LikeNetworkManager {
     func postUnlike(productId: Int) {
         
         AF.request("\(baseURL)/products/\(productId)/unlikes",
-                   method: .post,
-                   encoding: JSONEncoding.default)
+                   method: .post)
         .validate(statusCode: 200..<300)
         .response { response in
             switch response.result {

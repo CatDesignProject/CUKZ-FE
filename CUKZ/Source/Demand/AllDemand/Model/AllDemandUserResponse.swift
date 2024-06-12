@@ -5,8 +5,7 @@
 //  Created by 이승민 on 5/28/24.
 //
 
-// MARK: - Welcome
-struct AllDemandUserRespose: Codable {
+struct AllDemandUserResponse: Codable {
     let listSize, totalPage, totalElements: Int
     let content: [Content]
     let first, last: Bool
@@ -21,7 +20,7 @@ struct AllDemandUserRespose: Codable {
     }
     
     struct OptionList: Codable {
-        let optionId, quantity: Int
+        let optionId, quantity, additionalPrice: Int
         let optionName: String
     }
 }

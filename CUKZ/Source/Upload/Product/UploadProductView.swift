@@ -9,9 +9,7 @@ import UIKit
 
 final class UploadProductView: UIView {
     // MARK: - View
-    let scrollView = UIScrollView().then {
-        $0.keyboardDismissMode = .onDrag // 스크롤 시 키보드 숨김
-    }
+    let scrollView = UIScrollView()
     
     let contentView = UIView()
     

@@ -52,11 +52,21 @@ final class ProductDetailView: UIView {
         $0.backgroundColor = .clear
         $0.setTitle("총대 리뷰보기", for: .normal)
         $0.setTitleColor(.systemBlue, for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 10)
+        $0.titleLabel?.font = .systemFont(ofSize: 11)
     }
     
     private let dividerLine = UIView().then {
         $0.backgroundColor = .lightGray
+    }
+    
+    let dateLabel = UILabel().then {
+        $0.text = "2011-06-07T00:00:01 ~ 2011-06-07T23:59:59"
+        $0.font = .systemFont(ofSize: 17)
+    }
+    
+    let accountLabel = UILabel().then {
+        $0.text = "농협 123456789"
+        $0.font = .systemFont(ofSize: 13)
     }
     
     let productNameLabel = UILabel().then {
@@ -114,6 +124,8 @@ final class ProductDetailView: UIView {
             nicknameLabel,
             reviewButton,
             dividerLine,
+            dateLabel,
+            accountLabel,
             productNameLabel,
             productPriceLabel,
             productDescriptionLabel
@@ -163,10 +175,14 @@ final class ProductDetailView: UIView {
             make.leading.equalTo(personIcon.snp.trailing).offset(12)
         }
         
-        reviewButton.snp.makeConstraints { make in
+        accountLabel.snp.makeConstraints { make in
             make.top.equalTo(nicknameLabel.snp.bottom).offset(3)
-            make.leading.equalTo(nicknameLabel).offset(1)
-            make.height.equalTo(UIFont.systemFont(ofSize: 10).lineHeight) // 글씨 높이 만큼
+            make.leading.equalTo(nicknameLabel)
+        }
+        
+        reviewButton.snp.makeConstraints { make in
+            make.centerY.equalTo(personIcon)
+            make.trailing.equalTo(contentView).inset(20)
         }
         
         dividerLine.snp.makeConstraints { make in
@@ -175,8 +191,13 @@ final class ProductDetailView: UIView {
             make.top.equalTo(personIcon.snp.bottom).offset(10)
         }
         
+        dateLabel.snp.makeConstraints { make in
+            make.top.equalTo(dividerLine.snp.bottom).offset(15)
+            make.leading.trailing.equalTo(dividerLine)
+        }
+        
         productNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(dividerLine.snp.bottom).offset(10)
+            make.top.equalTo(dateLabel.snp.bottom).offset(10)
             make.leading.trailing.equalTo(dividerLine)
         }
         

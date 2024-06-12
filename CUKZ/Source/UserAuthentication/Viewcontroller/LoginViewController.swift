@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import IQKeyboardManagerSwift
 
 final class LoginViewController: UIViewController {
     // MARK: - Properties
@@ -19,11 +20,14 @@ final class LoginViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
+        IQKeyboardManager.shared.enableAutoToolbar = false
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.setNavigationBarHidden(false, animated: animated)
+        IQKeyboardManager.shared.enableAutoToolbar = true
+        
     }
     
     // MARK: - viewDidLoad

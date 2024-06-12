@@ -96,25 +96,25 @@ final class ProductHomeViewController: UIViewController {
             $0.addTarget(self, action: #selector(searchButtonTapped), for: .touchUpInside)
         }
         
-        let menuButton = UIButton().then {
-            let imageConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .light)
-            let image = UIImage(systemName: "ellipsis.circle", withConfiguration: imageConfig)
-            $0.setImage(image, for: .normal)
-            
-            let on_demand = UIAction(title: "수요조사 중", image: nil, handler: { _ in print("수요조사 중") })
-            let end_demand = UIAction(title: "수요조사 종료", image: nil, handler: { _ in print("수요조사 종료") })
-            let on_sale = UIAction(title: "판매 중", image: nil, handler: { _ in print("판매 중") })
-            let end_sale = UIAction(title: "판매 종료", image: nil, handler: { _ in print("판매 종료") })
-            
-            $0.menu = UIMenu(title: "정렬",
-                             image: UIImage(systemName: "heart.fill"),
-                             identifier: nil,
-                             options: .displayInline,
-                             children: [on_demand, end_demand, on_sale, end_sale])
-            $0.showsMenuAsPrimaryAction = true // 꾹 안눌러도 메뉴 표시
-        }
+//        let menuButton = UIButton().then {
+//            let imageConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .light)
+//            let image = UIImage(systemName: "ellipsis.circle", withConfiguration: imageConfig)
+//            $0.setImage(image, for: .normal)
+//            
+//            let on_demand = UIAction(title: "수요조사 중", image: nil, handler: { _ in print("수요조사 중") })
+//            let end_demand = UIAction(title: "수요조사 종료", image: nil, handler: { _ in print("수요조사 종료") })
+//            let on_sale = UIAction(title: "판매 중", image: nil, handler: { _ in print("판매 중") })
+//            let end_sale = UIAction(title: "판매 종료", image: nil, handler: { _ in print("판매 종료") })
+//            
+//            $0.menu = UIMenu(title: "정렬",
+//                             image: UIImage(systemName: "heart.fill"),
+//                             identifier: nil,
+//                             options: .displayInline,
+//                             children: [on_demand, end_demand, on_sale, end_sale])
+//            $0.showsMenuAsPrimaryAction = true // 꾹 안눌러도 메뉴 표시
+//        }
         
-        let itemsStackView = UIStackView.init(arrangedSubviews: [searchButton, menuButton])
+        let itemsStackView = UIStackView.init(arrangedSubviews: [searchButton, /*menuButton*/])
         itemsStackView.distribution = .equalSpacing
         itemsStackView.axis = .horizontal
         itemsStackView.alignment = .center
@@ -216,8 +216,10 @@ extension ProductHomeViewController: UITableViewDataSource {
             productStatusColor = .systemBlue
         case "END_SALE":
             productStatus = "판매 종료"
+        case "COMPLETE":
+            productStatus = "공구 종료"
         default:
-            print("")
+            break
         }
         
         cell.productStateLabel.text = productStatus

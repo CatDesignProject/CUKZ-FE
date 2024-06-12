@@ -72,12 +72,21 @@ final class ProductDetailViewController: UIViewController {
             productStatusColor = .systemBlue
         case "END_SALE":
             productStatus = "판매 종료"
+        case "COMPLETE":
+            if data.isBuy {
+                productStatus = "총대 리뷰 작성"
+                productStatusColor = .systemPurple
+            } else {
+                productStatus = "공구 종료"
+            }
         default:
             return
         }
         
         productDetailView.pageNumLabel.text = "1 / \(data.imageUrls.count)"
         productDetailView.nicknameLabel.text = data.nickname
+        productDetailView.accountLabel.text = data.sellerAccount
+        productDetailView.dateLabel.text = "기간: \(formatDate(data.startDate)) ~ \(formatDate(data.endDate))"
         productDetailView.productNameLabel.text = data.name
         productDetailView.productPriceLabel.text = "\(data.price)원"
         productDetailView.productDescriptionLabel.text = data.info
@@ -85,6 +94,17 @@ final class ProductDetailViewController: UIViewController {
         updateLikeButtonAppearance()
         productDetailView.productDetailBottomView.statusButton.setTitle(productStatus, for: .normal)
         productDetailView.productDetailBottomView.statusButton.backgroundColor = productStatusColor
+        
+        func formatDate(_ dateString: String) -> String {
+            let inputFormatter = DateFormatter()
+            inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+            guard let date = inputFormatter.date(from: dateString) else {
+                return dateString
+            }
+            let outputFormatter = DateFormatter()
+            outputFormatter.dateFormat = "yyyy-MM-dd"
+            return outputFormatter.string(from: date)
+        }
     }
     
     private func setupNaviBar() {
@@ -173,16 +193,20 @@ extension ProductDetailViewController {
         }
     }
     
-    // 수요조사, 구매 목록 보기
+    // 수요조사, 구매 인원 보기
     @objc private func gearButtonTapped() {
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let demandAction = UIAlertAction(title: "수요조사 목록 보기", style: .default) {_ in
-            
+        let demandAction = UIAlertAction(title: "수요조사 참여 인원 수", style: .default) {_ in
+            let VC = DemandCountViewController()
+            VC.productId = self.productId
+            self.navigationController?.pushViewController(VC, animated: true)
         }
         
-        let purchaseAction = UIAlertAction(title: "구매 목록 보기", style: .default) {_ in
-            
+        let purchaseAction = UIAlertAction(title: "구매하기한 인원 목록", style: .default) {_ in
+            let VC = PurchaseManagerViewController()
+            VC.productId = self.productId
+            self.navigationController?.pushViewController(VC, animated: true)
         }
         
         let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
@@ -309,9 +333,10 @@ extension ProductDetailViewController {
         }
     }
     
-    // 수요조사 참여, 구매하기
+    // 수요조사 참여, 구매하기, 리뷰 작성
     @objc func statusButtonTapped() {
-        guard let data = self.productDetailData else { return }
+        guard let data = self.productDetailData,
+              let productId = self.productId else { return }
         
         if !AppDelegate.isLogin  {
             showAlertWithDismissDelay(message: "로그인 후 이용해주세요.")
@@ -322,12 +347,22 @@ extension ProductDetailViewController {
         }
         
         switch data.status {
-        case "ON_DEMAND":
+        case "ON_DEMAND": // 수요조사 참여
             let VC = DemandParticipateViewController()
             VC.optionList = data.options
+            VC.productId = productId
             navigationController?.pushViewController(VC, animated: true)
-        case "ON_SALE":
-            print("구매하기 눌림")
+        case "ON_SALE": // 구매하기
+            let VC = PurchaseParticipateOptionViewController()
+            VC.optionList = data.options
+            VC.productId = productId
+            navigationController?.pushViewController(VC, animated: true)
+        case "COMPLETE":
+            if data.isBuy {
+                showAlertWithDismissDelay(message: "내가 구매한 상품 목록에서 리뷰 가능합니다.")
+            } else {
+                showAlertWithDismissDelay(message: "종료되었습니다.")
+            }
         default:
             showAlertWithDismissDelay(message: "종료되었습니다.")
         }

@@ -11,7 +11,7 @@ struct MyPageSection {
     let section0 = [
         "내가 작성한 상품",
         "내가 참여한 수요조사",
-        "내가 구매한 상품"
+        "내가 구매하기한 상품"
     ]
     
     let section1 = [
