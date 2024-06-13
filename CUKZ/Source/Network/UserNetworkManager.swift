@@ -92,7 +92,6 @@ class UserNetworkManager {
             case .success(let result):
                 if let headerFields = response.response?.allHeaderFields as? [String: String], let url = response.response?.url {
                     let cookies = HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: url)
-                    let cookie = cookies.first(where: { $0.name == "JSESSIONID" })
                 }
                 completion(.success(result))
             case .failure(let error):

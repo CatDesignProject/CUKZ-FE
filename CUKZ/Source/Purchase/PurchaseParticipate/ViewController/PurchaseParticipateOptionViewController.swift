@@ -37,6 +37,16 @@ final class PurchaseParticipateOptionViewController: UIViewController {
     private func setupNaviBar() {
         title = "옵션 선택"
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        
+        guard let purchaseProduct = self.purchaseProduct else { return }
+        if purchaseProduct.status == "COMPLETE" && purchaseProduct.payStatus {
+            let leaveReviewButton = UIBarButtonItem(title: "리뷰 작성",
+                                                    style: .plain,
+                                                    target: self,
+                                                    action: #selector(leaveReviewButtonTapped))
+            
+            navigationItem.rightBarButtonItem = leaveReviewButton
+        }
     }
     
     private func setupTableView() {
@@ -61,6 +71,16 @@ final class PurchaseParticipateOptionViewController: UIViewController {
 
 // MARK: - Actions
 extension PurchaseParticipateOptionViewController {
+    @objc private func leaveReviewButtonTapped() {
+        guard let purchaseProduct = self.purchaseProduct else { return }
+        let VC = ReviewViewController()
+        VC.isLeave = true
+//        VC.sellerId = purchaseProduct.sellerId
+//        VC.nickname = purchaseProduct.nickname
+        VC.purchaseFormId = purchaseProduct.id
+        navigationController?.pushViewController(VC, animated: true)
+    }
+    
     // 개입정보 입력 버튼
     @objc private func completeButtonTapped() {
         guard let productId = self.productId else { return }
