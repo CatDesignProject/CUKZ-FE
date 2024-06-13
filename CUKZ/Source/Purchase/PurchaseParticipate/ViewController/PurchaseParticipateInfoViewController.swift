@@ -40,7 +40,7 @@ final class PurchaseParticipateInfoViewController: UIViewController {
         guard let purchaseProduct = self.purchaseProduct else { return }
         DispatchQueue.main.async {
             if self.isAllPurchase {
-                self.purchaseParticipateInfoView.completeButton.setTitle("총 \(purchaseProduct.totalPrice)원\n총대계좌: 농협123456789", for: .normal)
+                self.purchaseParticipateInfoView.completeButton.setTitle("총 \(purchaseProduct.totalPrice)원\n총대계좌: \(purchaseProduct.sellerAccount)", for: .normal)
             } else if self.isPurchaseManager {
                 self.purchaseParticipateInfoView.completeButton.setTitle("총 \(purchaseProduct.totalPrice)원", for: .normal)
             }

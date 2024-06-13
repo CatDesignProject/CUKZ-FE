@@ -160,4 +160,3 @@ extension AllPurchaseUserViewController: UITableViewDataSourcePrefetching {
         }
     }
 }
-

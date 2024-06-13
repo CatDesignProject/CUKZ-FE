@@ -13,7 +13,7 @@ final class ReviewViewController: UIViewController {
     var sellerId: Int?
     var productId: Int?
     var purchaseFormId: Int?
-    var nickname: String?
+    var sellerNickname: String?
     
     private var isSellerKindnessSelected = false
     private var isGoodNotificationSelected = false
@@ -49,12 +49,11 @@ final class ReviewViewController: UIViewController {
     }
     
     private func updateUI() {
-        guard let data = self.reviewData else { return }
-        
-        if let isLeave = self.isLeave, isLeave == true, let nickname = self.nickname {
-            reviewView.nicknameLabel.text = "\(nickname) 님의\n이런 점이 좋았어요"
+        if let isLeave = self.isLeave, isLeave == true, let sellerNickname = self.sellerNickname {
+            reviewView.nicknameLabel.text = "\(sellerNickname) 님의\n이런 점이 좋았어요"
         }
         
+        guard let data = self.reviewData else { return }
         reviewView.nicknameLabel.text = "\(data.nickname) 님의\n이런 점이 좋았어요"
         reviewView.firstQuestionNumLabel.text = "\(data.sellerKindnessCnt)"
         reviewView.secondQuestionNumLabel.text = "\(data.goodNotificationCnt)"
@@ -127,10 +126,8 @@ extension ReviewViewController {
     }
     
     @objc private func completeButtonTapped() {
-        guard /*let sellerId = self.sellerId,*/
-            let purchaseFormId = self.purchaseFormId else { return }
-        
-        let sellerId = 521
+        guard let sellerId = self.sellerId,
+              let purchaseFormId = self.purchaseFormId else { return }
         
         ReviewNetworkManager.shared.postReview(sellerId: sellerId,
                                                purchaseFormId: purchaseFormId,

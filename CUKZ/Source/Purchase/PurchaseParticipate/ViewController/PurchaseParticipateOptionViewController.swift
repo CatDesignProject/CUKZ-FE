@@ -75,8 +75,8 @@ extension PurchaseParticipateOptionViewController {
         guard let purchaseProduct = self.purchaseProduct else { return }
         let VC = ReviewViewController()
         VC.isLeave = true
-//        VC.sellerId = purchaseProduct.sellerId
-//        VC.nickname = purchaseProduct.nickname
+        VC.sellerId = purchaseProduct.sellerId
+        VC.sellerNickname = purchaseProduct.sellerNickname
         VC.purchaseFormId = purchaseProduct.id
         navigationController?.pushViewController(VC, animated: true)
     }
