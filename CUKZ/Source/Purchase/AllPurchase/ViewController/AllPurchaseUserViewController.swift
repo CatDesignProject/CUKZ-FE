@@ -108,7 +108,16 @@ extension AllPurchaseUserViewController: UITableViewDataSource {
         }
         cell.productNameLabel.text = data.productName
         cell.productPriceLabel.text = "총 \(data.totalPrice)원"
-        cell.productStateLabel.isHidden = true
+        cell.productStateLabel.textColor = .gadaeBlue
+        if data.payStatus {
+            if data.status  == "COMPLETE" {
+                cell.productStateLabel.text = "입금확인 완료 ✅ (리뷰작성가능)"
+            } else {
+                cell.productStateLabel.text = "입금확인 완료 ✅"
+            }
+        } else {
+            cell.productStateLabel.text = "입금확인 ❌"
+        }
         
         return cell
     }
@@ -151,4 +160,3 @@ extension AllPurchaseUserViewController: UITableViewDataSourcePrefetching {
         }
     }
 }
-

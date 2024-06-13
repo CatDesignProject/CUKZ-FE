@@ -73,12 +73,7 @@ final class ProductDetailViewController: UIViewController {
         case "END_SALE":
             productStatus = "판매 종료"
         case "COMPLETE":
-            if data.isBuy {
-                productStatus = "총대 리뷰 작성"
-                productStatusColor = .systemPurple
-            } else {
-                productStatus = "공구 종료"
-            }
+            productStatus = "공구 종료"
         default:
             return
         }
@@ -333,7 +328,7 @@ extension ProductDetailViewController {
         }
     }
     
-    // 수요조사 참여, 구매하기, 리뷰 작성
+    // 수요조사 참여, 구매하기
     @objc func statusButtonTapped() {
         guard let data = self.productDetailData,
               let productId = self.productId else { return }
@@ -357,12 +352,6 @@ extension ProductDetailViewController {
             VC.optionList = data.options
             VC.productId = productId
             navigationController?.pushViewController(VC, animated: true)
-        case "COMPLETE":
-            if data.isBuy {
-                showAlertWithDismissDelay(message: "내가 구매한 상품 목록에서 리뷰 가능합니다.")
-            } else {
-                showAlertWithDismissDelay(message: "종료되었습니다.")
-            }
         default:
             showAlertWithDismissDelay(message: "종료되었습니다.")
         }

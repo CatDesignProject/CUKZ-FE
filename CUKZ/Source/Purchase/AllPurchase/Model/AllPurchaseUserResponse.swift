@@ -20,6 +20,9 @@ struct AllPurchaseUserResponse: Codable {
         let productName: String
         let price: Int
         let status: String
+        let sellerId: Int
+        let sellerNickname: String
+        let sellerAccount: String
         let buyerName: String
         let buyerPhone: String
         let recipientName: String
