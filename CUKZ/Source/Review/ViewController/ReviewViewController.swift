@@ -13,6 +13,7 @@ final class ReviewViewController: UIViewController {
     var sellerId: Int?
     var productId: Int?
     var purchaseFormId: Int?
+    var sellerNickname: String?
     
     private var isSellerKindnessSelected = false
     private var isGoodNotificationSelected = false
@@ -48,6 +49,10 @@ final class ReviewViewController: UIViewController {
     }
     
     private func updateUI() {
+        if let isLeave = self.isLeave, isLeave == true, let sellerNickname = self.sellerNickname {
+            reviewView.nicknameLabel.text = "\(sellerNickname) 님의\n이런 점이 좋았어요"
+        }
+        
         guard let data = self.reviewData else { return }
         reviewView.nicknameLabel.text = "\(data.nickname) 님의\n이런 점이 좋았어요"
         reviewView.firstQuestionNumLabel.text = "\(data.sellerKindnessCnt)"
@@ -57,11 +62,15 @@ final class ReviewViewController: UIViewController {
     }
     
     private func prepare() {
-        if isLeave == false {
-            [reviewView.firstQuestionButton, reviewView.secondQuestionButton, reviewView.thirdQuestionButton, reviewView.fourthQuestionButton].forEach {
-                $0.isEnabled = false
+        DispatchQueue.main.async {
+            if self.isLeave == false {
+                [self.reviewView.firstQuestionButton, self.reviewView.secondQuestionButton, self.reviewView.thirdQuestionButton, self.reviewView.fourthQuestionButton].forEach {
+                    $0.isEnabled = false
+                }
+                self.reviewView.completeButton.isHidden = true
+            } else {
+                [self.reviewView.firstQuestionNumLabel, self.reviewView.secondQuestionNumLabel, self.reviewView.thirdQuestionNumLabel, self.reviewView.fourthQuestionNumLabel].forEach { $0.isHidden = true }
             }
-            reviewView.completeButton.isHidden = true
         }
     }
     
@@ -118,21 +127,27 @@ extension ReviewViewController {
     
     @objc private func completeButtonTapped() {
         guard let sellerId = self.sellerId,
-              let productId = self.productId else { return }
+              let purchaseFormId = self.purchaseFormId else { return }
         
-        print(sellerId)
-        print(productId)
-        
-        ReviewNetworkManager.shared.postReview(sellerId: 525,
-                                               purchaseFormId: 11,
+        ReviewNetworkManager.shared.postReview(sellerId: sellerId,
+                                               purchaseFormId: purchaseFormId,
                                                sellerKindness: self.isSellerKindnessSelected,
                                                goodNotification: self.isGoodNotificationSelected,
                                                arrivalSatisfactory: self.isArrivalSatisfactorySelected,
                                                descriptionMatch: self.isDescriptionMatchSelected) { error in
+            let alertMessage: String
+            
             if let error = error {
                 print("리뷰 전송 실패: \(error.localizedDescription)")
+                alertMessage = "이미 리뷰작성을 했습니다."
             } else {
                 print("리뷰 전송 성공")
+                alertMessage = "리뷰 작성이 완료되었습니다."
+            }
+            
+            DispatchQueue.main.async() {
+                self.navigationController?.popViewController(animated: true)
+                self.showAlertWithDismissDelay(message: alertMessage)
             }
         }
     }
